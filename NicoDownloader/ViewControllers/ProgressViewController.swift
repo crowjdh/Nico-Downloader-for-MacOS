@@ -268,14 +268,30 @@ extension ProgressViewController: NSTableViewDelegate {
 extension ProgressViewController: NSWindowDelegate {
     
     func windowShouldClose(_ sender: Any) -> Bool {
-        cancelled = true
-        if let downloadWorkItem = downloadWorkItem {
-            downloadWorkItem.cancel()
-        }
-        for downloadRequest in downloadRequests {
-            downloadRequest.cancel()
+        if !cancelled {
+            let alert = NSAlert()
+            alert.messageText = "Are you sure you want to stop download?"
+            alert.addButton(withTitle: "OK")
+            alert.addButton(withTitle: "Cancel")
+            alert.beginSheetModal(for: view.window!) { response in
+                if response == NSAlertFirstButtonReturn {
+                    self.cancelled = true
+                }
+            }
         }
         
-        return true
+        return cancelled
+    }
+    
+    func windowDidEndSheet(_ notification: Notification) {
+        if cancelled {
+            if let downloadWorkItem = self.downloadWorkItem {
+                downloadWorkItem.cancel()
+            }
+            for downloadRequest in self.downloadRequests {
+                downloadRequest.cancel()
+            }
+            self.view.window!.performClose(self)
+        }
     }
 }
