@@ -13,6 +13,6 @@ struct Account {
     let password: String
 }
 
-//struct Options {
-//    
-//}
+struct Options {
+    let mylistID: String
+}

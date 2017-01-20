@@ -714,7 +714,7 @@
                             </textField>
                             <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qqe-ie-sAD">
                                 <rect key="frame" x="89" y="231" width="371" height="22"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" title="crowjdh@naver.com" placeholderString="" drawsBackground="YES" id="hc4-K4-YDE">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="id@domain.com" drawsBackground="YES" id="hc4-K4-YDE">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -731,12 +731,33 @@
                                     </allowedInputSourceLocales>
                                 </secureTextFieldCell>
                             </secureTextField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bvf-OH-btz">
+                                <rect key="frame" x="20" y="183" width="53" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="MylistID" id="URa-RQ-aaq">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                            <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fxF-v9-enf">
+                                <rect key="frame" x="89" y="180" width="371" height="22"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="MFR-ik-JUP">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
+                            <constraint firstAttribute="trailing" secondItem="fxF-v9-enf" secondAttribute="trailing" constant="20" id="0dm-V3-Jma"/>
                             <constraint firstItem="Slx-4Y-wmi" firstAttribute="leading" secondItem="uYB-8d-sv3" secondAttribute="trailing" constant="8" id="CF5-zB-jte"/>
+                            <constraint firstItem="Bvf-OH-btz" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="GLx-Gd-cW1"/>
                             <constraint firstItem="iuf-gp-lCq" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="LgO-Yw-Mcz"/>
+                            <constraint firstItem="Bvf-OH-btz" firstAttribute="top" secondItem="uYB-8d-sv3" secondAttribute="bottom" constant="8" id="NRz-0c-PwZ"/>
                             <constraint firstItem="Slx-4Y-wmi" firstAttribute="top" secondItem="qqe-ie-sAD" secondAttribute="bottom" constant="3" id="O5t-Gj-pCT"/>
+                            <constraint firstItem="fxF-v9-enf" firstAttribute="top" secondItem="Slx-4Y-wmi" secondAttribute="bottom" constant="4" id="O61-JP-HJJ"/>
                             <constraint firstItem="uYB-8d-sv3" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="OSE-y8-2tB"/>
+                            <constraint firstItem="fxF-v9-enf" firstAttribute="leading" secondItem="Bvf-OH-btz" secondAttribute="trailing" constant="18" id="YfN-8b-Q9o"/>
                             <constraint firstAttribute="trailing" secondItem="qqe-ie-sAD" secondAttribute="trailing" constant="20" id="ZDu-g6-053"/>
                             <constraint firstAttribute="trailing" secondItem="Slx-4Y-wmi" secondAttribute="trailing" constant="20" id="e0m-aD-b73"/>
                             <constraint firstAttribute="bottom" secondItem="7wB-Z1-VFf" secondAttribute="bottom" constant="20" id="g4N-02-EeT"/>
@@ -749,6 +770,7 @@
                     </view>
                     <connections>
                         <outlet property="emailField" destination="qqe-ie-sAD" id="bne-Pr-WX4"/>
+                        <outlet property="mylistIdField" destination="fxF-v9-enf" id="d2c-gM-AGq"/>
                         <outlet property="passwordField" destination="Slx-4Y-wmi" id="Kna-ww-heF"/>
                     </connections>
                 </viewController>

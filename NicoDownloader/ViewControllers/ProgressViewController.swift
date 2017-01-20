@@ -26,6 +26,7 @@ class ProgressViewController: NSViewController {
     @IBOutlet weak var downloadProgressTableView: NSTableView!
     
     var account: Account!
+    var options: Options!
     var items: [Item] = []
     var sessionManager: Alamofire.SessionManager!
     var cancelled = false
@@ -34,12 +35,7 @@ class ProgressViewController: NSViewController {
     var semaphore: DispatchSemaphore?
     
     let cookies = HTTPCookieStorage.shared
-//    deinit {
-//        guard let semaphore = semaphore else {
-//            return
-//        }
-//        while (semaphore.signal() != 0) {}
-//    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -49,10 +45,10 @@ class ProgressViewController: NSViewController {
         firstly {
             login()
         }.then {
-            self.createItems(fromMylistId: "48890167")
+            self.createItems(fromMylistId: self.options.mylistID)
         }.then{ items -> Void in
             self.items = items
-//            self.downloadProgressTableView.reloadData()
+            self.downloadProgressTableView.reloadData()
             self.download()
         }.catch { error in
             print(error)
@@ -154,9 +150,8 @@ extension ProgressViewController {
                                 self.downloadProgressTableView.reloadData()
                             })
                         }) { succeed in
-                            print(succeed)
                             self.items[idx].status = .done
-                            print(semaphore.signal())
+                            semaphore.signal()
                         }
                     }
                 }
@@ -165,7 +160,6 @@ extension ProgressViewController {
                     break
                 }
             }
-            print("Exited DispatchQueue")
         }
         DispatchQueue.global(qos: .default).async(execute: downloadWorkItem!)
     }

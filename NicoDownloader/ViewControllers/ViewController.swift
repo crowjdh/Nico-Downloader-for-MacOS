@@ -13,25 +13,12 @@ class ViewController: NSViewController {
 
     @IBOutlet weak var emailField: NSTextField!
     @IBOutlet weak var passwordField: NSSecureTextField!
+    @IBOutlet weak var mylistIdField: NSTextField!
     
     var sessionManager: SessionManager!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        let configuration = URLSessionConfiguration.default
-//        sessionManager = Alamofire.SessionManager(configuration: configuration)
-//        let videoApiUrl = "http://flapi.nicovideo.jp/api/getflv/sm26693090?as3=1"
-//        sessionManager.request(videoApiUrl).responseString { response in
-//            guard let htmlString = response.result.value else {
-//                return
-//            }
-//            let url = htmlString.components(separatedBy: "&")
-//                .map { $0.components(separatedBy: "=") }
-//                .filter { $0[0] == "url" }
-//                .map { $0[1] }[0]
-//            print(url)
-//        }
     }
 
     override var representedObject: Any? {
@@ -46,6 +33,7 @@ class ViewController: NSViewController {
         }
         
         dest.account = Account(email: emailField.stringValue, password: passwordField.stringValue)
+        dest.options = Options(mylistID: mylistIdField.stringValue)
     }
 
 }
