@@ -6,6 +6,7 @@ target 'NicoDownloader' do
   use_frameworks!
   pod 'Alamofire', '~> 4.3'
   pod 'Kanna', '~> 2.1.0'
+  pod 'PromiseKit/Alamofire', '~> 4.0'
 
   # Pods for NicoDownloader
 

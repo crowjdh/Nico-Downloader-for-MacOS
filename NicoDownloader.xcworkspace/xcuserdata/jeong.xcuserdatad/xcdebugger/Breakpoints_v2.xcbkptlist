@@ -89,38 +89,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "NicoDownloader/ViewControllers/ProgressViewController.swift"
-            timestampString = "506580295.868061"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
-            landmarkName = "login()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NicoDownloader/ViewControllers/ProgressViewController.swift"
-            timestampString = "506580295.868061"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "62"
-            endingLineNumber = "62"
-            landmarkName = "login()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "NicoDownloader/Extensions/Date+XMLPubDate.swift"
             timestampString = "506523087.567797"
             startingColumnNumber = "9223372036854775807"
@@ -138,59 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "NicoDownloader/ViewControllers/ProgressViewController.swift"
-            timestampString = "506580295.868061"
+            timestampString = "506590099.716722"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "78"
-            endingLineNumber = "78"
-            landmarkName = "videoIdsFrom(mylistId:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NicoDownloader.ProgressViewController.(videoIdsFrom (mylistId : Swift.String) -&gt; ()).(closure #1)"
-                  moduleName = "NicoDownloader"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeong/Dev/mac/projects/NicoDownloader/NicoDownloader/ViewControllers/ProgressViewController.swift"
-                  timestampString = "506523454.803491"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "73"
-                  endingLineNumber = "73"
-                  offsetFromSymbolStart = "1291">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NicoDownloader.ProgressViewController.(videoIdsFrom (mylistId : Swift.String) -&gt; ()).(closure #1)"
-                  moduleName = "NicoDownloader"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jeong/Dev/mac/projects/NicoDownloader/NicoDownloader/ViewControllers/ProgressViewController.swift"
-                  timestampString = "506523454.805612"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "73"
-                  endingLineNumber = "73"
-                  offsetFromSymbolStart = "1846">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NicoDownloader/ViewControllers/ProgressViewController.swift"
-            timestampString = "506580382.942203"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "163"
-            endingLineNumber = "163"
+            startingLineNumber = "211"
+            endingLineNumber = "211"
             landmarkName = "downloadVideo(item:url:progressCallback:finishCallback:)"
             landmarkType = "7">
          </BreakpointContent>

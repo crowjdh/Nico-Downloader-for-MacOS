@@ -8,10 +8,31 @@
 
 import Foundation
 
+enum Status {
+    case sleeping
+    case fetching
+    case downloading
+    case done
+    
+    var description: String {
+        switch self {
+        case .sleeping:
+            return "Sleeping"
+        case .fetching:
+            return "Fetching"
+        case .downloading:
+            return "Downloading"
+        case .done:
+            return "Done"
+        }
+    }
+}
+
 struct Item {
     let videoId: String
     let name: String
     let pubdate: Date
+    var status: Status = .sleeping
     
     var progress: Double = 0
     

@@ -10,28 +10,59 @@ import Cocoa
 
 import Alamofire
 import Kanna
+import PromiseKit
 
 typealias Callback = () -> Void
 typealias BoolCallback = (Bool) -> Void
 typealias DoubleCallback = (Double) -> Void
 typealias StringCallback = (String) -> Void
 
+enum NicoError: Error {
+    case LoginError
+    case FetchVideoIdsError(String)
+}
+
 class ProgressViewController: NSViewController {
     @IBOutlet weak var downloadProgressTableView: NSTableView!
     
     var account: Account!
-    var items: [(Item)] = []
+    var items: [Item] = []
     var sessionManager: Alamofire.SessionManager!
+    var cancelled = false
+    var downloadRequests: [DownloadRequest] = []
+    var downloadWorkItem: DispatchWorkItem?
+    var semaphore: DispatchSemaphore?
     
     let cookies = HTTPCookieStorage.shared
-
+//    deinit {
+//        guard let semaphore = semaphore else {
+//            return
+//        }
+//        while (semaphore.signal() != 0) {}
+//    }
     override func viewDidLoad() {
         super.viewDidLoad()
         
         initTableView()
         initSessionManager()
         
-        login()
+        firstly {
+            login()
+        }.then {
+            self.createItems(fromMylistId: "48890167")
+        }.then{ items -> Void in
+            self.items = items
+//            self.downloadProgressTableView.reloadData()
+            self.download()
+        }.catch { error in
+            print(error)
+        }
+    }
+    
+    override func viewDidAppear() {
+        super.viewDidAppear()
+        
+        view.window?.delegate = self
     }
     
     private func initTableView() {
@@ -44,67 +75,79 @@ extension ProgressViewController {
     
     func initSessionManager() {
         let configuration = URLSessionConfiguration.default
-//        configuration.httpMaximumConnectionsPerHost = 1
         configuration.timeoutIntervalForRequest = 30
         configuration.httpCookieStorage = cookies
         sessionManager = Alamofire.SessionManager(configuration: configuration)
     }
     
-    func login() {
-        let url = "https://secure.nicovideo.jp/secure/login?site=niconico&mail=\(account.email)&password=\(account.password)"
-        sessionManager.request(url, method: .post).responseString { response in
-            guard let htmlString = response.result.value else {
-                return
-            }
-            if let doc = HTML(html: htmlString, encoding: .utf8), doc.css("div.notice.error").count == 0 {
-                print("Login succeed")
-                self.videoIdsFrom(mylistId: "48890167")
-            } else {
-                print("Login failed")
+    func login() -> Promise<Void> {
+        return Promise { fulfill, reject in
+            let url = "https://secure.nicovideo.jp/secure/login?site=niconico&mail=\(account.email)&password=\(account.password)"
+            sessionManager.request(url, method: .post).responseString { response in
+                switch response.result {
+                case .success(let htmlString):
+                    if let doc = HTML(html: htmlString, encoding: .utf8), doc.css("div.notice.error").count == 0 {
+                        fulfill()
+                    } else {
+                        reject(NicoError.LoginError)
+                    }
+                case .failure(let error):
+                    reject(error)
+                }
             }
         }
     }
     
-    func videoIdsFrom(mylistId: String) {
-        let url = "http://www.nicovideo.jp/mylist/\(mylistId)?rss=2.0"
-        sessionManager.request(url, method: .get).responseString { response in
-            guard let xmlString = response.result.value, let doc = Kanna.XML(xml: xmlString, encoding: .utf8) else {
-                return
-            }
-            let itemXmls = doc.xpath("//item")
-            for itemXml in itemXmls {
-                guard let link = itemXml.at_xpath("link")?.text,
-                    let videoId = link.components(separatedBy: "/").last,
-                    let title = itemXml.at_xpath("title")?.text,
-                    let pubdateString = itemXml.at_xpath("pubDate")?.text,
-                    let pubdate = DateFormatter.from(pubdateString: pubdateString) else {
-                        continue
+    func createItems(fromMylistId: String) -> Promise<Array<Item>> {
+        return Promise { fulfill, reject in
+            let url = "http://www.nicovideo.jp/mylist/\(fromMylistId)?rss=2.0"
+            sessionManager.request(url, method: .get).responseString { response in
+                switch response.result {
+                case .success(let xmlString):
+                    guard let doc = Kanna.XML(xml: xmlString, encoding: .utf8) else {
+                            reject(NicoError.FetchVideoIdsError("Malformed xml"))
+                            return
+                    }
+                    let itemXmls = doc.xpath("//item")
+                    guard itemXmls.count > 0 else {
+                        reject(NicoError.FetchVideoIdsError("Invalid mylist ID"))
+                        return
+                    }
+                    
+                    var items: [Item] = []
+                    for itemXml in itemXmls {
+                        guard let link = itemXml.at_xpath("link")?.text,
+                            let videoId = link.components(separatedBy: "/").last,
+                            let title = itemXml.at_xpath("title")?.text,
+                            let pubdateString = itemXml.at_xpath("pubDate")?.text,
+                            let pubdate = DateFormatter.from(pubdateString: pubdateString) else {
+                                continue
+                        }
+                        
+                        items.append(Item(videoId: videoId, name: title, pubdate: pubdate))
+                    }
+                    items.sort(by: { (lhs, rhs) -> Bool in
+                        lhs.pubdate.compare(rhs.pubdate) == .orderedAscending
+                    })
+                    items = Array(items[0..<3])
+                    fulfill(items)
+                case .failure(let error):
+                    reject(error)
                 }
-                
-                self.items.append(Item(videoId: videoId, name: title, pubdate: pubdate))
             }
-            self.items.sort(by: { (lhs, rhs) -> Bool in
-                lhs.pubdate.compare(rhs.pubdate) == .orderedAscending
-            })
-            self.items = Array(self.items[0..<3])
-            print("item parsed: \(self.items.count)")
-            self.download()
+            
         }
     }
     
     func download() {
-        DispatchQueue.global(qos: .default).async {
+        downloadWorkItem = DispatchWorkItem {
             let semaphore = DispatchSemaphore(value: 1)
             for (idx, item) in self.items.enumerated() {
-                print("sleeping...\(idx)")
                 Thread.sleep(forTimeInterval: 3)
-                print("awake\(idx)")
+                self.items[idx].status = .fetching
                 self.getVideoUrlWith(item: item) { url in
-                    print("\(idx): \(url)")
                     self.prefetchVideoPage(videoId: item.videoId) {
-                        print("\(idx): prefetched")
-                        
-                        print("main: \(idx)")
+                        self.items[idx].status = .downloading
                         self.downloadVideo(item: item, url: url, progressCallback: {
                             self.items[idx].progress = $0
                             DispatchQueue.main.async(execute: {
@@ -112,13 +155,19 @@ extension ProgressViewController {
                             })
                         }) { succeed in
                             print(succeed)
-                            semaphore.signal()
+                            self.items[idx].status = .done
+                            print(semaphore.signal())
                         }
                     }
                 }
-                semaphore.wait(timeout: .distantFuture)
+                let _ = semaphore.wait(timeout: .distantFuture)
+                if self.cancelled {
+                    break
+                }
             }
+            print("Exited DispatchQueue")
         }
+        DispatchQueue.global(qos: .default).async(execute: downloadWorkItem!)
     }
     
     func getVideoUrlWith(item: Item, callback: @escaping StringCallback) {
@@ -151,6 +200,10 @@ extension ProgressViewController {
     
     func downloadVideo(item: Item, url: String, progressCallback: @escaping DoubleCallback,
                        finishCallback: @escaping BoolCallback) {
+        guard !cancelled else {
+            finishCallback(false)
+            return
+        }
         let destination: DownloadRequest.DownloadFileDestination = { temporaryURL, response in
             let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
             var fileURL = downloadsURL.appendingPathComponent(item.name)
@@ -160,12 +213,13 @@ extension ProgressViewController {
             
             return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
         }
-        sessionManager.download(url, to: destination)
+        let request = sessionManager.download(url, to: destination)
             .downloadProgress { progress in
                 progressCallback(progress.fractionCompleted)
             }.responseData { response in
                 finishCallback(response.result.value != nil)
         }
+        downloadRequests.append(request)
     }
 }
 
@@ -182,6 +236,7 @@ extension ProgressViewController: NSTableViewDelegate {
         static let NumberCell = "NumberCellID"
         static let TitleCell = "TitleCellID"
         static let ProgressCell = "ProgressCellID"
+        static let StatusCell = "StatusCellID"
     }
     
     func tableView(_ tableView: NSTableView, viewFor optionalTableColumn: NSTableColumn?, row: Int) -> NSView? {
@@ -198,24 +253,35 @@ extension ProgressViewController: NSTableViewDelegate {
             }
         case tableView.tableColumns[1]:
             if let cell = tableView.make(withIdentifier: CellIdentifiers.TitleCell, owner: nil) as? NSTableCellView {
-                cell.textField?.stringValue = item.name ?? ""
+                cell.textField?.stringValue = item.name
+                return cell
+            }
+        case tableView.tableColumns[2]:
+            if let cell = tableView.make(withIdentifier: CellIdentifiers.ProgressCell, owner: nil) as? ProgressTableCellView {
+                cell.progressIndicator.doubleValue = Double(item.progress)
                 return cell
             }
         default:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.ProgressCell, owner: nil) as? ProgressTableCellView {
-                cell.progressIndicator.doubleValue = Double(item.progress)
+            if let cell = tableView.make(withIdentifier: CellIdentifiers.StatusCell, owner: nil) as? NSTableCellView {
+                cell.textField?.stringValue = item.status.description
                 return cell
             }
         }
         return nil
     }
+}
+
+extension ProgressViewController: NSWindowDelegate {
     
-//    func tableViewSelectionDidChange(_ notification: Notification) {
-//        let row = downloadProgressTableView.selectedRow
-//        guard row >= 0 else {
-//                return
-//        }
-//        items[row].progress += 4
-//        downloadProgressTableView.reloadData()
-//    }
+    func windowShouldClose(_ sender: Any) -> Bool {
+        cancelled = true
+        if let downloadWorkItem = downloadWorkItem {
+            downloadWorkItem.cancel()
+        }
+        for downloadRequest in downloadRequests {
+            downloadRequest.cancel()
+        }
+        
+        return true
+    }
 }
