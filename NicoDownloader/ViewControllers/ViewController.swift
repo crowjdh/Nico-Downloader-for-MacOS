@@ -14,11 +14,16 @@ class ViewController: NSViewController {
     @IBOutlet weak var emailField: NSTextField!
     @IBOutlet weak var passwordField: NSSecureTextField!
     @IBOutlet weak var mylistIdField: NSTextField!
+    @IBOutlet weak var startDownloadButton: NSButton!
     
     var sessionManager: SessionManager!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewDidAppear() {
+        super.viewDidAppear()
     }
 
     override var representedObject: Any? {
