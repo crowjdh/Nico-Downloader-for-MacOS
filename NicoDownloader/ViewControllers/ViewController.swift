@@ -58,7 +58,7 @@ class ViewController: NSViewController {
         
         let rangeComponenets = rangeTextField.stringValue.components(separatedBy: ":")
         if rangeComponenets.count == 2, let from = Int(rangeComponenets[0]), let to = Int(rangeComponenets[1]), from <= to {
-            dest.options.range = (from - 1)...(to - 1)
+            dest.options.range = max((from - 1), 1)...(to - 1)
         }
     }
 
