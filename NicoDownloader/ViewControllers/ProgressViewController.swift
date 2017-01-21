@@ -22,6 +22,7 @@ enum NicoError: Error {
 
 class ProgressViewController: NSViewController {
     @IBOutlet weak var downloadProgressTableView: NSTableView!
+    @IBOutlet weak var messageLabel: NSTextField!
     
     var account: Account!
     var options: Options!
@@ -49,7 +50,16 @@ class ProgressViewController: NSViewController {
             self.downloadProgressTableView.reloadData()
             self.download()
         }.catch { error in
-            print(error)
+            var msg: String
+            switch error {
+            case NicoError.LoginError:
+                msg = "Login error. Check id/pw and retry."
+            case NicoError.FetchVideoIdsError(let errMsg):
+                msg = errMsg
+            default:
+                msg = "Unknown error occurred."
+            }
+            self.updateStatusMessage(message: msg)
         }
     }
     
@@ -76,6 +86,10 @@ class ProgressViewController: NSViewController {
                 }
             }
         }
+    }
+    
+    func updateStatusMessage(message: String) {
+        messageLabel.stringValue = message
     }
 }
 

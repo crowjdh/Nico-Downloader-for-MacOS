@@ -24,6 +24,7 @@ extension ProgressViewController {
     
     func login() -> Promise<Void> {
         return Promise { fulfill, reject in
+            self.updateStatusMessage(message: "Logging in...")
             let url = "https://secure.nicovideo.jp/secure/login?site=niconico&mail=\(account.email)&password=\(account.password)"
             sessionManager.request(url, method: .post).responseString { response in
                 switch response.result {
@@ -42,6 +43,7 @@ extension ProgressViewController {
     
     func createItems(fromMylistId: String) -> Promise<Array<Item>> {
         return Promise { fulfill, reject in
+            self.updateStatusMessage(message: "Fetching items...")
             let url = "http://www.nicovideo.jp/mylist/\(fromMylistId)?rss=2.0"
             sessionManager.request(url, method: .get).responseString { response in
                 switch response.result {
@@ -71,7 +73,7 @@ extension ProgressViewController {
                     items.sort(by: { (lhs, rhs) -> Bool in
                         lhs.pubdate.compare(rhs.pubdate) == .orderedAscending
                     })
-                    items = Array(items[0..<3])
+                    items = Array(items[0..<2])
                     fulfill(items)
                 case .failure(let error):
                     reject(error)
@@ -82,6 +84,7 @@ extension ProgressViewController {
     }
     
     func download() {
+        self.updateStatusMessage(message: "Downloading items...")
         downloadWorkItem = DispatchWorkItem {
             let semaphore = DispatchSemaphore(value: 1)
             for (idx, item) in self.items.enumerated() {
@@ -98,6 +101,12 @@ extension ProgressViewController {
                         }) { succeed in
                             self.items[idx].status = .done
                             semaphore.signal()
+                            let allDone = self.items.reduce(false) { $0.0 && ($0.1.status == .done) }
+                            if allDone {
+                                DispatchQueue.main.async {
+                                    self.updateStatusMessage(message: "Downloading items...")
+                                }
+                            }
                         }
                     }
                 }
