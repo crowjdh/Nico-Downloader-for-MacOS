@@ -100,11 +100,13 @@ extension ProgressViewController {
                         }) { succeed in
                             self.items[idx].status = .done
                             semaphore.signal()
-                            let allDone = self.items.reduce(false) { $0.0 && ($0.1.status == .done) }
-                            if allDone {
-                                DispatchQueue.main.async {
-                                    self.updateStatusMessage(message: "Downloading items...")
+                            DispatchQueue.main.async {
+                                self.downloadProgressTableView.reloadData()
+                                let allDone = self.items.reduce(true) { $0.0 && ($0.1.status == .done) }
+                                if allDone {
+                                    self.updateStatusMessage(message: "DONE")
                                 }
+                                
                             }
                         }
                     }
