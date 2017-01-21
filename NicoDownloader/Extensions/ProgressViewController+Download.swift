@@ -73,7 +73,6 @@ extension ProgressViewController {
                     items.sort(by: { (lhs, rhs) -> Bool in
                         lhs.pubdate.compare(rhs.pubdate) == .orderedAscending
                     })
-                    items = Array(items[0..<2])
                     fulfill(items)
                 case .failure(let error):
                     reject(error)
