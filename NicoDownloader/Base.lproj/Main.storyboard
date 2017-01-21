@@ -733,6 +733,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="stopAndClose:" target="Bm4-7K-Nlt" id="9Bu-cb-fpX"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>

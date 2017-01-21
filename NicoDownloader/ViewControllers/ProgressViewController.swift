@@ -63,11 +63,8 @@ class ProgressViewController: NSViewController {
         downloadProgressTableView.delegate = self
         downloadProgressTableView.dataSource = self
     }
-}
-
-extension ProgressViewController: NSWindowDelegate {
     
-    func windowShouldClose(_ sender: Any) -> Bool {
+    @IBAction func stopAndClose(_ sender: Any) {
         if !cancelled {
             let alert = NSAlert()
             alert.messageText = "Are you sure you want to stop download?"
@@ -79,9 +76,10 @@ extension ProgressViewController: NSWindowDelegate {
                 }
             }
         }
-        
-        return cancelled
     }
+}
+
+extension ProgressViewController: NSWindowDelegate {
     
     func windowDidEndSheet(_ notification: Notification) {
         if cancelled {
@@ -91,7 +89,7 @@ extension ProgressViewController: NSWindowDelegate {
             for downloadRequest in self.downloadRequests {
                 downloadRequest.cancel()
             }
-            self.view.window!.performClose(self)
+            dismissViewController(self)
         }
     }
 }

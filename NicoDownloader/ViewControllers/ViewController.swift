@@ -22,6 +22,12 @@ class ViewController: NSViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let keychain = Keychain()
+        if let item = keychain.allItems().first, let savedEmail = item["key"] as? String, let password = keychain[savedEmail] {
+            emailField.stringValue = savedEmail
+            passwordField.stringValue = password
+        }
     }
     
     override func viewDidAppear() {
@@ -42,6 +48,7 @@ class ViewController: NSViewController {
         let account = Account(email: emailField.stringValue, password: passwordField.stringValue)
         if rememberAccountCheckbox.state == NSOnState {
             let keychain = Keychain()
+            try? keychain.removeAll()
             keychain[account.email] = account.password
         }
         
