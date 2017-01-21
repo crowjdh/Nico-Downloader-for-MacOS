@@ -29,6 +29,10 @@ extension ProgressViewController {
             sessionManager.request(url, method: .post).responseString { response in
                 switch response.result {
                 case .success(let htmlString):
+                    guard !self.cancelled else {
+                        reject(NicoError.Cancelled)
+                        return
+                    }
                     if let doc = HTML(html: htmlString, encoding: .utf8), doc.css("div.notice.error").count == 0 {
                         fulfill()
                     } else {
@@ -48,6 +52,10 @@ extension ProgressViewController {
             sessionManager.request(url, method: .get).responseString { response in
                 switch response.result {
                 case .success(let xmlString):
+                    guard !self.cancelled else {
+                        reject(NicoError.Cancelled)
+                        return
+                    }
                     guard let doc = Kanna.XML(xml: xmlString, encoding: .utf8) else {
                         reject(NicoError.FetchVideoIdsError("Malformed xml"))
                         return
@@ -102,8 +110,8 @@ extension ProgressViewController {
                             semaphore.signal()
                             DispatchQueue.main.async {
                                 self.downloadProgressTableView.reloadData()
-                                let allDone = self.items.reduce(true) { $0.0 && ($0.1.status == .done) }
-                                if allDone {
+                                
+                                if self.allDone {
                                     self.updateStatusMessage(message: "DONE")
                                 }
                                 

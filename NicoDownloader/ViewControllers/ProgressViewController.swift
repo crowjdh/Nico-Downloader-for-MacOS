@@ -18,6 +18,7 @@ typealias StringCallback = (String) -> Void
 enum NicoError: Error {
     case LoginError
     case FetchVideoIdsError(String)
+    case Cancelled
 }
 
 class ProgressViewController: NSViewController {
@@ -32,6 +33,11 @@ class ProgressViewController: NSViewController {
     var downloadRequests: [DownloadRequest] = []
     var downloadWorkItem: DispatchWorkItem?
     var semaphore: DispatchSemaphore?
+    var allDone: Bool {
+        get {
+            return self.items.reduce(true) { $0.0 && ($0.1.status == .done) }
+        }
+    }
     
     let cookies = HTTPCookieStorage.shared
     
@@ -56,6 +62,8 @@ class ProgressViewController: NSViewController {
                 msg = "Login error. Check id/pw and retry."
             case NicoError.FetchVideoIdsError(let errMsg):
                 msg = errMsg
+            case NicoError.Cancelled:
+                msg = "Cancelled"
             default:
                 msg = "Unknown error occurred."
             }
@@ -75,7 +83,10 @@ class ProgressViewController: NSViewController {
     }
     
     @IBAction func stopAndClose(_ sender: Any) {
-        if !cancelled {
+        if downloadRequests.count == 0 || allDone {
+            cancelled = true
+            cancelAllTasksAndDismiss()
+        } else if !cancelled {
             let alert = NSAlert()
             alert.messageText = "Are you sure you want to stop download?"
             alert.addButton(withTitle: "OK")
@@ -97,13 +108,17 @@ extension ProgressViewController: NSWindowDelegate {
     
     func windowDidEndSheet(_ notification: Notification) {
         if cancelled {
-            if let downloadWorkItem = self.downloadWorkItem {
-                downloadWorkItem.cancel()
-            }
-            for downloadRequest in self.downloadRequests {
-                downloadRequest.cancel()
-            }
-            dismissViewController(self)
+            cancelAllTasksAndDismiss()
         }
+    }
+    
+    func cancelAllTasksAndDismiss() {
+        if let downloadWorkItem = self.downloadWorkItem {
+            downloadWorkItem.cancel()
+        }
+        for downloadRequest in self.downloadRequests {
+            downloadRequest.cancel()
+        }
+        dismissViewController(self)
     }
 }
