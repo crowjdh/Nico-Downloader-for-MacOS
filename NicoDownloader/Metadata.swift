@@ -15,4 +15,9 @@ struct Account {
 
 struct Options {
     let mylistID: String
+    var range: ClosedRange<Int>? = nil
+    
+    init(mylistID: String) {
+        self.mylistID = mylistID
+    }
 }

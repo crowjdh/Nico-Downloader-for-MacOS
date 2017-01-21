@@ -81,6 +81,14 @@ extension ProgressViewController {
                     items.sort(by: { (lhs, rhs) -> Bool in
                         lhs.pubdate.compare(rhs.pubdate) == .orderedAscending
                     })
+                    
+                    if var from = self.options.range?.lowerBound, var to = self.options.range?.upperBound {
+                        let largestIndex = items.count - 1
+                        from = min(from, largestIndex)
+                        to = min(to, largestIndex)
+                        items = Array(items[from...to])
+                    }
+                    
                     fulfill(items)
                 case .failure(let error):
                     reject(error)

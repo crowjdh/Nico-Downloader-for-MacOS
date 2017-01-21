@@ -15,6 +15,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var emailField: NSTextField!
     @IBOutlet weak var passwordField: NSSecureTextField!
     @IBOutlet weak var mylistIdField: NSTextField!
+    @IBOutlet weak var rangeTextField: NSTextField!
     @IBOutlet weak var startDownloadButton: NSButton!
     @IBOutlet weak var rememberAccountCheckbox: NSButton!
     
@@ -54,6 +55,11 @@ class ViewController: NSViewController {
         
         dest.account = account
         dest.options = Options(mylistID: mylistIdField.stringValue)
+        
+        let rangeComponenets = rangeTextField.stringValue.components(separatedBy: ":")
+        if rangeComponenets.count == 2, let from = Int(rangeComponenets[0]), let to = Int(rangeComponenets[1]), from <= to {
+            dest.options.range = (from - 1)...(to - 1)
+        }
     }
 
 }
