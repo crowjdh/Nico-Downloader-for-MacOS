@@ -511,6 +511,7 @@
 			baseConfigurationReference = B271A42538ECAC7DDF04181C /* Pods-NicoDownloader.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = MLP3L3AX37;
 				INFOPLIST_FILE = NicoDownloader/Info.plist;
@@ -526,6 +527,7 @@
 			baseConfigurationReference = BDF62ECA7FC02A783FBB742D /* Pods-NicoDownloader.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = MLP3L3AX37;
 				INFOPLIST_FILE = NicoDownloader/Info.plist;

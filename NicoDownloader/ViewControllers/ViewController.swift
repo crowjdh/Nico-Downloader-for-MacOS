@@ -8,6 +8,7 @@
 
 import Cocoa
 import Alamofire
+import KeychainAccess
 
 class ViewController: NSViewController {
 
@@ -15,6 +16,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var passwordField: NSSecureTextField!
     @IBOutlet weak var mylistIdField: NSTextField!
     @IBOutlet weak var startDownloadButton: NSButton!
+    @IBOutlet weak var rememberAccountCheckbox: NSButton!
     
     var sessionManager: SessionManager!
     
@@ -37,7 +39,13 @@ class ViewController: NSViewController {
             return
         }
         
-        dest.account = Account(email: emailField.stringValue, password: passwordField.stringValue)
+        let account = Account(email: emailField.stringValue, password: passwordField.stringValue)
+        if rememberAccountCheckbox.state == NSOnState {
+            let keychain = Keychain()
+            keychain[account.email] = account.password
+        }
+        
+        dest.account = account
         dest.options = Options(mylistID: mylistIdField.stringValue)
     }
 

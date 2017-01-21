@@ -756,6 +756,14 @@
                                     <action selector="performClick:" target="7wB-Z1-VFf" id="G5D-Gy-whP"/>
                                 </connections>
                             </textField>
+                            <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="MWm-dm-JcT">
+                                <rect key="frame" x="341" y="156" width="121" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="remember id/pw" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="XKQ-32-zWu">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstAttribute="trailing" secondItem="fxF-v9-enf" secondAttribute="trailing" constant="20" id="0dm-V3-Jma"/>
@@ -781,6 +789,7 @@
                         <outlet property="emailField" destination="qqe-ie-sAD" id="bne-Pr-WX4"/>
                         <outlet property="mylistIdField" destination="fxF-v9-enf" id="d2c-gM-AGq"/>
                         <outlet property="passwordField" destination="Slx-4Y-wmi" id="Kna-ww-heF"/>
+                        <outlet property="rememberAccountCheckbox" destination="MWm-dm-JcT" id="A1p-nK-WXF"/>
                         <outlet property="startDownloadButton" destination="7wB-Z1-VFf" id="Nhg-rr-VDb"/>
                     </connections>
                 </viewController>
