@@ -171,7 +171,7 @@ extension ProgressViewController {
             return
         }
         let destination: DownloadRequest.DownloadFileDestination = { temporaryURL, response in
-            let downloadsURL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
+            let downloadsURL = self.options.saveDirectory
             var fileURL = downloadsURL.appendingPathComponent(item.name)
             if let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension {
                 fileURL = fileURL.appendingPathExtension(fileExtension)

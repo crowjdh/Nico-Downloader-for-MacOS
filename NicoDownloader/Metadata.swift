@@ -16,6 +16,7 @@ struct Account {
 struct Options {
     let mylistID: String
     var range: ClosedRange<Int>? = nil
+    var saveDirectory: URL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
     
     init(mylistID: String) {
         self.mylistID = mylistID

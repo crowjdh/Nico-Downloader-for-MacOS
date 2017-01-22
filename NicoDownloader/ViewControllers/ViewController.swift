@@ -14,12 +14,14 @@ class ViewController: NSViewController {
 
     @IBOutlet weak var emailField: NSTextField!
     @IBOutlet weak var passwordField: NSSecureTextField!
+    @IBOutlet weak var selectedDirectoryTextField: NSTextField!
     @IBOutlet weak var mylistIdField: NSTextField!
     @IBOutlet weak var rangeTextField: NSTextField!
     @IBOutlet weak var startDownloadButton: NSButton!
     @IBOutlet weak var rememberAccountCheckbox: NSButton!
     
     var sessionManager: SessionManager!
+    var saveDirectory: URL?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,6 +30,11 @@ class ViewController: NSViewController {
         if let item = keychain.allItems().first, let savedEmail = item["key"] as? String, let password = keychain[savedEmail] {
             emailField.stringValue = savedEmail
             passwordField.stringValue = password
+        }
+        
+        
+        if let saveDirectory = UserDefaults.standard.url(forKey: "saveDirectory") {
+            setSaveDirectory(url: saveDirectory)
         }
     }
     
@@ -60,7 +67,21 @@ class ViewController: NSViewController {
         if rangeComponenets.count == 2, let from = Int(rangeComponenets[0]), let to = Int(rangeComponenets[1]), from <= to {
             dest.options.range = max((from - 1), 1)...(to - 1)
         }
+        if let saveDirectory = saveDirectory {
+            dest.options.saveDirectory = saveDirectory
+        }
     }
-
+    
+    @IBAction func chooseDirectoryButtonDidTap(_ sender: Any) {
+        if let directoryUrl = showSaveDirectoryChooser() {
+            setSaveDirectory(url: directoryUrl)
+            UserDefaults.standard.set(saveDirectory, forKey: "saveDirectory")
+        }
+    }
+    
+    private func setSaveDirectory(url: URL) {
+        saveDirectory = url
+        selectedDirectoryTextField.stringValue = url.path
+    }
 }
 
