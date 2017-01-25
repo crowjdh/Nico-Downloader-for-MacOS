@@ -789,8 +789,8 @@
                                                     </textFieldCell>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                     <prototypeCellViews>
-                                                        <tableCellView identifier="ProgressCellID" misplaced="YES" id="Wk0-dl-zwt" customClass="ProgressTableCellView" customModule="NicoDownloader" customModuleProvider="target">
-                                                            <rect key="frame" x="423" y="1" width="30" height="17"/>
+                                                        <tableCellView identifier="ProgressCellID" id="Wk0-dl-zwt" customClass="ProgressTableCellView" customModule="NicoDownloader" customModuleProvider="target">
+                                                            <rect key="frame" x="423" y="1" width="28" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="1" bezeled="NO" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="net-qC-Jbv">

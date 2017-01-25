@@ -13,10 +13,7 @@ import Alamofire
 import Kanna
 import PromiseKit
 
-typealias Callback = () -> Void
-typealias BoolCallback = (Bool) -> Void
 typealias DoubleCallback = (Double) -> Void
-typealias StringCallback = (String) -> Void
 
 extension ProgressViewController {
     
@@ -111,27 +108,35 @@ extension ProgressViewController {
             for (idx, item) in self.items.enumerated() {
                 Thread.sleep(forTimeInterval: 3)
                 self.items[idx].status = .fetching
-                self.getVideoUrlWith(item: item) { url in
-                    self.prefetchVideoPage(videoId: item.videoId) { title in
-                        self.items[idx].name = title
-                        self.items[idx].status = .downloading
-                        self.downloadVideo(item: self.items[idx], url: url, progressCallback: {
-                            self.items[idx].progress = $0
-                            DispatchQueue.main.async(execute: {
-                                self.downloadProgressTableView.reloadData()
-                            })
-                        }) { succeed in
-                            self.items[idx].status = .done
-                            semaphore.signal()
-                            DispatchQueue.main.async {
-                                self.downloadProgressTableView.reloadData()
-                                
-                                if self.allDone {
-                                    self.updateStatusMessage(message: "DONE")
-                                }
-                                
-                            }
+                
+                firstly {
+                    self.getVideoUrlWith(item: item)
+                }.then { url -> Promise<String> in
+                    self.items[idx].videoUrl = url
+                    return self.prefetchVideoPage(videoId: item.videoId)
+                }.then { title -> Promise<Void> in
+                    self.items[idx].name = title
+                    self.items[idx].status = .downloading
+                    return self.downloadVideo(item: self.items[idx], url: self.items[idx].videoUrl!, progressCallback: {
+                        self.items[idx].progress = $0
+                        DispatchQueue.main.async(execute: {
+                            self.downloadProgressTableView.reloadData()
+                        })
+                    })
+                }.then { _ -> Void in
+                    self.items[idx].status = .done
+                    semaphore.signal()
+                    DispatchQueue.main.async {
+                        self.downloadProgressTableView.reloadData()
+                        
+                        if self.allDone {
+                            self.updateStatusMessage(message: "DONE")
                         }
+                    }
+                }.catch { error in
+                    self.items[idx].status = .error
+                    DispatchQueue.main.async {
+                        self.downloadProgressTableView.reloadData()
                     }
                 }
                 let _ = semaphore.wait(timeout: .distantFuture)
@@ -143,58 +148,68 @@ extension ProgressViewController {
         DispatchQueue.global(qos: .default).async(execute: downloadWorkItem!)
     }
     
-    func getVideoUrlWith(item: Item, callback: @escaping StringCallback) {
-        let videoApiUrl = "http://flapi.nicovideo.jp/api/getflv/\(item.videoId)?as3=1"
-        sessionManager.request(videoApiUrl).responseString { response in
-            guard let htmlString = response.result.value else {
-                return
-            }
-            let url = htmlString.components(separatedBy: "&")
-                .map { $0.components(separatedBy: "=") }
-                .filter { $0[0] == "url" }
-                .map { $0[1] }[0]
-            guard let decodedUrl = url.removingPercentEncoding else {
-                return
-            }
-            callback(decodedUrl)
-        }
-    }
-    
-    func prefetchVideoPage(videoId: String, callback: @escaping StringCallback) {
-        let videoUrl = "http://www.nicovideo.jp/watch/\(videoId)?watch_harmful=1"
-        sessionManager.request(videoUrl).responseString { response in
-            guard let htmlString = response.result.value else {
-                print("prefetchVideoPage failed: \(videoId)")
-                return
-            }
-            if let doc = HTML(html: htmlString, encoding: .utf8),
-                let title = doc.title?.replacingOccurrences(of: "/", with: "／") {
-                callback(title)
+    func getVideoUrlWith(item: Item) -> Promise<String> {
+        return Promise { fulfill, reject in
+            let videoApiUrl = "http://flapi.nicovideo.jp/api/getflv/\(item.videoId)?as3=1"
+            sessionManager.request(videoApiUrl).responseString { response in
+                guard let htmlString = response.result.value else {
+                    reject(NicoError.VideoAPIError)
+                    return
+                }
+                let url = htmlString.components(separatedBy: "&")
+                    .map { $0.components(separatedBy: "=") }
+                    .filter { $0[0] == "url" }
+                    .map { $0[1] }[0]
+                guard let decodedUrl = url.removingPercentEncoding else {
+                    reject(NicoError.VideoAPIError)
+                    return
+                }
+                fulfill(decodedUrl)
             }
         }
     }
     
-    func downloadVideo(item: Item, url: String, progressCallback: @escaping DoubleCallback,
-                       finishCallback: @escaping BoolCallback) {
-        guard !cancelled else {
-            finishCallback(false)
-            return
-        }
-        let destination: DownloadRequest.DownloadFileDestination = { temporaryURL, response in
-            let downloadsURL = self.options.saveDirectory
-            var fileURL = downloadsURL.appendingPathComponent(item.name)
-            if let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension {
-                fileURL = fileURL.appendingPathExtension(fileExtension)
+    func prefetchVideoPage(videoId: String) -> Promise<String> {
+        return Promise { fulfill, reject in
+            let videoUrl = "http://www.nicovideo.jp/watch/\(videoId)?watch_harmful=1"
+            sessionManager.request(videoUrl).responseString { response in
+                guard let htmlString = response.result.value,
+                    let doc = HTML(html: htmlString, encoding: .utf8),
+                    let title = doc.title?.replacingOccurrences(of: "/", with: "／") else {
+                    reject(NicoError.FetchVideoPageError)
+                    return
+                }
+                fulfill(title)
             }
-            
-            return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
         }
-        let request = sessionManager.download(url, to: destination)
-            .downloadProgress { progress in
-                progressCallback(progress.fractionCompleted)
-            }.responseData { response in
-                finishCallback(response.result.value != nil)
+    }
+    
+    func downloadVideo(item: Item, url: String, progressCallback: @escaping DoubleCallback) -> Promise<Void> {
+        return Promise { fulfill, reject in
+            guard !cancelled else {
+                reject(NicoError.Cancelled)
+                return
+            }
+            let destination: DownloadRequest.DownloadFileDestination = { temporaryURL, response in
+                let downloadsURL = self.options.saveDirectory
+                var fileURL = downloadsURL.appendingPathComponent(item.name)
+                if let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension {
+                    fileURL = fileURL.appendingPathExtension(fileExtension)
+                }
+                
+                return (fileURL, [.removePreviousFile, .createIntermediateDirectories])
+            }
+            let request = sessionManager.download(url, to: destination)
+                .downloadProgress { progress in
+                    progressCallback(progress.fractionCompleted)
+                }.responseData { response in
+                    guard response.result.value != nil else {
+                        reject(NicoError.UnknownError("Download failed"))
+                        return
+                    }
+                    fulfill()
+            }
+            downloadRequests.append(request)
         }
-        downloadRequests.append(request)
     }
 }

@@ -13,6 +13,8 @@ import PromiseKit
 enum NicoError: Error {
     case LoginError
     case FetchVideoIdsError(String)
+    case VideoAPIError
+    case FetchVideoPageError
     case Cancelled
     case UnknownError(String)
 }

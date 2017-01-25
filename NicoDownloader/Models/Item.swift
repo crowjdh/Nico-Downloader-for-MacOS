@@ -13,6 +13,7 @@ enum Status {
     case fetching
     case downloading
     case done
+    case error
     
     var description: String {
         switch self {
@@ -24,6 +25,8 @@ enum Status {
             return "Downloading"
         case .done:
             return "Done"
+        case .error:
+            return "Error"
         }
     }
 }
@@ -33,6 +36,7 @@ struct Item {
     var name: String
     var pubdate: Date?
     var status: Status = .sleeping
+    var videoUrl: String?
     
     var progress: Double = 0
     
