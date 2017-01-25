@@ -14,11 +14,30 @@ struct Account {
 }
 
 struct Options {
-    let mylistID: String
-    var range: ClosedRange<Int>? = nil
+    let videoInfo: VideoInfo
     var saveDirectory: URL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
     
-    init(mylistID: String) {
-        self.mylistID = mylistID
+    init(videoInfo: VideoInfo) {
+        self.videoInfo = videoInfo
     }
+}
+
+protocol VideoInfo {}
+
+struct Mylist: VideoInfo {
+    let id: String
+    var range: ClosedRange<Int>? = nil
+    
+    init(id: String) {
+        self.id = id
+    }
+    
+    init(id: String, range: ClosedRange<Int>?) {
+        self.init(id: id)
+        self.range = range
+    }
+}
+
+struct Videos: VideoInfo {
+    let ids: [String]
 }

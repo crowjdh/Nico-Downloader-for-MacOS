@@ -13,6 +13,11 @@ import Alamofire
 import Kanna
 import PromiseKit
 
+typealias Callback = () -> Void
+typealias BoolCallback = (Bool) -> Void
+typealias DoubleCallback = (Double) -> Void
+typealias StringCallback = (String) -> Void
+
 extension ProgressViewController {
     
     func initSessionManager() {
@@ -45,10 +50,10 @@ extension ProgressViewController {
         }
     }
     
-    func createItems(fromMylistId: String) -> Promise<Array<Item>> {
+    func createItems(fromMylist mylist: Mylist) -> Promise<Array<Item>> {
         return Promise { fulfill, reject in
             self.updateStatusMessage(message: "Fetching items...")
-            let url = "http://www.nicovideo.jp/mylist/\(fromMylistId)?rss=2.0"
+            let url = "http://www.nicovideo.jp/mylist/\(mylist.id)?rss=2.0"
             sessionManager.request(url, method: .get).responseString { response in
                 switch response.result {
                 case .success(let xmlString):
@@ -79,10 +84,11 @@ extension ProgressViewController {
                         items.append(Item(videoId: videoId, name: title, pubdate: pubdate))
                     }
                     items.sort(by: { (lhs, rhs) -> Bool in
-                        lhs.pubdate.compare(rhs.pubdate) == .orderedAscending
+                        // Force unwrap since we're setting pubdate from above
+                        lhs.pubdate!.compare(rhs.pubdate!) == .orderedAscending
                     })
                     
-                    if var from = self.options.range?.lowerBound, var to = self.options.range?.upperBound {
+                    if var from = mylist.range?.lowerBound, var to = mylist.range?.upperBound {
                         let largestIndex = items.count - 1
                         from = min(from, largestIndex)
                         to = min(to, largestIndex)
@@ -106,9 +112,10 @@ extension ProgressViewController {
                 Thread.sleep(forTimeInterval: 3)
                 self.items[idx].status = .fetching
                 self.getVideoUrlWith(item: item) { url in
-                    self.prefetchVideoPage(videoId: item.videoId) {
+                    self.prefetchVideoPage(videoId: item.videoId) { title in
+                        self.items[idx].name = title
                         self.items[idx].status = .downloading
-                        self.downloadVideo(item: item, url: url, progressCallback: {
+                        self.downloadVideo(item: self.items[idx], url: url, progressCallback: {
                             self.items[idx].progress = $0
                             DispatchQueue.main.async(execute: {
                                 self.downloadProgressTableView.reloadData()
@@ -153,14 +160,17 @@ extension ProgressViewController {
         }
     }
     
-    func prefetchVideoPage(videoId: String, callback: @escaping Callback) {
+    func prefetchVideoPage(videoId: String, callback: @escaping StringCallback) {
         let videoUrl = "http://www.nicovideo.jp/watch/\(videoId)?watch_harmful=1"
         sessionManager.request(videoUrl).responseString { response in
-            guard response.result.value != nil else {
+            guard let htmlString = response.result.value else {
                 print("prefetchVideoPage failed: \(videoId)")
                 return
             }
-            callback()
+            if let doc = HTML(html: htmlString, encoding: .utf8),
+                let title = doc.title?.replacingOccurrences(of: "/", with: "／") {
+                callback(title)
+            }
         }
     }
     

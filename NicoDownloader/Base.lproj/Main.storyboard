@@ -576,11 +576,14 @@
                                                 </textField>
                                                 <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NEu-jC-kzE">
                                                     <rect key="frame" x="84" y="35" width="194" height="22"/>
-                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="sm12342345 sm12342346" drawsBackground="YES" id="lsN-gj-L8u">
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" placeholderString="sm12342345 sm12342346" drawsBackground="YES" id="lsN-gj-L8u">
                                                         <font key="font" metaFont="system"/>
                                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
+                                                    <connections>
+                                                        <action selector="performClick:" target="7wB-Z1-VFf" id="dtV-TY-FJ2"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -604,11 +607,14 @@
                             </textField>
                             <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UbX-Oy-qId">
                                 <rect key="frame" x="89" y="181" width="152" height="22"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="nUE-A8-TOe">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="nUE-A8-TOe">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
+                                <connections>
+                                    <action selector="performClick:" target="7wB-Z1-VFf" id="5XS-py-ZYO"/>
+                                </connections>
                             </textField>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7wB-Z1-VFf">
                                 <rect key="frame" x="226" y="13" width="101" height="32"/>
@@ -661,12 +667,14 @@
                     </view>
                     <connections>
                         <outlet property="emailField" destination="qqe-ie-sAD" id="bne-Pr-WX4"/>
+                        <outlet property="modeTabView" destination="BNv-Yj-Kqq" id="m4h-7G-vk6"/>
                         <outlet property="mylistIdField" destination="fxF-v9-enf" id="d2c-gM-AGq"/>
                         <outlet property="passwordField" destination="Slx-4Y-wmi" id="Kna-ww-heF"/>
                         <outlet property="rangeTextField" destination="p8X-Jw-PVM" id="4gA-pd-hVh"/>
                         <outlet property="rememberAccountCheckbox" destination="MWm-dm-JcT" id="A1p-nK-WXF"/>
                         <outlet property="selectedDirectoryTextField" destination="UbX-Oy-qId" id="bGp-ug-tLD"/>
                         <outlet property="startDownloadButton" destination="7wB-Z1-VFf" id="Nhg-rr-VDb"/>
+                        <outlet property="videoIdsTextField" destination="NEu-jC-kzE" id="DZC-L4-hHP"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
@@ -781,8 +789,8 @@
                                                     </textFieldCell>
                                                     <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                                     <prototypeCellViews>
-                                                        <tableCellView identifier="ProgressCellID" id="Wk0-dl-zwt" customClass="ProgressTableCellView" customModule="NicoDownloader" customModuleProvider="target">
-                                                            <rect key="frame" x="423" y="1" width="28" height="17"/>
+                                                        <tableCellView identifier="ProgressCellID" misplaced="YES" id="Wk0-dl-zwt" customClass="ProgressTableCellView" customModule="NicoDownloader" customModuleProvider="target">
+                                                            <rect key="frame" x="423" y="1" width="30" height="17"/>
                                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                             <subviews>
                                                                 <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" maxValue="1" bezeled="NO" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="net-qC-Jbv">

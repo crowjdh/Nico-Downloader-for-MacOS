@@ -19,6 +19,8 @@ class ViewController: NSViewController {
     @IBOutlet weak var rangeTextField: NSTextField!
     @IBOutlet weak var startDownloadButton: NSButton!
     @IBOutlet weak var rememberAccountCheckbox: NSButton!
+    @IBOutlet weak var modeTabView: NSTabView!
+    @IBOutlet weak var videoIdsTextField: NSTextField!
     
     var sessionManager: SessionManager!
     var saveDirectory: URL?
@@ -61,15 +63,7 @@ class ViewController: NSViewController {
         }
         
         dest.account = account
-        dest.options = Options(mylistID: mylistIdField.stringValue)
-        
-        let rangeComponenets = rangeTextField.stringValue.components(separatedBy: ":")
-        if rangeComponenets.count == 2, let from = Int(rangeComponenets[0]), let to = Int(rangeComponenets[1]), from <= to {
-            dest.options.range = max((from - 1), 1)...(to - 1)
-        }
-        if let saveDirectory = saveDirectory {
-            dest.options.saveDirectory = saveDirectory
-        }
+        dest.options = createOptions()
     }
     
     @IBAction func chooseDirectoryButtonDidTap(_ sender: Any) {
@@ -77,6 +71,29 @@ class ViewController: NSViewController {
             setSaveDirectory(url: directoryUrl)
             UserDefaults.standard.set(saveDirectory, forKey: "saveDirectory")
         }
+    }
+    
+    private func createOptions() -> Options {
+        let videoInfo: VideoInfo
+        switch modeTabView.selectedTabViewItem?.label {
+        case .some("Video"):
+            videoInfo = Videos(ids: videoIdsTextField.stringValue.components(separatedBy: " "))
+        default:
+            var mylist = Mylist(id: mylistIdField.stringValue)
+            let rangeComponenets = rangeTextField.stringValue.components(separatedBy: ":")
+            if rangeComponenets.count == 2, let from = Int(rangeComponenets[0]), let to = Int(rangeComponenets[1]), from <= to {
+                mylist.range = max((from - 1), 0)...(to - 1)
+            }
+            videoInfo = mylist
+        }
+        
+        var options = Options(videoInfo: videoInfo)
+        
+        if let saveDirectory = saveDirectory {
+            options.saveDirectory = saveDirectory
+        }
+        
+        return options
     }
     
     private func setSaveDirectory(url: URL) {

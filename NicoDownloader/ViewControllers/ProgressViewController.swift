@@ -10,15 +10,11 @@ import Cocoa
 
 import PromiseKit
 
-typealias Callback = () -> Void
-typealias BoolCallback = (Bool) -> Void
-typealias DoubleCallback = (Double) -> Void
-typealias StringCallback = (String) -> Void
-
 enum NicoError: Error {
     case LoginError
     case FetchVideoIdsError(String)
     case Cancelled
+    case UnknownError(String)
 }
 
 class ProgressViewController: NSViewController {
@@ -49,8 +45,15 @@ class ProgressViewController: NSViewController {
         
         firstly {
             login()
-        }.then {
-            self.createItems(fromMylistId: self.options.mylistID)
+        }.then { () -> Promise<Array<Item>> in
+            switch self.options.videoInfo {
+            case let mylist as Mylist:
+                return self.createItems(fromMylist: mylist)
+            case let videos as Videos:
+                return Promise<Array<Item>>(value: videos.ids.map { Item(videoId: $0) })
+            default:
+                throw NicoError.UnknownError("Invalid videoInfo.")
+            }
         }.then{ items -> Void in
             self.items = items
             self.downloadProgressTableView.reloadData()
