@@ -1,15 +1,24 @@
 PODS:
   - Alamofire (4.3.0)
   - Kanna (2.1.1)
+  - KeychainAccess (3.0.1)
+  - PromiseKit/Alamofire (4.1.3):
+    - Alamofire (~> 4.0)
+    - PromiseKit/CorePromise
+  - PromiseKit/CorePromise (4.1.3)
 
 DEPENDENCIES:
   - Alamofire (~> 4.3)
   - Kanna (~> 2.1.0)
+  - KeychainAccess
+  - PromiseKit/Alamofire (~> 4.0)
 
 SPEC CHECKSUMS:
   Alamofire: 856a113053a7bc9cbe5d6367a555d773fc5cfef7
   Kanna: 9b4b086c218703f2b94f5b21a466217dd2f9332e
+  KeychainAccess: 017ea25e313a49eda10bb19b0bb0760fb1edfe1a
+  PromiseKit: 56baec63efa89210c023260879435a5a6b3bff00
 
-PODFILE CHECKSUM: ed535f0d8d4d9b5d7102e02d6ed6bdd7c562d9b6
+PODFILE CHECKSUM: d51c16e492716bdbd530fd64a550686d6432ade0
 
 COCOAPODS: 1.1.1
