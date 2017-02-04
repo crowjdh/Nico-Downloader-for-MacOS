@@ -38,6 +38,7 @@ class ProgressViewController: NSViewController {
     }
     
     let cookies = HTTPCookieStorage.shared
+    let powerManager = PowerManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -125,5 +126,17 @@ extension ProgressViewController: NSWindowDelegate {
             downloadRequest.cancel()
         }
         dismissViewController(self)
+    }
+}
+
+extension ProgressViewController {
+    override func viewWillAppear() {
+        super.viewWillAppear()
+        powerManager.preventSleep()
+    }
+    
+    override func viewWillDisappear() {
+        super.viewWillDisappear()
+        powerManager.releaseSleepAssertion()
     }
 }
