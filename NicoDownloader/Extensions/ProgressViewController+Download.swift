@@ -125,6 +125,7 @@ extension ProgressViewController {
                     })
                 }.then { _ -> Void in
                     self.items[idx].status = .done
+                    self.togglePreventSleep()
                     semaphore.signal()
                     DispatchQueue.main.async {
                         self.downloadProgressTableView.reloadData()
@@ -135,6 +136,8 @@ extension ProgressViewController {
                     }
                 }.catch { error in
                     self.items[idx].status = .error
+                    semaphore.signal()
+                    self.togglePreventSleep()
                     DispatchQueue.main.async {
                         self.downloadProgressTableView.reloadData()
                     }

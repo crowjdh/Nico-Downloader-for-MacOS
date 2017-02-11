@@ -33,11 +33,12 @@ class ProgressViewController: NSViewController {
     var semaphore: DispatchSemaphore?
     var allDone: Bool {
         get {
-            return self.items.reduce(true) { $0.0 && ($0.1.status == .done) }
+            return self.items.reduce(true) { $0.0 && ($0.1.status == .done || $0.1.status == .error) }
         }
     }
     
     let cookies = HTTPCookieStorage.shared
+    let powerManager = PowerManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -125,5 +126,21 @@ extension ProgressViewController: NSWindowDelegate {
             downloadRequest.cancel()
         }
         dismissViewController(self)
+    }
+}
+
+extension ProgressViewController {
+    override func viewWillAppear() {
+        super.viewWillAppear()
+        powerManager.preventSleep()
+    }
+    
+    override func viewWillDisappear() {
+        super.viewWillDisappear()
+        powerManager.releaseSleepAssertion()
+    }
+    
+    func togglePreventSleep() {
+        !allDone ? powerManager.preventSleep() : powerManager.releaseSleepAssertion()
     }
 }
