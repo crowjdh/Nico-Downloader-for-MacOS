@@ -33,7 +33,7 @@ class ProgressViewController: NSViewController {
     var semaphore: DispatchSemaphore?
     var allDone: Bool {
         get {
-            return self.items.reduce(true) { $0.0 && ($0.1.status == .done) }
+            return self.items.reduce(true) { $0.0 && ($0.1.status == .done || $0.1.status == .error) }
         }
     }
     
@@ -138,5 +138,9 @@ extension ProgressViewController {
     override func viewWillDisappear() {
         super.viewWillDisappear()
         powerManager.releaseSleepAssertion()
+    }
+    
+    func togglePreventSleep() {
+        !allDone ? powerManager.preventSleep() : powerManager.releaseSleepAssertion()
     }
 }

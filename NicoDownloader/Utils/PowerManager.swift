@@ -19,7 +19,7 @@ class PowerManager {
     
     func preventSleep(time: NSInteger = 0) {
         if powerAssertion == kIOReturnSuccess {
-            NSLog("Sleep already prevented; releasing existing assertion first.")
+            print("Sleep already prevented; releasing existing assertion first.")
             releaseSleepAssertion()
         }
         
@@ -32,15 +32,15 @@ class PowerManager {
         
         if powerAssertion == kIOReturnSuccess {
             if time != 0 {
-                NSLog("Disable screen sleep for %i minute(s)", time)
+                print("Disable screen sleep for %i minute(s)", time)
             } else {
-                NSLog("Disable screen sleep indefinitely")
+                print("Disable screen sleep indefinitely")
             }
         }
     }
     
     func releaseSleepAssertion() {
-        NSLog("Enable display sleep")
+        print("Enable display sleep")
         IOPMAssertionRelease(powerId)
     }
     
