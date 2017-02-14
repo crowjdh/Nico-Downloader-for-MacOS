@@ -21,6 +21,9 @@ class ViewController: NSViewController {
     @IBOutlet weak var rememberAccountCheckbox: NSButton!
     @IBOutlet weak var modeTabView: NSTabView!
     @IBOutlet weak var videoIdsTextField: NSTextField!
+    @IBOutlet weak var advancedOptionsBox: NSBox!
+    @IBOutlet weak var advancedOptionsDisclosure: NSButton!
+    @IBOutlet weak var advancedOptionHeightConstraint: NSLayoutConstraint!
     
     var sessionManager: SessionManager!
     var saveDirectory: URL?
@@ -38,6 +41,8 @@ class ViewController: NSViewController {
         if let saveDirectory = UserDefaults.standard.url(forKey: "saveDirectory") {
             setSaveDirectory(url: saveDirectory)
         }
+        
+        toggleAdvancedOptions(animate: false)
     }
     
     override func viewDidAppear() {
@@ -99,6 +104,21 @@ class ViewController: NSViewController {
     private func setSaveDirectory(url: URL) {
         saveDirectory = url
         selectedDirectoryTextField.stringValue = url.path
+    }
+    
+    @IBAction func advancedOptionsDidClick(_ sender: Any) {
+        toggleAdvancedOptions()
+    }
+    
+    private func toggleAdvancedOptions(animate: Bool = true) {
+        let show = advancedOptionHeightConstraint.constant == 0
+        let constraint = animate ? advancedOptionHeightConstraint.animator() : advancedOptionHeightConstraint
+        let box = animate ? advancedOptionsBox.animator() : advancedOptionsBox
+        let disclosure = animate ? advancedOptionsDisclosure.animator() : advancedOptionsDisclosure
+        
+        constraint!.constant = show ? 34 : 0
+        box!.isHidden = !show
+        disclosure!.state = show ? NSOnState : NSOffState
     }
 }
 
