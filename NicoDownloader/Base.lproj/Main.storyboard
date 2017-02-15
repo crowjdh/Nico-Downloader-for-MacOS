@@ -741,6 +741,7 @@
                         <outlet property="advancedOptionHeightConstraint" destination="rkE-0g-Maq" id="BTI-Js-gXW"/>
                         <outlet property="advancedOptionsBox" destination="52n-7b-Jov" id="7uR-9a-aG0"/>
                         <outlet property="advancedOptionsDisclosure" destination="xQs-1Q-ZAa" id="o3Z-ih-UTK"/>
+                        <outlet property="concurrentDownloadCountButton" destination="jui-HF-axQ" id="soH-Ak-QNT"/>
                         <outlet property="emailField" destination="qqe-ie-sAD" id="bne-Pr-WX4"/>
                         <outlet property="modeTabView" destination="BNv-Yj-Kqq" id="m4h-7G-vk6"/>
                         <outlet property="mylistIdField" destination="fxF-v9-enf" id="d2c-gM-AGq"/>

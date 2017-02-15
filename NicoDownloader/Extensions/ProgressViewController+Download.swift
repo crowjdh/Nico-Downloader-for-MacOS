@@ -104,7 +104,7 @@ extension ProgressViewController {
     func download() {
         self.updateStatusMessage(message: "Downloading items...")
         downloadWorkItem = DispatchWorkItem {
-            let semaphore = DispatchSemaphore(value: 1)
+            let semaphore = DispatchSemaphore(value: self.options.concurrentDownloadCount - 1)
             for (idx, item) in self.items.enumerated() {
                 Thread.sleep(forTimeInterval: 3)
                 self.items[idx].status = .fetching

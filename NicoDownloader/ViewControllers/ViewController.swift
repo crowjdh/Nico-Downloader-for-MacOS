@@ -24,6 +24,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var advancedOptionsBox: NSBox!
     @IBOutlet weak var advancedOptionsDisclosure: NSButton!
     @IBOutlet weak var advancedOptionHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var concurrentDownloadCountButton: NSPopUpButton!
     
     var sessionManager: SessionManager!
     var saveDirectory: URL?
@@ -56,8 +57,10 @@ class ViewController: NSViewController {
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        guard let segID = segue.identifier, segID == "showDownloadController", let dest = segue.destinationController as? ProgressViewController else {
-            return
+        guard let segID = segue.identifier, segID == "showDownloadController",
+            let dest = segue.destinationController as? ProgressViewController,
+            let options = createOptions() else {
+                return
         }
         
         let account = Account(email: emailField.stringValue, password: passwordField.stringValue)
@@ -68,7 +71,7 @@ class ViewController: NSViewController {
         }
         
         dest.account = account
-        dest.options = createOptions()
+        dest.options = options
     }
     
     @IBAction func chooseDirectoryButtonDidTap(_ sender: Any) {
@@ -78,7 +81,7 @@ class ViewController: NSViewController {
         }
     }
     
-    private func createOptions() -> Options {
+    private func createOptions() -> Options? {
         let videoInfo: VideoInfo
         switch modeTabView.selectedTabViewItem?.label {
         case .some("Video"):
@@ -91,8 +94,12 @@ class ViewController: NSViewController {
             }
             videoInfo = mylist
         }
+        guard let concurrentDownloadCountString = concurrentDownloadCountButton.selectedItem?.title,
+            let concurrentDownloadCount = Int(concurrentDownloadCountString) else {
+                return nil
+        }
         
-        var options = Options(videoInfo: videoInfo)
+        var options = Options(videoInfo: videoInfo, concurrentDownloadCount: concurrentDownloadCount)
         
         if let saveDirectory = saveDirectory {
             options.saveDirectory = saveDirectory
