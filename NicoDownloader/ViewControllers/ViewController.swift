@@ -21,6 +21,10 @@ class ViewController: NSViewController {
     @IBOutlet weak var rememberAccountCheckbox: NSButton!
     @IBOutlet weak var modeTabView: NSTabView!
     @IBOutlet weak var videoIdsTextField: NSTextField!
+    @IBOutlet weak var advancedOptionsBox: NSBox!
+    @IBOutlet weak var advancedOptionsDisclosure: NSButton!
+    @IBOutlet weak var advancedOptionHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var concurrentDownloadCountButton: NSPopUpButton!
     
     var sessionManager: SessionManager!
     var saveDirectory: URL?
@@ -38,6 +42,8 @@ class ViewController: NSViewController {
         if let saveDirectory = UserDefaults.standard.url(forKey: "saveDirectory") {
             setSaveDirectory(url: saveDirectory)
         }
+        
+        toggleAdvancedOptions(animate: false)
     }
     
     override func viewDidAppear() {
@@ -51,8 +57,10 @@ class ViewController: NSViewController {
     }
     
     override func prepare(for segue: NSStoryboardSegue, sender: Any?) {
-        guard let segID = segue.identifier, segID == "showDownloadController", let dest = segue.destinationController as? ProgressViewController else {
-            return
+        guard let segID = segue.identifier, segID == "showDownloadController",
+            let dest = segue.destinationController as? ProgressViewController,
+            let options = createOptions() else {
+                return
         }
         
         let account = Account(email: emailField.stringValue, password: passwordField.stringValue)
@@ -63,7 +71,7 @@ class ViewController: NSViewController {
         }
         
         dest.account = account
-        dest.options = createOptions()
+        dest.options = options
     }
     
     @IBAction func chooseDirectoryButtonDidTap(_ sender: Any) {
@@ -73,7 +81,7 @@ class ViewController: NSViewController {
         }
     }
     
-    private func createOptions() -> Options {
+    private func createOptions() -> Options? {
         let videoInfo: VideoInfo
         switch modeTabView.selectedTabViewItem?.label {
         case .some("Video"):
@@ -86,8 +94,12 @@ class ViewController: NSViewController {
             }
             videoInfo = mylist
         }
+        guard let concurrentDownloadCountString = concurrentDownloadCountButton.selectedItem?.title,
+            let concurrentDownloadCount = Int(concurrentDownloadCountString) else {
+                return nil
+        }
         
-        var options = Options(videoInfo: videoInfo)
+        var options = Options(videoInfo: videoInfo, concurrentDownloadCount: concurrentDownloadCount)
         
         if let saveDirectory = saveDirectory {
             options.saveDirectory = saveDirectory
@@ -99,6 +111,21 @@ class ViewController: NSViewController {
     private func setSaveDirectory(url: URL) {
         saveDirectory = url
         selectedDirectoryTextField.stringValue = url.path
+    }
+    
+    @IBAction func advancedOptionsDidClick(_ sender: Any) {
+        toggleAdvancedOptions()
+    }
+    
+    private func toggleAdvancedOptions(animate: Bool = true) {
+        let show = advancedOptionHeightConstraint.constant == 0
+        let constraint = animate ? advancedOptionHeightConstraint.animator() : advancedOptionHeightConstraint
+        let box = animate ? advancedOptionsBox.animator() : advancedOptionsBox
+        let disclosure = animate ? advancedOptionsDisclosure.animator() : advancedOptionsDisclosure
+        
+        constraint!.constant = show ? 34 : 0
+        box!.isHidden = !show
+        disclosure!.state = show ? NSOnState : NSOffState
     }
 }
 

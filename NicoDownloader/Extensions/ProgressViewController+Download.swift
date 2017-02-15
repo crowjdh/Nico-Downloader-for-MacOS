@@ -104,7 +104,7 @@ extension ProgressViewController {
     func download() {
         self.updateStatusMessage(message: "Downloading items...")
         downloadWorkItem = DispatchWorkItem {
-            let semaphore = DispatchSemaphore(value: 1)
+            let semaphore = DispatchSemaphore(value: self.options.concurrentDownloadCount - 1)
             for (idx, item) in self.items.enumerated() {
                 Thread.sleep(forTimeInterval: 3)
                 self.items[idx].status = .fetching
@@ -115,7 +115,7 @@ extension ProgressViewController {
                     self.items[idx].videoUrl = url
                     return self.prefetchVideoPage(videoId: item.videoId)
                 }.then { title -> Promise<Void> in
-                    self.items[idx].name = title
+                    self.items[idx].name = self.items[idx].name ?? title
                     self.items[idx].status = .downloading
                     return self.downloadVideo(item: self.items[idx], url: self.items[idx].videoUrl!, progressCallback: {
                         self.items[idx].progress = $0

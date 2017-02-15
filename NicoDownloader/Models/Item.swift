@@ -33,7 +33,7 @@ enum Status {
 
 struct Item {
     let videoId: String
-    var name: String
+    var name: String!
     var pubdate: Date?
     var status: Status = .sleeping
     var videoUrl: String?
@@ -42,7 +42,6 @@ struct Item {
     
     init(videoId: String) {
         self.videoId = videoId
-        self.name = "Unknown"
     }
     
     init(videoId: String, name: String, pubdate: Date) {
