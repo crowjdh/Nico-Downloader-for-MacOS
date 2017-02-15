@@ -32,7 +32,7 @@ extension ProgressViewController: NSTableViewDelegate {
             }
         case tableView.tableColumns[1]:
             if let cell = tableView.make(withIdentifier: CellIdentifiers.TitleCell, owner: nil) as? NSTableCellView {
-                cell.textField?.stringValue = item.name
+                cell.textField?.stringValue = item.name ?? "Unknown"
                 return cell
             }
         case tableView.tableColumns[2]:

@@ -115,7 +115,7 @@ extension ProgressViewController {
                     self.items[idx].videoUrl = url
                     return self.prefetchVideoPage(videoId: item.videoId)
                 }.then { title -> Promise<Void> in
-                    self.items[idx].name = title
+                    self.items[idx].name = self.items[idx].name ?? title
                     self.items[idx].status = .downloading
                     return self.downloadVideo(item: self.items[idx], url: self.items[idx].videoUrl!, progressCallback: {
                         self.items[idx].progress = $0
