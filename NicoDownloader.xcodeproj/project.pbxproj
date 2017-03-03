@@ -11,6 +11,7 @@
 		572B875C1E332A79008BC5AE /* ProgressViewController+Tableview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */; };
 		572B875E1E332AB3008BC5AE /* ProgressViewController+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */; };
 		573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573B9A0C1E3DC755001C4F5D /* PowerManager.swift */; };
+		575C68E11E683F7A00B56D34 /* Enum+Iterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */; };
 		575D45CB1E3093B000F9E623 /* ProgressTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575D45CA1E3093B000F9E623 /* ProgressTableCellView.swift */; };
 		575D45D11E30A80F00F9E623 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575D45D01E30A80F00F9E623 /* Item.swift */; };
 		5784FDBB1E3075AC004BD160 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDBA1E3075AC004BD160 /* AppDelegate.swift */; };
@@ -19,6 +20,7 @@
 		5784FDC21E3075AC004BD160 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5784FDC01E3075AC004BD160 /* Main.storyboard */; };
 		5784FDCD1E3075AC004BD160 /* NicoDownloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDCC1E3075AC004BD160 /* NicoDownloaderTests.swift */; };
 		5784FDD81E307B49004BD160 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDD71E307B49004BD160 /* ProgressViewController.swift */; };
+		579253D61E6548780041E2C8 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579253D51E6548780041E2C8 /* Comment.swift */; };
 		57AA47C11E34633E006777CB /* ViewController+OpenDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */; };
 		57F30F711E30D40500BB2445 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F701E30D40500BB2445 /* Metadata.swift */; };
 		57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */; };
@@ -39,6 +41,7 @@
 		572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ProgressViewController+Tableview.swift"; path = "NicoDownloader/Extensions/ProgressViewController+Tableview.swift"; sourceTree = SOURCE_ROOT; };
 		572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ProgressViewController+Download.swift"; path = "NicoDownloader/Extensions/ProgressViewController+Download.swift"; sourceTree = SOURCE_ROOT; };
 		573B9A0C1E3DC755001C4F5D /* PowerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerManager.swift; sourceTree = "<group>"; };
+		575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Enum+Iterable.swift"; sourceTree = "<group>"; };
 		575D45CA1E3093B000F9E623 /* ProgressTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressTableCellView.swift; sourceTree = "<group>"; };
 		575D45D01E30A80F00F9E623 /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Item.swift; path = Models/Item.swift; sourceTree = "<group>"; };
 		5784FDB71E3075AB004BD160 /* NicoDownloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NicoDownloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -51,6 +54,7 @@
 		5784FDCC1E3075AC004BD160 /* NicoDownloaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoDownloaderTests.swift; sourceTree = "<group>"; };
 		5784FDCE1E3075AC004BD160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5784FDD71E307B49004BD160 /* ProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
+		579253D51E6548780041E2C8 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ViewController+OpenDialog.swift"; path = "NicoDownloader/Extensions/ViewController+OpenDialog.swift"; sourceTree = SOURCE_ROOT; };
 		57F30F701E30D40500BB2445 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Date+XMLPubDate.swift"; path = "NicoDownloader/Extensions/Date+XMLPubDate.swift"; sourceTree = SOURCE_ROOT; };
@@ -121,6 +125,7 @@
 			children = (
 				575D45D01E30A80F00F9E623 /* Item.swift */,
 				57F30F701E30D40500BB2445 /* Metadata.swift */,
+				579253D51E6548780041E2C8 /* Comment.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -177,9 +182,9 @@
 				572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */,
 				572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */,
 				57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */,
+				575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */,
 			);
-			name = Extensions;
-			path = Utils;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		62735FCEE1078E1C40D2B29C /* Pods */ = {
@@ -403,7 +408,9 @@
 				57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */,
 				5784FDBD1E3075AC004BD160 /* ViewController.swift in Sources */,
 				575D45CB1E3093B000F9E623 /* ProgressTableCellView.swift in Sources */,
+				579253D61E6548780041E2C8 /* Comment.swift in Sources */,
 				5784FDBB1E3075AC004BD160 /* AppDelegate.swift in Sources */,
+				575C68E11E683F7A00B56D34 /* Enum+Iterable.swift in Sources */,
 				57F30F711E30D40500BB2445 /* Metadata.swift in Sources */,
 				57AA47C11E34633E006777CB /* ViewController+OpenDialog.swift in Sources */,
 				572B875E1E332AB3008BC5AE /* ProgressViewController+Download.swift in Sources */,

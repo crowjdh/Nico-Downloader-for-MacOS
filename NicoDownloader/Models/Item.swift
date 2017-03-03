@@ -36,7 +36,7 @@ struct Item {
     var name: String!
     var pubdate: Date?
     var status: Status = .sleeping
-    var videoUrl: String?
+    var apiInfo: [String: String]!
     
     var progress: Double = 0
     

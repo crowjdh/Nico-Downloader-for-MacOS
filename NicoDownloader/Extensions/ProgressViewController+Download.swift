@@ -15,6 +15,30 @@ import PromiseKit
 
 typealias DoubleCallback = (Double) -> Void
 
+struct NicoCommentEncoding: ParameterEncoding {
+    private let threadId: String
+    
+    init(threadId: String) {
+        self.threadId = threadId
+    }
+    
+    func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
+        guard var urlRequest = urlRequest.urlRequest else {
+            throw NicoError.UnknownError("URLRequestConvertible has no URLRequest")
+        }
+        
+        let xml = "<thread res_from='-1000' version='20061206' thread='\(threadId)' />"
+        
+        if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
+            urlRequest.setValue("text/xml", forHTTPHeaderField: "Content-Type")
+        }
+        
+        urlRequest.httpBody = xml.data(using: .utf8)
+        
+        return urlRequest
+    }
+}
+
 extension ProgressViewController {
     
     func initSessionManager() {
@@ -110,14 +134,17 @@ extension ProgressViewController {
                 self.items[idx].status = .fetching
                 
                 firstly {
-                    self.getVideoUrlWith(item: item)
-                }.then { url -> Promise<String> in
-                    self.items[idx].videoUrl = url
+                    self.getVideoApiInfoWith(item: item)
+                }.then { apiInfo -> Promise<String> in
+                    self.items[idx].apiInfo = apiInfo
                     return self.prefetchVideoPage(videoId: item.videoId)
                 }.then { title -> Promise<Void> in
                     self.items[idx].name = self.items[idx].name ?? title
+                // TOOD: Add below to download comment
+//                    return self.downloadCommentXml(item: self.items[idx])
+//                }.then { _ -> Promise<Void> in
                     self.items[idx].status = .downloading
-                    return self.downloadVideo(item: self.items[idx], url: self.items[idx].videoUrl!, progressCallback: {
+                    return self.downloadVideo(item: self.items[idx], url: self.items[idx].apiInfo["url"]!, progressCallback: {
                         self.items[idx].progress = $0
                         DispatchQueue.main.async(execute: {
                             self.downloadProgressTableView.reloadData()
@@ -151,7 +178,7 @@ extension ProgressViewController {
         DispatchQueue.global(qos: .default).async(execute: downloadWorkItem!)
     }
     
-    func getVideoUrlWith(item: Item) -> Promise<String> {
+    func getVideoApiInfoWith(item: Item) -> Promise<[String: String]> {
         return Promise { fulfill, reject in
             let videoApiUrl = "http://flapi.nicovideo.jp/api/getflv/\(item.videoId)?as3=1"
             sessionManager.request(videoApiUrl).responseString { response in
@@ -159,15 +186,22 @@ extension ProgressViewController {
                     reject(NicoError.VideoAPIError)
                     return
                 }
-                let url = htmlString.components(separatedBy: "&")
-                    .map { $0.components(separatedBy: "=") }
-                    .filter { $0[0] == "url" }
-                    .map { $0[1] }[0]
-                guard let decodedUrl = url.removingPercentEncoding else {
-                    reject(NicoError.VideoAPIError)
-                    return
+                var apiInfo = [String: String]()
+                let apiInfoArray = htmlString.components(separatedBy: "&")
+                for component in apiInfoArray {
+                    let keyValueTuple = component.components(separatedBy: "=")
+                    let key = keyValueTuple[0]
+                    var value = keyValueTuple[1]
+                    if key.contains("url") || key.contains("ms") {
+                        guard let decodedUrl = value.removingPercentEncoding else {
+                            reject(NicoError.VideoAPIError)
+                            return
+                        }
+                        value = decodedUrl
+                    }
+                    apiInfo[key] = value
                 }
-                fulfill(decodedUrl)
+                fulfill(apiInfo)
             }
         }
     }
@@ -213,6 +247,28 @@ extension ProgressViewController {
                     fulfill()
             }
             downloadRequests.append(request)
+        }
+    }
+    
+    func downloadCommentXml(item: Item) -> Promise<Void> {
+        return Promise { fulfill, reject in
+            sessionManager.request(item.apiInfo["ms"]!, method: .post, encoding: NicoCommentEncoding(threadId: item.apiInfo["thread_id"]!)).responseString(encoding: String.Encoding.utf8) { response in
+                switch response.result {
+                case .success(let xmlString):
+                    guard !self.cancelled else {
+                        reject(NicoError.Cancelled)
+                        return
+                    }
+                    let comments = Comment.fromXml(xmlString)
+                    // TODO: convert(save also?) comments into "drawtext" filters
+                    let downloadsURL = self.options.saveDirectory
+                    let fileURL = downloadsURL.appendingPathComponent(item.name).appendingPathExtension("comment")
+                    try! xmlString.write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
+                    fulfill()
+                case .failure(let error):
+                    reject(error)
+                }
+            }
         }
     }
 }
