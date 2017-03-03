@@ -141,8 +141,8 @@ extension ProgressViewController {
                 }.then { title -> Promise<Void> in
                     self.items[idx].name = self.items[idx].name ?? title
                 // TOOD: Add below to download comment
-//                    return self.downloadCommentXml(item: self.items[idx])
-//                }.then { _ -> Promise<Void> in
+                    return self.downloadCommentXml(item: self.items[idx])
+                }.then { _ -> Promise<Void> in
                     self.items[idx].status = .downloading
                     return self.downloadVideo(item: self.items[idx], url: self.items[idx].apiInfo["url"]!, progressCallback: {
                         self.items[idx].progress = $0
@@ -259,16 +259,43 @@ extension ProgressViewController {
                         reject(NicoError.Cancelled)
                         return
                     }
-                    let comments = Comment.fromXml(xmlString)
-                    // TODO: convert(save also?) comments into "drawtext" filters
-                    let downloadsURL = self.options.saveDirectory
-                    let fileURL = downloadsURL.appendingPathComponent(item.name).appendingPathExtension("comment")
-                    try! xmlString.write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
+                    do {
+                        try self.saveComment(fromXmlString: xmlString, item: item)
+                    } catch {
+                        print("Error occurred while saving comments")
+                    }
                     fulfill()
                 case .failure(let error):
                     reject(error)
                 }
             }
         }
+    }
+    
+    func saveComment(fromXmlString xmlString: String, item: Item) throws {
+        let downloadsURL = self.options.saveDirectory
+        let dirURL = downloadsURL.appendingPathComponent(item.name, isDirectory: true)
+        try FileManager.default.createDirectory(
+            at: dirURL, withIntermediateDirectories: true, attributes: nil)
+        let fileURL = dirURL.appendingPathComponent("original").appendingPathExtension("comment")
+        try xmlString.write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
+        
+        let filterURL = dirURL.appendingPathComponent("filter").appendingPathExtension("comment")
+        try "".write(to: filterURL, atomically: false, encoding: String.Encoding.utf8)
+        
+        let filterFileHandle = try FileHandle(forWritingTo: filterURL)
+        filterFileHandle.seekToEndOfFile()
+        
+        Comment.parseXml(xmlString) { comment, isLastItem in
+            var line = "drawtext=fontsize=20:fontcolor=\(comment.color):fontfile=/Users/jeong/Dev/etc/ffmpeg/playground/ja.ttc:y=mod(lh*1\\, h):x=w-max(t-1\\,0)*(w+tw)/3:text='\(comment.comment)',\n"
+            
+            if isLastItem {
+                let range = line.index(line.endIndex, offsetBy: -2) ..< line.endIndex
+                line.removeSubrange(range)
+            }
+            filterFileHandle.write(line.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+        }
+        
+        filterFileHandle.closeFile()
     }
 }

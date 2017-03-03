@@ -22,6 +22,7 @@
 		5784FDD81E307B49004BD160 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDD71E307B49004BD160 /* ProgressViewController.swift */; };
 		579253D61E6548780041E2C8 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579253D51E6548780041E2C8 /* Comment.swift */; };
 		57AA47C11E34633E006777CB /* ViewController+OpenDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */; };
+		57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CEC1E69184800499029 /* NSColor+Hex.swift */; };
 		57F30F711E30D40500BB2445 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F701E30D40500BB2445 /* Metadata.swift */; };
 		57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */; };
 		6D9FE5F9E7119651CF4565BC /* Pods_NicoDownloader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD01B2271764A4CCDCB412AC /* Pods_NicoDownloader.framework */; };
@@ -56,6 +57,7 @@
 		5784FDD71E307B49004BD160 /* ProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
 		579253D51E6548780041E2C8 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ViewController+OpenDialog.swift"; path = "NicoDownloader/Extensions/ViewController+OpenDialog.swift"; sourceTree = SOURCE_ROOT; };
+		57C25CEC1E69184800499029 /* NSColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
 		57F30F701E30D40500BB2445 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Date+XMLPubDate.swift"; path = "NicoDownloader/Extensions/Date+XMLPubDate.swift"; sourceTree = SOURCE_ROOT; };
 		B271A42538ECAC7DDF04181C /* Pods-NicoDownloader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NicoDownloader.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader.debug.xcconfig"; sourceTree = "<group>"; };
@@ -182,6 +184,7 @@
 				572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */,
 				572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */,
 				57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */,
+				57C25CEC1E69184800499029 /* NSColor+Hex.swift */,
 				575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */,
 			);
 			path = Extensions;
@@ -402,6 +405,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				572B875C1E332A79008BC5AE /* ProgressViewController+Tableview.swift in Sources */,
+				57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */,
 				575D45D11E30A80F00F9E623 /* Item.swift in Sources */,
 				5784FDD81E307B49004BD160 /* ProgressViewController.swift in Sources */,
 				573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */,
