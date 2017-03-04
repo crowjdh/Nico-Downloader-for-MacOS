@@ -132,24 +132,34 @@ extension ProgressViewController {
             for (idx, item) in self.items.enumerated() {
                 Thread.sleep(forTimeInterval: 3)
                 self.items[idx].status = .fetching
+                self.downloadProgressTableView.reloadData()
                 
                 firstly {
                     self.getVideoApiInfoWith(item: item)
                 }.then { apiInfo -> Promise<String> in
                     self.items[idx].apiInfo = apiInfo
                     return self.prefetchVideoPage(videoId: item.videoId)
-                }.then { title -> Promise<Void> in
+                }.then { title -> Promise<URL?> in
                     self.items[idx].name = self.items[idx].name ?? title
                 // TOOD: Add below to download comment
                     return self.downloadCommentXml(item: self.items[idx])
-                }.then { _ -> Promise<Void> in
+                }.then { filterURL -> Promise<URL> in
                     self.items[idx].status = .downloading
-                    return self.downloadVideo(item: self.items[idx], url: self.items[idx].apiInfo["url"]!, progressCallback: {
+                    self.items[idx].filterURL = filterURL
+                    let item = self.items[idx]
+                    
+                    return self.downloadVideo(item: item, url: item.apiInfo["url"]!, progressCallback: {
                         self.items[idx].progress = $0
                         DispatchQueue.main.async(execute: {
                             self.downloadProgressTableView.reloadData()
                         })
                     })
+                }.then { destinationURL -> Promise<Void> in
+                    self.items[idx].status = .filtering
+                    self.downloadProgressTableView.reloadData()
+                    self.items[idx].destinationURL = destinationURL
+                    // TODO: Consider showing progress
+                    return self.applyComment(item: self.items[idx])
                 }.then { _ -> Void in
                     self.items[idx].status = .done
                     self.togglePreventSleep()
@@ -221,7 +231,7 @@ extension ProgressViewController {
         }
     }
     
-    func downloadVideo(item: Item, url: String, progressCallback: @escaping DoubleCallback) -> Promise<Void> {
+    func downloadVideo(item: Item, url: String, progressCallback: @escaping DoubleCallback) -> Promise<URL> {
         return Promise { fulfill, reject in
             guard !cancelled else {
                 reject(NicoError.Cancelled)
@@ -229,7 +239,7 @@ extension ProgressViewController {
             }
             let destination: DownloadRequest.DownloadFileDestination = { temporaryURL, response in
                 let downloadsURL = self.options.saveDirectory
-                var fileURL = downloadsURL.appendingPathComponent(item.name)
+                var fileURL = downloadsURL.appendingPathComponent(item.name, isDirectory: false)
                 if let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension {
                     fileURL = fileURL.appendingPathExtension(fileExtension)
                 }
@@ -240,17 +250,17 @@ extension ProgressViewController {
                 .downloadProgress { progress in
                     progressCallback(progress.fractionCompleted)
                 }.responseData { response in
-                    guard response.result.value != nil else {
+                    guard let fileURL = response.destinationURL, response.result.value != nil else {
                         reject(NicoError.UnknownError("Download failed"))
                         return
                     }
-                    fulfill()
+                    fulfill(fileURL)
             }
             downloadRequests.append(request)
         }
     }
     
-    func downloadCommentXml(item: Item) -> Promise<Void> {
+    func downloadCommentXml(item: Item) -> Promise<URL?> {
         return Promise { fulfill, reject in
             sessionManager.request(item.apiInfo["ms"]!, method: .post, encoding: NicoCommentEncoding(threadId: item.apiInfo["thread_id"]!)).responseString(encoding: String.Encoding.utf8) { response in
                 switch response.result {
@@ -259,12 +269,13 @@ extension ProgressViewController {
                         reject(NicoError.Cancelled)
                         return
                     }
+                    var filterURL: URL? = nil
                     do {
-                        try self.saveComment(fromXmlString: xmlString, item: item)
+                        filterURL = try self.saveComment(fromXmlString: xmlString, item: item)
                     } catch {
                         print("Error occurred while saving comments")
                     }
-                    fulfill()
+                    fulfill(filterURL)
                 case .failure(let error):
                     reject(error)
                 }
@@ -272,7 +283,39 @@ extension ProgressViewController {
         }
     }
     
-    func saveComment(fromXmlString xmlString: String, item: Item) throws {
+    func applyComment(item: Item) -> Promise<Void> {
+        return Promise { fulfill, reject in
+            guard let filterURL = item.filterURL else {
+                fulfill()
+                return
+            }
+            
+            // TODO: Refactor
+            var fileURL: URL! = item.destinationURL
+            let name = fileURL.lastPathComponent
+            let ext = fileURL.pathExtension
+            fileURL.deleteLastPathComponent()
+            fileURL.deletePathExtension()
+            fileURL.appendPathComponent("\(name)_filtered")
+            fileURL.appendPathExtension(ext)
+            
+            let res = filterVideo(inputFilePath: item.destinationURL.absoluteString.removingPercentEncoding!,
+                        outputFilePath: fileURL.absoluteString.removingPercentEncoding!,
+                        filterPath: filterURL.absoluteString.removingPercentEncoding!) { success in
+                            if success {
+                                fulfill()
+                            } else {
+                                reject(NicoError.Cancelled)
+                            }
+            }
+            if let res = res {
+                self.filterProcesses.append(res.0)
+                self.filterWorkItems.append(res.1)
+            }
+        }
+    }
+    
+    func saveComment(fromXmlString xmlString: String, item: Item) throws -> URL {
         let downloadsURL = self.options.saveDirectory
         let dirURL = downloadsURL.appendingPathComponent(item.name, isDirectory: true)
         try FileManager.default.createDirectory(
@@ -287,7 +330,8 @@ extension ProgressViewController {
         filterFileHandle.seekToEndOfFile()
         
         Comment.parseXml(xmlString) { comment, isLastItem in
-            var line = "drawtext=fontsize=20:fontcolor=\(comment.color):fontfile=/Users/jeong/Dev/etc/ffmpeg/playground/ja.ttc:y=mod(lh*1\\, h):x=w-max(t-1\\,0)*(w+tw)/3:text='\(comment.comment)',\n"
+            // TODO: Add 'enable' option and config comment position & speed
+            var line = "drawtext=fontsize=20:fontcolor=\(comment.color):fontfile=/Users/jeong/Dev/etc/ffmpeg/playground/fonts/ja.ttc:y=mod(lh*1\\, h):x=w-max(t-1\\,0)*(w+tw)/3:text='\(comment.comment)',\n"
             
             if isLastItem {
                 let range = line.index(line.endIndex, offsetBy: -2) ..< line.endIndex
@@ -297,5 +341,7 @@ extension ProgressViewController {
         }
         
         filterFileHandle.closeFile()
+        
+        return filterURL
     }
 }

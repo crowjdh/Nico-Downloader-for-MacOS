@@ -23,6 +23,8 @@
 		579253D61E6548780041E2C8 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579253D51E6548780041E2C8 /* Comment.swift */; };
 		57AA47C11E34633E006777CB /* ViewController+OpenDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */; };
 		57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CEC1E69184800499029 /* NSColor+Hex.swift */; };
+		57C25CEF1E692FA900499029 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = 57C25CEE1E692FA900499029 /* ffmpeg */; };
+		57C25CF21E69309400499029 /* FFMpegUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CF11E69309400499029 /* FFMpegUtil.swift */; };
 		57F30F711E30D40500BB2445 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F701E30D40500BB2445 /* Metadata.swift */; };
 		57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */; };
 		6D9FE5F9E7119651CF4565BC /* Pods_NicoDownloader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD01B2271764A4CCDCB412AC /* Pods_NicoDownloader.framework */; };
@@ -58,6 +60,8 @@
 		579253D51E6548780041E2C8 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ViewController+OpenDialog.swift"; path = "NicoDownloader/Extensions/ViewController+OpenDialog.swift"; sourceTree = SOURCE_ROOT; };
 		57C25CEC1E69184800499029 /* NSColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
+		57C25CEE1E692FA900499029 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = "<group>"; };
+		57C25CF11E69309400499029 /* FFMpegUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFMpegUtil.swift; sourceTree = "<group>"; };
 		57F30F701E30D40500BB2445 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Date+XMLPubDate.swift"; path = "NicoDownloader/Extensions/Date+XMLPubDate.swift"; sourceTree = SOURCE_ROOT; };
 		B271A42538ECAC7DDF04181C /* Pods-NicoDownloader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NicoDownloader.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader.debug.xcconfig"; sourceTree = "<group>"; };
@@ -101,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				573B9A0C1E3DC755001C4F5D /* PowerManager.swift */,
+				57C25CF11E69309400499029 /* FFMpegUtil.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 			children = (
 				5784FDB91E3075AB004BD160 /* NicoDownloader */,
 				5784FDCB1E3075AC004BD160 /* NicoDownloaderTests */,
+				57C25CF01E692FB400499029 /* Resources */,
 				5784FDB81E3075AB004BD160 /* Products */,
 				62735FCEE1078E1C40D2B29C /* Pods */,
 				4E1F20C532B381B6F9115534 /* Frameworks */,
@@ -175,6 +181,14 @@
 				5784FDCE1E3075AC004BD160 /* Info.plist */,
 			);
 			path = NicoDownloaderTests;
+			sourceTree = "<group>";
+		};
+		57C25CF01E692FB400499029 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				57C25CEE1E692FA900499029 /* ffmpeg */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		57F30F721E30E6DC00BB2445 /* Extensions */ = {
@@ -294,6 +308,7 @@
 			files = (
 				5784FDBF1E3075AC004BD160 /* Assets.xcassets in Resources */,
 				5784FDC21E3075AC004BD160 /* Main.storyboard in Resources */,
+				57C25CEF1E692FA900499029 /* ffmpeg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -415,6 +430,7 @@
 				579253D61E6548780041E2C8 /* Comment.swift in Sources */,
 				5784FDBB1E3075AC004BD160 /* AppDelegate.swift in Sources */,
 				575C68E11E683F7A00B56D34 /* Enum+Iterable.swift in Sources */,
+				57C25CF21E69309400499029 /* FFMpegUtil.swift in Sources */,
 				57F30F711E30D40500BB2445 /* Metadata.swift in Sources */,
 				57AA47C11E34633E006777CB /* ViewController+OpenDialog.swift in Sources */,
 				572B875E1E332AB3008BC5AE /* ProgressViewController+Download.swift in Sources */,

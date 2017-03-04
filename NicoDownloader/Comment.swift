@@ -50,7 +50,7 @@ func nicoColorToHex(hexColor: String) -> String? {
     case "purple2": return "#6633CC"
     case "nobleviolet": return "#6633CC"
     case "black2": return "#666666"
-    default: return NSColor(hex: hexColor) != nil ? hexColor : nil
+    default: return NSColor(rgba: hexColor) != nil ? hexColor : nil
     }
 }
 
