@@ -271,7 +271,12 @@ extension ProgressViewController {
                     }
                     var filterURL: URL? = nil
                     do {
-                        filterURL = try self.saveComment(fromXmlString: xmlString, item: item)
+                        try Comment.saveOriginalComment(
+                            fromXmlString: xmlString, item: item,
+                            directory: self.options.saveDirectory)
+                        filterURL = try Comment.saveFilterFile(
+                            fromXmlString: xmlString, item: item,
+                            directory: self.options.saveDirectory)
                     } catch {
                         print("Error occurred while saving comments")
                     }
@@ -313,35 +318,5 @@ extension ProgressViewController {
                 self.filterWorkItems.append(res.1)
             }
         }
-    }
-    
-    func saveComment(fromXmlString xmlString: String, item: Item) throws -> URL {
-        let downloadsURL = self.options.saveDirectory
-        let dirURL = downloadsURL.appendingPathComponent(item.name, isDirectory: true)
-        try FileManager.default.createDirectory(
-            at: dirURL, withIntermediateDirectories: true, attributes: nil)
-        let fileURL = dirURL.appendingPathComponent("original").appendingPathExtension("comment")
-        try xmlString.write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
-        
-        let filterURL = dirURL.appendingPathComponent("filter").appendingPathExtension("comment")
-        try "".write(to: filterURL, atomically: false, encoding: String.Encoding.utf8)
-        
-        let filterFileHandle = try FileHandle(forWritingTo: filterURL)
-        filterFileHandle.seekToEndOfFile()
-        
-        Comment.parseXml(xmlString) { comment, isLastItem in
-            // TODO: Add 'enable' option and config comment position & speed
-            var line = "drawtext=fontsize=20:fontcolor=\(comment.color):fontfile=/Users/jeong/Dev/etc/ffmpeg/playground/fonts/ja.ttc:y=mod(lh*1\\, h):x=w-max(t-1\\,0)*(w+tw)/3:text='\(comment.comment)',\n"
-            
-            if isLastItem {
-                let range = line.index(line.endIndex, offsetBy: -2) ..< line.endIndex
-                line.removeSubrange(range)
-            }
-            filterFileHandle.write(line.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
-        }
-        
-        filterFileHandle.closeFile()
-        
-        return filterURL
     }
 }
