@@ -203,13 +203,3 @@ extension Comment {
         return flowingComments
     }
 }
-
-extension Comment: Hashable {
-    var hashValue: Int {
-        return vpos
-    }
-}
-
-func ==(lhs: Comment, rhs: Comment) -> Bool {
-    return lhs.vpos == rhs.vpos
-}
