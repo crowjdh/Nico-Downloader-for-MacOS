@@ -45,6 +45,10 @@ struct Item {
     
     var progress: Double = 0
     
+    var destinationString: String! {
+        return destinationURL.absoluteString.removingPercentEncoding
+    }
+    
     init(videoId: String) {
         self.videoId = videoId
     }

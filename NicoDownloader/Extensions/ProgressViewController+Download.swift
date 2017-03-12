@@ -139,13 +139,9 @@ extension ProgressViewController {
                 }.then { apiInfo -> Promise<String> in
                     self.items[idx].apiInfo = apiInfo
                     return self.prefetchVideoPage(videoId: item.videoId)
-                }.then { title -> Promise<URL?> in
+                }.then { title -> Promise<URL> in
                     self.items[idx].name = self.items[idx].name ?? title
-                // TOOD: Add below to download comment
-                    return self.downloadCommentXml(item: self.items[idx])
-                }.then { filterURL -> Promise<URL> in
                     self.items[idx].status = .downloading
-                    self.items[idx].filterURL = filterURL
                     let item = self.items[idx]
                     
                     return self.downloadVideo(item: item, url: item.apiInfo["url"]!, progressCallback: {
@@ -154,10 +150,13 @@ extension ProgressViewController {
                             self.downloadProgressTableView.reloadData()
                         })
                     })
-                }.then { destinationURL -> Promise<Void> in
+                }.then { destinationURL -> Promise<URL?> in
+                    self.items[idx].destinationURL = destinationURL
+                    return self.downloadCommentXml(item: self.items[idx])
+                }.then { filterURL -> Promise<Void> in
+                    self.items[idx].filterURL = filterURL
                     self.items[idx].status = .filtering
                     self.downloadProgressTableView.reloadData()
-                    self.items[idx].destinationURL = destinationURL
                     // TODO: Consider showing progress
                     return self.applyComment(item: self.items[idx])
                 }.then { _ -> Void in

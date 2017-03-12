@@ -56,6 +56,7 @@ func nicoColorToHex(hexColor: String) -> String? {
 
 struct Comment {
     static let duration = Float(4)
+    static let maximumLine = 11
     
     let no: Int
     let vpos: Int
@@ -156,11 +157,14 @@ extension Comment {
         let rawComments = Comment.fromXml(xmlString).sorted { $0.0.vpos < $0.1.vpos }
         let comments = Comment.assignLinesToComments(comments: rawComments)
         
+        let resolution = videoResolution(inputFilePath: item.destinationString)!
+        let guessedLineHeight = resolution.1 / Comment.maximumLine
+        
         for (idx, comment) in comments.enumerated() {
             // TODO: Add empty space to fit aspect ratio of embedded player(possibly on each side)
             let yIdx = comment.line!
             
-            var line = "drawtext=fontsize=20:fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=25*(\(yIdx)-floor(h/25)*floor(\(yIdx)/(floor(h/25))))+10:text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
+            var line = "drawtext=fontsize=\(guessedLineHeight):fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=\(guessedLineHeight)*(\(yIdx)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))+10:text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
             
             // Remove ",\n" for last item
             if idx == comments.count - 1 {
