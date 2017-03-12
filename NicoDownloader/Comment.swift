@@ -67,6 +67,17 @@ struct Comment {
     var startTimeSec: Float {
         return Float(vpos)/100.0
     }
+    var width: Float {
+        return Float(boundingRectSize.width)
+    }
+    var height: Float {
+        return Float(boundingRectSize.height)
+    }
+    var boundingRectSize: CGSize {
+        let nsText = comment as NSString
+        let dict: [String: NSFont] = [NSFontAttributeName: font]
+        return nsText.size(withAttributes: dict)
+    }
     var line: Int!
     
     init(no: Int, vpos: Int, size: Size, position: Position, color: String, comment: String) {
@@ -149,7 +160,7 @@ extension Comment {
             // TODO: Add empty space to fit aspect ratio of embedded player(possibly on each side)
             let yIdx = comment.line!
             
-            var line = "drawtext=fontsize=20:fontcolor=\(comment.color):fontfile=/Users/jeong/Dev/etc/ffmpeg/playground/fonts/ja_.ttc:x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=25*(\(yIdx)-floor(h/25)*floor(\(yIdx)/(floor(h/25))))+10:text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
+            var line = "drawtext=fontsize=20:fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=25*(\(yIdx)-floor(h/25)*floor(\(yIdx)/(floor(h/25))))+10:text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
             
             // Remove ",\n" for last item
             if idx == comments.count - 1 {
@@ -201,5 +212,14 @@ extension Comment {
         }
         
         return flowingComments
+    }
+}
+
+extension Comment {
+    var font: NSFont {
+        return NSFont(name: "HiraMaruProN-W4", size: 20.0)!
+    }
+    static var fontPath: String {
+        return Bundle.main.path(forResource: "ja_", ofType: "ttc", inDirectory: "Fonts")!
     }
 }
