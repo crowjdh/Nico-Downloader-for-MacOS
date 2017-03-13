@@ -143,7 +143,9 @@ extension ProgressViewController {
                     self.items[idx].name = self.items[idx].name ?? title
                     self.items[idx].status = .downloading
                     let item = self.items[idx]
-                    
+
+                    // TODO: Remove below when test is over
+//                    return Promise<URL>(value: URL(fileURLWithPath: "/Volumes/JetDrive Lite/playground/yOBEdsVlSRIoVKED.mp4"))
                     return self.downloadVideo(item: item, url: item.apiInfo["url"]!, progressCallback: {
                         self.items[idx].progress = $0
                         DispatchQueue.main.async(execute: {

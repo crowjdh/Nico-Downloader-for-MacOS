@@ -76,7 +76,7 @@ struct Comment {
     }
     var boundingRectSize: CGSize {
         let nsText = comment as NSString
-        let dict: [String: NSFont] = [NSFontAttributeName: font]
+        let dict: [String: NSFont] = [NSFontAttributeName: Comment.font]
         return nsText.size(withAttributes: dict)
     }
     var line: Int!
@@ -90,11 +90,11 @@ struct Comment {
         self.comment = comment
     }
     
-    // TODO: Calculate est - et(if tw == width/4sec, then est - et == 1sec)
-    func canHaveFollowingInSameLine(other: Comment) -> Bool {
+    func canHaveFollowingInSameLine(other: Comment, displayWidth: Float) -> Bool {
+        let selfTailGotOut = startTimeSec + Comment.duration * (width / (displayWidth + width))
         let selfEnd = startTimeSec + Comment.duration
-        let otherHeadHitsLeft = other.startTimeSec + 2.5
-        return selfEnd < otherHeadHitsLeft
+        let otherHeadHitsLeft = other.startTimeSec + Comment.duration * (displayWidth / (displayWidth + other.width))
+        return selfTailGotOut < other.startTimeSec && selfEnd < otherHeadHitsLeft
     }
 }
 
@@ -154,17 +154,17 @@ extension Comment {
         let filterFileHandle = try FileHandle(forWritingTo: filterURL)
         filterFileHandle.seekToEndOfFile()
         
-        let rawComments = Comment.fromXml(xmlString).sorted { $0.0.vpos < $0.1.vpos }
-        let comments = Comment.assignLinesToComments(comments: rawComments)
-        
         let resolution = videoResolution(inputFilePath: item.destinationString)!
         let guessedLineHeight = resolution.1 / Comment.maximumLine
+        
+        let rawComments = Comment.fromXml(xmlString).sorted { $0.0.vpos < $0.1.vpos }
+        let comments = Comment.assignLinesToComments(comments: rawComments, displayWidth: Float(resolution.0))
         
         for (idx, comment) in comments.enumerated() {
             // TODO: Add empty space to fit aspect ratio of embedded player(possibly on each side)
             let yIdx = comment.line!
             
-            var line = "drawtext=fontsize=\(guessedLineHeight):fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=\(guessedLineHeight)*(\(yIdx)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))+10:text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
+            var line = "drawtext=fontsize=\(Comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=\(guessedLineHeight)*(\(yIdx)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine))):text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
             
             // Remove ",\n" for last item
             if idx == comments.count - 1 {
@@ -179,7 +179,7 @@ extension Comment {
         return filterURL
     }
     
-    static func assignLinesToComments(comments: [Comment]) -> [Comment] {
+    static func assignLinesToComments(comments: [Comment], displayWidth: Float) -> [Comment] {
         var flowingComments = comments.filter { $0.position == .naka }
 //        let fixedComments = comments.filter { $0.position != .naka }
         
@@ -199,7 +199,7 @@ extension Comment {
                 let hasLastCommentGone = lastCommentInLine.startTimeSec + Comment.duration < currentTime
                 if hasLastCommentGone {
                     flowingCommentsOnScreen.removeValue(forKey: line)
-                } else if !lastCommentInLine.canHaveFollowingInSameLine(other: commentToAdd) {
+                } else if !lastCommentInLine.canHaveFollowingInSameLine(other: commentToAdd, displayWidth: displayWidth) {
                     /* Store lines which can't have this comment */
                     occupiedLines.insert(line)
                 }
@@ -220,10 +220,7 @@ extension Comment {
 }
 
 extension Comment {
-    var font: NSFont {
-        return NSFont(name: "HiraMaruProN-W4", size: 20.0)!
-    }
-    static var fontPath: String {
-        return Bundle.main.path(forResource: "ja_", ofType: "ttc", inDirectory: "Fonts")!
-    }
+    static let fontSize = Float(43)
+    static let font = NSFont(name: "HiraMaruProN-W4", size: CGFloat(Comment.fontSize))!
+    static let fontPath = Bundle.main.path(forResource: "ja_", ofType: "ttc", inDirectory: "Fonts")!
 }
