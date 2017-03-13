@@ -164,7 +164,8 @@ extension Comment {
             // TODO: Add empty space to fit aspect ratio of embedded player(possibly on each side)
             let yIdx = comment.line!
             
-            var line = "drawtext=fontsize=\(Comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=\(guessedLineHeight)*(\(yIdx)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine))):text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
+            let alignVariant = "-(\(guessedLineHeight)-lh)/2"
+            var line = "drawtext=fontsize=\(Comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
             
             // Remove ",\n" for last item
             if idx == comments.count - 1 {

@@ -125,6 +125,12 @@ extension ProgressViewController {
         }
     }
     
+    func reloadTableViewData() {
+        DispatchQueue.main.async(execute: {
+            self.downloadProgressTableView.reloadData()
+        })
+    }
+    
     func download() {
         self.updateStatusMessage(message: "Downloading items...")
         downloadWorkItem = DispatchWorkItem {
@@ -132,7 +138,7 @@ extension ProgressViewController {
             for (idx, item) in self.items.enumerated() {
                 Thread.sleep(forTimeInterval: 3)
                 self.items[idx].status = .fetching
-                self.downloadProgressTableView.reloadData()
+                self.reloadTableViewData()
                 
                 firstly {
                     self.getVideoApiInfoWith(item: item)
@@ -148,9 +154,7 @@ extension ProgressViewController {
 //                    return Promise<URL>(value: URL(fileURLWithPath: "/Volumes/JetDrive Lite/playground/yOBEdsVlSRIoVKED.mp4"))
                     return self.downloadVideo(item: item, url: item.apiInfo["url"]!, progressCallback: {
                         self.items[idx].progress = $0
-                        DispatchQueue.main.async(execute: {
-                            self.downloadProgressTableView.reloadData()
-                        })
+                        self.reloadTableViewData()
                     })
                 }.then { destinationURL -> Promise<URL?> in
                     self.items[idx].destinationURL = destinationURL
@@ -158,17 +162,16 @@ extension ProgressViewController {
                 }.then { filterURL -> Promise<Void> in
                     self.items[idx].filterURL = filterURL
                     self.items[idx].status = .filtering
-                    self.downloadProgressTableView.reloadData()
+                    self.reloadTableViewData()
                     // TODO: Consider showing progress
                     return self.applyComment(item: self.items[idx])
                 }.then { _ -> Void in
                     self.items[idx].status = .done
                     self.togglePreventSleep()
                     semaphore.signal()
-                    DispatchQueue.main.async {
-                        self.downloadProgressTableView.reloadData()
-                        
-                        if self.allDone {
+                    self.reloadTableViewData()
+                    if self.allDone {
+                        DispatchQueue.main.async {
                             self.updateStatusMessage(message: "DONE")
                         }
                     }
@@ -176,9 +179,7 @@ extension ProgressViewController {
                     self.items[idx].status = .error
                     semaphore.signal()
                     self.togglePreventSleep()
-                    DispatchQueue.main.async {
-                        self.downloadProgressTableView.reloadData()
-                    }
+                    self.reloadTableViewData()
                 }
                 let _ = semaphore.wait(timeout: .distantFuture)
                 if self.cancelled {
