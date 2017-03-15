@@ -149,7 +149,7 @@ extension Comment {
             let alignVariant = "-(\(guessedLineHeight)-lh)/2"
             let escapedComment = comment.comment.replacingOccurrences(of: "'", with: "'\\\\\\\''")
             let x = comment.position == .naka ? ":x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(comment.duration)" : ":x=(w-tw)/2"
-            var line = "drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath)" + x + ":y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(escapedComment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + comment.duration))',\n"
+            var line = "drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath)" + x + ":y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(escapedComment)':borderw=1:bordercolor=#333333:shadowx=1.5:shadowcolor=#333333:enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + comment.duration))',\n"
             
             // Remove ",\n" for last item
             if idx == comments.count - 1 {
