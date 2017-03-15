@@ -301,10 +301,10 @@ extension ProgressViewController {
             
             // TODO: Refactor
             var fileURL: URL! = item.destinationURL
-            let name = fileURL.lastPathComponent
             let ext = fileURL.pathExtension
-            fileURL.deleteLastPathComponent()
             fileURL.deletePathExtension()
+            let name = fileURL.lastPathComponent
+            fileURL.deleteLastPathComponent()
             fileURL.appendPathComponent("\(name)_filtered")
             fileURL.appendPathExtension(ext)
             
