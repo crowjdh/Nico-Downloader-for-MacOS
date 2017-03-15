@@ -178,6 +178,7 @@ extension ProgressViewController {
                         }
                     }
                 }.catch { error in
+                    print(error.localizedDescription)
                     self.items[idx].status = .error
                     semaphore.signal()
                     self.togglePreventSleep()

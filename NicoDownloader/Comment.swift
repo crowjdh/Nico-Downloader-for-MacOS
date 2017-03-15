@@ -55,7 +55,6 @@ func nicoColorToHex(hexColor: String) -> String? {
 }
 
 struct Comment {
-    static let duration = Float(4)
     static let maximumLine = 11
     
     let no: Int
@@ -64,11 +63,11 @@ struct Comment {
     let position: Position
     let color: String
     let comment: String
+    var line: Int!
     
     var startTimeSec: Float {
         return Float(vpos)/100.0
     }
-    var line: Int!
     
     init(no: Int, vpos: Int, size: Size, position: Position, color: String, comment: String) {
         self.no = no
@@ -77,13 +76,6 @@ struct Comment {
         self.position = position
         self.color = color
         self.comment = comment
-    }
-    
-    func canHaveFollowingInSameLine(other: Comment, displayWidth: Float) -> Bool {
-        let selfTailGotOut = startTimeSec + Comment.duration * (width / (displayWidth + width))
-        let selfEnd = startTimeSec + Comment.duration
-        let otherHeadHitsLeft = other.startTimeSec + Comment.duration * (displayWidth / (displayWidth + other.width))
-        return selfTailGotOut < other.startTimeSec && selfEnd < otherHeadHitsLeft
     }
 }
 
@@ -146,16 +138,18 @@ extension Comment {
         let resolution = videoResolution(inputFilePath: item.destinationString)!
         let guessedLineHeight = resolution.1 / Comment.maximumLine
         
-        let rawComments = Comment.fromXml(xmlString).sorted { $0.0.vpos < $0.1.vpos }
+        let rawComments = Comment.fromXml(xmlString).sorted { $0.0.no + $0.0.vpos < $0.1.no + $0.1.vpos }
         let comments = Comment.assignLinesToComments(comments: rawComments, displayWidth: Float(resolution.0))
         
         // TODO: Comment heights are different by comment sizes(0.5cm*?Lines, 0.75cm*11Lines, 1cm*8Lines)
         for (idx, comment) in comments.enumerated() {
             // TODO: Add empty space to fit aspect ratio of embedded player(possibly on each side)
-            let yIdx = comment.line!
+            let yIdx = comment.normalizedLine
             
             let alignVariant = "-(\(guessedLineHeight)-lh)/2"
-            var line = "drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
+            let escapedComment = comment.comment.replacingOccurrences(of: "'", with: "'\\\\\\\''")
+            let x = comment.position == .naka ? ":x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(comment.duration)" : ":x=(w-tw)/2"
+            var line = "drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath)" + x + ":y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(escapedComment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + comment.duration))',\n"
             
             // Remove ",\n" for last item
             if idx == comments.count - 1 {
@@ -171,25 +165,34 @@ extension Comment {
     }
     
     static func assignLinesToComments(comments: [Comment], displayWidth: Float) -> [Comment] {
-        var flowingComments = comments.filter { $0.position == .naka }
-//        let fixedComments = comments.filter { $0.position != .naka }
+        let flowingComments = assignLinesToComments(comments: comments, position: .naka, displayWidth: displayWidth)
+        let ueComments = assignLinesToComments(comments: comments, position: .ue, displayWidth: displayWidth)
+        let shitaComments = assignLinesToComments(comments: comments, position: .shita, displayWidth: displayWidth)
+        var comments: [Comment] = []
+        comments.append(contentsOf: flowingComments)
+        comments.append(contentsOf: ueComments)
+        comments.append(contentsOf: shitaComments)
+        return comments
+    }
+    
+    static func assignLinesToComments(comments origianlComments: [Comment], position: Position, displayWidth: Float) -> [Comment] {
+        var comments = origianlComments.filter { $0.position == position }
         
-        var flowingCommentsOnScreen = [Int: Comment]()
+        var commentsOnScreen = [Int: Comment]()
         var vacantLines = IndexSet(0..<1000)
         
-        for idx in flowingComments.indices {
-            let commentToAdd = flowingComments[idx]
+        for idx in comments.indices {
+            let commentToAdd = comments[idx]
             let currentTime = commentToAdd.startTimeSec
             
             /* Clean up & get line number */
             var occupiedLines = IndexSet()
-            for line in flowingCommentsOnScreen.keys {
+            for line in commentsOnScreen.keys {
                 // Force unwrap since we're iterating over keys
                 // This might change if "flowingCommentsOnScreen" can be used in multi-threaded environment
-                let lastCommentInLine = flowingCommentsOnScreen[line]!
-                let hasLastCommentGone = lastCommentInLine.startTimeSec + Comment.duration < currentTime
-                if hasLastCommentGone {
-                    flowingCommentsOnScreen.removeValue(forKey: line)
+                let lastCommentInLine = commentsOnScreen[line]!
+                if !lastCommentInLine.isVisible(currentTime: currentTime) {
+                    commentsOnScreen.removeValue(forKey: line)
                 } else if !lastCommentInLine.canHaveFollowingInSameLine(other: commentToAdd, displayWidth: displayWidth) {
                     /* Store lines which can't have this comment */
                     occupiedLines.insert(line)
@@ -202,11 +205,11 @@ extension Comment {
             // Restore vacant lines Set for later use
             vacantLines.formUnion(occupiedLines)
             
-            flowingComments[idx].line = vacantLine
-            flowingCommentsOnScreen[vacantLine] = flowingComments[idx]
+            comments[idx].line = vacantLine
+            commentsOnScreen[vacantLine] = comments[idx]
         }
         
-        return flowingComments
+        return comments
     }
 }
 
@@ -226,6 +229,9 @@ extension Comment {
     var font: NSFont {
         return NSFont(name: "HiraMaruProN-W4", size: CGFloat(fontSize))!
     }
+    var duration: Float {
+        return position == .naka ? Float(4) : Float(3)
+    }
     static let fontPath = Bundle.main.path(forResource: "ja_", ofType: "ttc", inDirectory: "Fonts")!
     
     private var boundingRectSize: CGSize {
@@ -238,5 +244,26 @@ extension Comment {
     }
     var height: Float {
         return Float(boundingRectSize.height)
+    }
+    var normalizedLine: Int {
+        guard position == .shita else {
+            return line
+        }
+        let lineInScreen = line - Comment.maximumLine * (line / Comment.maximumLine)
+        return (Comment.maximumLine - 1) - lineInScreen
+    }
+    
+    func isVisible(currentTime: Float) -> Bool {
+        return startTimeSec + duration > currentTime
+    }
+    
+    func canHaveFollowingInSameLine(other: Comment, displayWidth: Float) -> Bool {
+        guard position == .naka else {
+            return false
+        }
+        let selfTailGotOut = startTimeSec + duration * (width / (displayWidth + width))
+        let selfEnd = startTimeSec + duration
+        let otherHeadHitsLeft = other.startTimeSec + duration * (displayWidth / (displayWidth + other.width))
+        return selfTailGotOut < other.startTimeSec && selfEnd < otherHeadHitsLeft
     }
 }
