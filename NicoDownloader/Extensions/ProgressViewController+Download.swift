@@ -144,6 +144,8 @@ extension ProgressViewController {
                     self.getVideoApiInfoWith(item: item)
                 }.then { apiInfo -> Promise<String> in
                     self.items[idx].apiInfo = apiInfo
+                    // TODO: Change to thumbnail api
+                    // TODO: Also, add referer(http://www.nicovideo.jp/watch/[動画番号]) to download request
                     return self.prefetchVideoPage(videoId: item.videoId)
                 }.then { title -> Promise<URL> in
                     self.items[idx].name = self.items[idx].name ?? title

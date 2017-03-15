@@ -68,17 +68,6 @@ struct Comment {
     var startTimeSec: Float {
         return Float(vpos)/100.0
     }
-    var width: Float {
-        return Float(boundingRectSize.width)
-    }
-    var height: Float {
-        return Float(boundingRectSize.height)
-    }
-    var boundingRectSize: CGSize {
-        let nsText = comment as NSString
-        let dict: [String: NSFont] = [NSFontAttributeName: Comment.font]
-        return nsText.size(withAttributes: dict)
-    }
     var line: Int!
     
     init(no: Int, vpos: Int, size: Size, position: Position, color: String, comment: String) {
@@ -160,12 +149,13 @@ extension Comment {
         let rawComments = Comment.fromXml(xmlString).sorted { $0.0.vpos < $0.1.vpos }
         let comments = Comment.assignLinesToComments(comments: rawComments, displayWidth: Float(resolution.0))
         
+        // TODO: Comment heights are different by comment sizes(0.5cm*?Lines, 0.75cm*11Lines, 1cm*8Lines)
         for (idx, comment) in comments.enumerated() {
             // TODO: Add empty space to fit aspect ratio of embedded player(possibly on each side)
             let yIdx = comment.line!
             
             let alignVariant = "-(\(guessedLineHeight)-lh)/2"
-            var line = "drawtext=fontsize=\(Comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
+            var line = "drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath):x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(Comment.duration):y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(comment.comment)':enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + Comment.duration))',\n"
             
             // Remove ",\n" for last item
             if idx == comments.count - 1 {
@@ -221,7 +211,32 @@ extension Comment {
 }
 
 extension Comment {
-    static let fontSize = Float(43)
-    static let font = NSFont(name: "HiraMaruProN-W4", size: CGFloat(Comment.fontSize))!
+    var fontSize: Float {
+        var sizeInt: Int! = nil
+        switch size {
+        case .small:
+            sizeInt = 21
+        case .medium:
+            sizeInt = 32
+        case .big:
+            sizeInt = 43
+        }
+        return Float(sizeInt)
+    }
+    var font: NSFont {
+        return NSFont(name: "HiraMaruProN-W4", size: CGFloat(fontSize))!
+    }
     static let fontPath = Bundle.main.path(forResource: "ja_", ofType: "ttc", inDirectory: "Fonts")!
+    
+    private var boundingRectSize: CGSize {
+        let nsText = comment as NSString
+        let dict: [String: NSFont] = [NSFontAttributeName: font]
+        return nsText.size(withAttributes: dict)
+    }
+    var width: Float {
+        return Float(boundingRectSize.width)
+    }
+    var height: Float {
+        return Float(boundingRectSize.height)
+    }
 }
