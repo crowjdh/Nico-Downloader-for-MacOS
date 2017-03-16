@@ -130,7 +130,7 @@ extension Comment {
     static func saveFilterFile(fromXmlString xmlString: String, item: Item, directory: URL) throws -> URL {
         let dirURL = try createDirectory(ofItem: item, at: directory)
         let filterURL = dirURL.appendingPathComponent("filter").appendingPathExtension(commentExtension)
-        try "".write(to: filterURL, atomically: false, encoding: String.Encoding.utf8)
+        try "[in]fps=60[tmp],\n".write(to: filterURL, atomically: false, encoding: String.Encoding.utf8)
         
         let filterFileHandle = try FileHandle(forWritingTo: filterURL)
         filterFileHandle.seekToEndOfFile()
@@ -144,17 +144,19 @@ extension Comment {
         // TODO: Comment heights are different by comment sizes(0.5cm*?Lines, 0.75cm*11Lines, 1cm*8Lines)
         for (idx, comment) in comments.enumerated() {
             // TODO: Add empty space to fit aspect ratio of embedded player(possibly on each side)
+            // TODO: Adjust start time of comments at the end of video(show little bit earlier)
             let yIdx = comment.normalizedLine
             
             let alignVariant = "-(\(guessedLineHeight)-lh)/2"
             let escapedComment = comment.comment.replacingOccurrences(of: "'", with: "'\\\\\\\''")
             let x = comment.position == .naka ? ":x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(comment.duration)" : ":x=(w-tw)/2"
-            var line = "drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath)" + x + ":y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(escapedComment)':borderw=1:bordercolor=#333333:shadowx=1.5:shadowcolor=#333333:enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + comment.duration))',\n"
+            var line = "[tmp]drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath)" + x + ":y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(escapedComment)':borderw=1:bordercolor=#333333:shadowx=1.5:shadowcolor=#333333:enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + comment.duration))'[tmp],\n"
             
             // Remove ",\n" for last item
             if idx == comments.count - 1 {
-                let range = line.index(line.endIndex, offsetBy: -2) ..< line.endIndex
+                let range = line.index(line.endIndex, offsetBy: -7) ..< line.endIndex
                 line.removeSubrange(range)
+                line.append("[out]")
             }
             filterFileHandle.write(line.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
         }
