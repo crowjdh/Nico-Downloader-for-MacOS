@@ -25,7 +25,7 @@ func filterVideo(inputFilePath: String, outputFilePath: String,
     }
 }
 
-func videoResolution(inputFilePath: String) -> VideoResolution? {
+func getVideoResolution(inputFilePath: String) -> VideoResolution? {
     let arguments = [
         "-v", "error",
         "-show_entries", "stream=width,height",

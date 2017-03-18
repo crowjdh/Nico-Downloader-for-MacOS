@@ -26,9 +26,9 @@
 		57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CEC1E69184800499029 /* NSColor+Hex.swift */; };
 		57C25CEF1E692FA900499029 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = 57C25CEE1E692FA900499029 /* ffmpeg */; };
 		57C25CF21E69309400499029 /* FFMpegUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CF11E69309400499029 /* FFMpegUtil.swift */; };
+		57EC4C2A1E7D570C00C1DE41 /* ヒラギノ角ゴシック W4.ttc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */; };
 		57F30F711E30D40500BB2445 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F701E30D40500BB2445 /* Metadata.swift */; };
 		57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */; };
-		57F56EF11E74CBAB002CB108 /* ja_.ttc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57F56EF01E74CBA4002CB108 /* ja_.ttc */; };
 		6D9FE5F9E7119651CF4565BC /* Pods_NicoDownloader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD01B2271764A4CCDCB412AC /* Pods_NicoDownloader.framework */; };
 /* End PBXBuildFile section */
 
@@ -49,7 +49,7 @@
 			dstPath = Fonts;
 			dstSubfolderSpec = 7;
 			files = (
-				57F56EF11E74CBAB002CB108 /* ja_.ttc in CopyFiles */,
+				57EC4C2A1E7D570C00C1DE41 /* ヒラギノ角ゴシック W4.ttc in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,9 +78,9 @@
 		57C25CEC1E69184800499029 /* NSColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
 		57C25CEE1E692FA900499029 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = "<group>"; };
 		57C25CF11E69309400499029 /* FFMpegUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFMpegUtil.swift; sourceTree = "<group>"; };
+		57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ヒラギノ角ゴシック W4.ttc"; sourceTree = "<group>"; };
 		57F30F701E30D40500BB2445 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Date+XMLPubDate.swift"; path = "NicoDownloader/Extensions/Date+XMLPubDate.swift"; sourceTree = SOURCE_ROOT; };
-		57F56EF01E74CBA4002CB108 /* ja_.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = ja_.ttc; sourceTree = "<group>"; };
 		B271A42538ECAC7DDF04181C /* Pods-NicoDownloader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NicoDownloader.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader.debug.xcconfig"; sourceTree = "<group>"; };
 		B2992436EA5924EDB8CFAADF /* Pods_NicoDownloaderTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NicoDownloaderTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDF62ECA7FC02A783FBB742D /* Pods-NicoDownloader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NicoDownloader.release.xcconfig"; path = "Pods/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader.release.xcconfig"; sourceTree = "<group>"; };
@@ -205,7 +205,7 @@
 			children = (
 				57C25CEE1E692FA900499029 /* ffmpeg */,
 				576FF7CC1E751B45008F11A2 /* ffprobe */,
-				57F56EF01E74CBA4002CB108 /* ja_.ttc */,
+				57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */,
 			);
 			path = Resources;
 			sourceTree = "<group>";

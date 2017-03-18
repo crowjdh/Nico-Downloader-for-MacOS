@@ -13,6 +13,49 @@ enum Size: String, Iterable {
     case small
     case medium
     case big
+    
+    var idx: Int {
+        switch self {
+        case .small:
+            return 0
+        case .medium:
+            return 1
+        case .big:
+            return 2
+        }
+    }
+    
+    func videoHeightDenominator() -> Int {
+        return Size.videoHeightDenominator(ofSize: self)
+    }
+    
+    static func fromIndex(_ idx: Int) -> Size? {
+        switch idx {
+        case 0:
+            return .small
+        case 1:
+            return .medium
+        case 2:
+            return .big
+        default:
+            return nil
+        }
+    }
+    
+    static func videoHeightDenominator(ofSize size: Size?) -> Int {
+        guard let size = size else {
+            return 44
+        }
+        switch size {
+        case .small:
+            return 22
+        case .medium:
+            return 15
+        case .big:
+            return 11
+        }
+    }
+    
 }
 
 enum Position: String, Iterable {
@@ -63,24 +106,26 @@ struct Comment {
     let position: Position
     let color: String
     let comment: String
+    let videoResolution: VideoResolution
     var line: Int!
     
     var startTimeSec: Float {
         return Float(vpos)/100.0
     }
     
-    init(no: Int, vpos: Int, size: Size, position: Position, color: String, comment: String) {
+    init(no: Int, vpos: Int, size: Size, position: Position, color: String, comment: String, videoResolution: VideoResolution) {
         self.no = no
         self.vpos = vpos
         self.size = size
         self.position = position
         self.color = color
         self.comment = comment
+        self.videoResolution = videoResolution
     }
 }
 
 extension Comment {
-    static func parseXml(_ xml: String, parsed: (Comment, Bool) -> Void) {
+    static func parseXml(_ xml: String, videoResolution: VideoResolution, parsed: (Comment, Bool) -> Void) {
         guard let doc = Kanna.XML(xml: xml, encoding: .utf8) else {
             return
         }
@@ -88,6 +133,7 @@ extension Comment {
         for (index, chatXml) in chatXmls.enumerated() {
             guard let no = chatXml.at_xpath("@no")?.text,
                 let vpos = chatXml.at_xpath("@vpos")?.text,
+                chatXml.at_xpath("@deleted") == nil,
                 let comment = chatXml.text else {
                     continue
             }
@@ -100,13 +146,14 @@ extension Comment {
             
             parsed(Comment(no: Int(no)!, vpos: Int(vpos)!, size: size,
                            position: position, color: colorHex,
-                           comment: comment), index >= chatXmls.count-1)
+                           comment: comment, videoResolution: videoResolution),
+                   index >= chatXmls.count-1)
         }
     }
     
-    static func fromXml(_ xml: String) -> [Comment] {
+    static func fromXml(_ xml: String, videoResolution: VideoResolution) -> [Comment] {
         var comments = [Comment]()
-        parseXml(xml) { comments.append($0.0) }
+        parseXml(xml, videoResolution: videoResolution) { comments.append($0.0) }
         return comments
     }
 }
@@ -135,11 +182,13 @@ extension Comment {
         let filterFileHandle = try FileHandle(forWritingTo: filterURL)
         filterFileHandle.seekToEndOfFile()
         
-        let resolution = videoResolution(inputFilePath: item.destinationString)!
+        let resolution = getVideoResolution(inputFilePath: item.destinationString)!
         let guessedLineHeight = resolution.1 / Comment.maximumLine
         
-        let rawComments = Comment.fromXml(xmlString).sorted { $0.0.no + $0.0.vpos < $0.1.no + $0.1.vpos }
-        let comments = Comment.assignLinesToComments(comments: rawComments, displayWidth: Float(resolution.0))
+        let rawComments = Comment.fromXml(xmlString, videoResolution: resolution).sorted {
+            $0.0.vpos != $0.1.vpos ? $0.0.vpos < $0.1.vpos : $0.0.no < $0.1.no
+        }
+        let comments = Comment.assignLinesToComments(comments: rawComments, videoWidth: Float(resolution.0))
         
         // TODO: Comment heights are different by comment sizes(0.5cm*?Lines, 0.75cm*11Lines, 1cm*8Lines)
         for (idx, comment) in comments.enumerated() {
@@ -149,6 +198,7 @@ extension Comment {
             
             let alignVariant = "-(\(guessedLineHeight)-lh)/2"
             let escapedComment = comment.comment.replacingOccurrences(of: "'", with: "'\\\\\\\''")
+                .replacingOccurrences(of: ":", with: "\\\\\\:")
             let x = comment.position == .naka ? ":x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(comment.duration)" : ":x=(w-tw)/2"
             var line = "[tmp]drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath)" + x + ":y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(escapedComment)':borderw=1:bordercolor=#333333:shadowx=1.5:shadowcolor=#333333:enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + comment.duration))'[tmp],\n"
             
@@ -166,10 +216,10 @@ extension Comment {
         return filterURL
     }
     
-    static func assignLinesToComments(comments: [Comment], displayWidth: Float) -> [Comment] {
-        let flowingComments = assignLinesToComments(comments: comments, position: .naka, displayWidth: displayWidth)
-        let ueComments = assignLinesToComments(comments: comments, position: .ue, displayWidth: displayWidth)
-        let shitaComments = assignLinesToComments(comments: comments, position: .shita, displayWidth: displayWidth)
+    static func assignLinesToComments(comments: [Comment], videoWidth: Float) -> [Comment] {
+        let flowingComments = assignLinesToComments(comments: comments, position: .naka, videoWidth: videoWidth)
+        let ueComments = assignLinesToComments(comments: comments, position: .ue, videoWidth: videoWidth)
+        let shitaComments = assignLinesToComments(comments: comments, position: .shita, videoWidth: videoWidth)
         var comments: [Comment] = []
         comments.append(contentsOf: flowingComments)
         comments.append(contentsOf: ueComments)
@@ -177,7 +227,7 @@ extension Comment {
         return comments
     }
     
-    static func assignLinesToComments(comments origianlComments: [Comment], position: Position, displayWidth: Float) -> [Comment] {
+    static func assignLinesToComments(comments origianlComments: [Comment], position: Position, videoWidth: Float) -> [Comment] {
         var comments = origianlComments.filter { $0.position == position }
         
         var commentsOnScreen = [Int: Comment]()
@@ -195,7 +245,7 @@ extension Comment {
                 let lastCommentInLine = commentsOnScreen[line]!
                 if !lastCommentInLine.isVisible(currentTime: currentTime) {
                     commentsOnScreen.removeValue(forKey: line)
-                } else if !lastCommentInLine.canHaveFollowingInSameLine(other: commentToAdd, displayWidth: displayWidth) {
+                } else if !lastCommentInLine.canHaveFollowingInSameLine(other: commentToAdd, videoWidth: videoWidth) {
                     /* Store lines which can't have this comment */
                     occupiedLines.insert(line)
                 }
@@ -217,29 +267,36 @@ extension Comment {
 
 extension Comment {
     var fontSize: Float {
-        var sizeInt: Int! = nil
-        switch size {
-        case .small:
-            sizeInt = 21
-        case .medium:
-            sizeInt = 32
-        case .big:
-            sizeInt = 43
+        let videoHeight = Float(videoResolution.1)
+        guard position == .shita else {
+            return calculateFontSize(withSize: self.size, videoHeight: videoHeight)
         }
-        return Float(sizeInt)
-    }
-    var font: NSFont {
-        return NSFont(name: "HiraMaruProN-W4", size: CGFloat(fontSize))!
+        let videoWidth = Float(videoResolution.0)
+        var fontSize: Float! = nil
+        var commentWidth: Float = Float(99999)
+        var size: Size! = self.size
+        
+        while size != nil {
+            fontSize = calculateFontSize(withSize: size, videoHeight: videoHeight)
+            commentWidth = Float(boundingRectSize(withFontSize: fontSize).width)
+            if commentWidth < videoWidth || size.idx <= 0 {
+                break
+            }
+            size = Size.fromIndex(size.idx - 1)
+        }
+        
+        if commentWidth > videoWidth {
+            fontSize = findBestFontSize(fontSize: fontSize)
+        }
+        return fontSize
     }
     var duration: Float {
         return position == .naka ? Float(4) : Float(3)
     }
-    static let fontPath = Bundle.main.path(forResource: "ja_", ofType: "ttc", inDirectory: "Fonts")!
+    static let fontPath = Bundle.main.path(forResource: "ヒラギノ角ゴシック W4", ofType: "ttc", inDirectory: "Fonts")!
     
     private var boundingRectSize: CGSize {
-        let nsText = comment as NSString
-        let dict: [String: NSFont] = [NSFontAttributeName: font]
-        return nsText.size(withAttributes: dict)
+        return boundingRectSize(withFontSize: fontSize)
     }
     var width: Float {
         return Float(boundingRectSize.width)
@@ -255,17 +312,55 @@ extension Comment {
         return (Comment.maximumLine - 1) - lineInScreen
     }
     
+    private func calculateFontSize(withSize: Size, videoHeight: Float) -> Float {
+        return videoHeight / Float(withSize.videoHeightDenominator())
+    }
+    
+    private func findBestFontSize(fontSize: Float) -> Float {
+        let videoWidth = Float(videoResolution.0)
+        var minFontSize = Float(videoResolution.1) / Float(Size.videoHeightDenominator(ofSize: nil))
+        var maxFontSize = fontSize
+        guard Float(boundingRectSize(withFontSize: minFontSize).width) < videoWidth else {
+            return minFontSize
+        }
+        var found: Float! = nil
+        while true {
+            let midFontSize = minFontSize + (maxFontSize - minFontSize) / 2
+            let commentWidth = Float(boundingRectSize(withFontSize: midFontSize).width)
+            if commentWidth > videoWidth {
+                maxFontSize = midFontSize
+            } else {
+                minFontSize = midFontSize
+            }
+            if maxFontSize - minFontSize < 3 {
+                found = midFontSize
+                break
+            }
+        }
+        return found
+    }
+    
+    private func boundingRectSize(withFontSize: Float) -> CGSize {
+        let nsText = comment as NSString
+        let dict: [String: NSFont] = [NSFontAttributeName: font(withSize: withFontSize)]
+        return nsText.size(withAttributes: dict)
+    }
+    
+    func font(withSize fontSize: Float) -> NSFont {
+        return NSFont(name: "HiraginoSans-W4", size: CGFloat(fontSize))!
+    }
+    
     func isVisible(currentTime: Float) -> Bool {
         return startTimeSec + duration > currentTime
     }
     
-    func canHaveFollowingInSameLine(other: Comment, displayWidth: Float) -> Bool {
+    func canHaveFollowingInSameLine(other: Comment, videoWidth: Float) -> Bool {
         guard position == .naka else {
             return false
         }
-        let selfTailGotOut = startTimeSec + duration * (width / (displayWidth + width))
+        let selfTailGotOut = startTimeSec + duration * (width / (videoWidth + width))
         let selfEnd = startTimeSec + duration
-        let otherHeadHitsLeft = other.startTimeSec + duration * (displayWidth / (displayWidth + other.width))
+        let otherHeadHitsLeft = other.startTimeSec + duration * (videoWidth / (videoWidth + other.width))
         return selfTailGotOut < other.startTimeSec && selfEnd < otherHeadHitsLeft
     }
 }
