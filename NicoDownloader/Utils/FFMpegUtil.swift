@@ -90,6 +90,7 @@ private func createProcessMeta(bundleName: String, bundleType: String? = nil,
         
         let errorHandler: (Data) -> Void = { data in
             if let str = String(data: data, encoding: .utf8) {
+                print(str)
                 if str.contains("Error while decoding stream") {
                     process.interrupt()
                 }

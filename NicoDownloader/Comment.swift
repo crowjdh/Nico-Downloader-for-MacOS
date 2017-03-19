@@ -177,12 +177,18 @@ extension Comment {
     static func saveFilterFile(fromXmlString xmlString: String, item: Item, directory: URL) throws -> URL {
         let dirURL = try createDirectory(ofItem: item, at: directory)
         let filterURL = dirURL.appendingPathComponent("filter").appendingPathExtension(commentExtension)
-        try "[in]fps=60[tmp],\n".write(to: filterURL, atomically: false, encoding: String.Encoding.utf8)
         
+        try "[in]fps=60[tmp],\n".write(to: filterURL, atomically: false, encoding: String.Encoding.utf8)
         let filterFileHandle = try FileHandle(forWritingTo: filterURL)
         filterFileHandle.seekToEndOfFile()
         
-        let resolution = getVideoResolution(inputFilePath: item.destinationString)!
+        var resolution = getVideoResolution(inputFilePath: item.destinationString)!
+        if resolution.1 < 480 {
+            filterFileHandle.write("[tmp]scale=width=-1:height=480[tmp],\n".data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+            resolution.0 = (resolution.0 * 480) / resolution.1
+            resolution.1 = 480
+        }
+        
         let guessedLineHeight = resolution.1 / Comment.maximumLine
         
         let rawComments = Comment.fromXml(xmlString, videoResolution: resolution).sorted {

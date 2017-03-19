@@ -161,7 +161,7 @@ extension ProgressViewController {
                     let item = self.items[idx]
 
                     // TODO: Remove below when test is over
-//                    return Promise<URL>(value: URL(fileURLWithPath: "/Volumes/JetDrive Lite/playground/test3.mp4"))
+//                    return Promise<URL>(value: URL(fileURLWithPath: "/Volumes/JetDrive Lite/playground/test5.flv"))
                     return self.downloadVideo(item: item, url: item.apiInfo["url"]!, progressCallback: {
                         self.items[idx].progress = $0
                         self.reloadTableViewData()
