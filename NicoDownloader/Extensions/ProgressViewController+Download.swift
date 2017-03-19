@@ -131,6 +131,14 @@ extension ProgressViewController {
         })
     }
     
+    func checkIfAllDone() {
+        if self.allDone {
+            DispatchQueue.main.async {
+                self.updateStatusMessage(message: "DONE")
+            }
+        }
+    }
+    
     func download() {
         self.updateStatusMessage(message: "Downloading items...")
         downloadWorkItem = DispatchWorkItem {
@@ -172,17 +180,19 @@ extension ProgressViewController {
                     self.togglePreventSleep()
                     semaphore.signal()
                     self.reloadTableViewData()
-                    if self.allDone {
-                        DispatchQueue.main.async {
-                            self.updateStatusMessage(message: "DONE")
-                        }
-                    }
+                    self.checkIfAllDone()
                 }.catch { error in
-                    print(error.localizedDescription)
+                    switch error {
+                    case NicoError.UnknownError(let msg):
+                        print(msg)
+                    default:
+                        print(error.localizedDescription)
+                    }
                     self.items[idx].status = .error
                     semaphore.signal()
                     self.togglePreventSleep()
                     self.reloadTableViewData()
+                    self.checkIfAllDone()
                 }
                 let _ = semaphore.wait(timeout: .distantFuture)
                 if self.cancelled {
@@ -311,11 +321,11 @@ extension ProgressViewController {
             
             let res = filterVideo(inputFilePath: item.destinationURL.absoluteString.removingPercentEncoding!,
                         outputFilePath: fileURL.absoluteString.removingPercentEncoding!,
-                        filterPath: filterURL.absoluteString.removingPercentEncoding!) { success in
-                            if success {
+                        filterPath: filterURL.absoluteString.removingPercentEncoding!) { output, error, status in
+                            if status == 0 {
                                 fulfill()
                             } else {
-                                reject(NicoError.Cancelled)
+                                reject(NicoError.UnknownError(error.joined(separator: "\n")))
                             }
             }
             if let res = res {

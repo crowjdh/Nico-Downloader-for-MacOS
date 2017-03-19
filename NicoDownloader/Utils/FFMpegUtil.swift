@@ -13,7 +13,7 @@ typealias ProcessResult = ([String], [String], Int32)
 typealias VideoResolution = (Int, Int)
 
 func filterVideo(inputFilePath: String, outputFilePath: String,
-                 filterPath: String, callback: @escaping (Bool) -> Void) -> (Process, DispatchWorkItem)? {
+                 filterPath: String, callback: @escaping (ProcessResult) -> Void) -> (Process, DispatchWorkItem)? {
     let arguments = [
         "-y",
         "-i", inputFilePath,
@@ -21,7 +21,7 @@ func filterVideo(inputFilePath: String, outputFilePath: String,
         outputFilePath
     ]
     return requestProcess(bundleName: "ffmpeg", arguments: arguments) { processResult in
-        callback(processResult.2 == 0)
+        callback(processResult)
     }
 }
 
@@ -54,7 +54,7 @@ private func requestProcess(bundleName: String, bundleType: String? = nil,
         return nil
     }
     task.perform()
-    process.waitUntilExit()
+    task.wait()
     
     return result
 }
@@ -87,22 +87,41 @@ private func createProcessMeta(bundleName: String, bundleType: String? = nil,
         process.launchPath = launchPath
         process.arguments = arguments
         process.standardInput = FileHandle.nullDevice
-        process.launch()
         
-        let outdata = outpipe.fileHandleForReading.readDataToEndOfFile()
-        if var string = String(data: outdata, encoding: .utf8) {
-            string = string.trimmingCharacters(in: .newlines)
-            output = string.components(separatedBy: "\n")
+        let errorHandler: (Data) -> Void = { data in
+            if let str = String(data: data, encoding: .utf8) {
+                if str.contains("Error while decoding stream") {
+                    process.interrupt()
+                }
+            }
         }
         
-        let errdata = errpipe.fileHandleForReading.readDataToEndOfFile()
-        if var string = String(data: errdata, encoding: .utf8) {
-            string = string.trimmingCharacters(in: .newlines)
-            error = string.components(separatedBy: "\n")
+        var outdata = Data()
+        outpipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            outdata.append(data)
+            errorHandler(data)
         }
+        var errdata = Data()
+        errpipe.fileHandleForReading.readabilityHandler = { handle in
+            let data = handle.availableData
+            errdata.append(data)
+            errorHandler(data)
+        }
+        
         process.terminationHandler = { process in
+            if var string = String(data: outdata, encoding: .utf8) {
+                string = string.trimmingCharacters(in: .newlines)
+                output = string.components(separatedBy: "\n")
+            }
+            if var string = String(data: errdata, encoding: .utf8) {
+                string = string.trimmingCharacters(in: .newlines)
+                error = string.components(separatedBy: "\n")
+            }
             callback((output, error, process.terminationStatus))
         }
+        process.launch()
+        process.waitUntilExit()
     }
     return (process, task)
 }
