@@ -285,7 +285,7 @@ extension Comment {
 extension Comment {
     var fontSize: Float {
         let videoHeight = Float(videoResolution.1)
-        guard position == .shita else {
+        guard position == .shita || position == .ue else {
             return calculateFontSize(withSize: self.size, videoHeight: videoHeight)
         }
         let videoWidth = Float(videoResolution.0)
