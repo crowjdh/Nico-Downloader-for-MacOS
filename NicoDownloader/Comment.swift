@@ -184,10 +184,21 @@ extension Comment {
         
         var resolution = getVideoResolution(inputFilePath: item.destinationString)!
         if resolution.1 < 480 {
-            filterFileHandle.write("[tmp]scale=width=-1:height=480[tmp],\n".data(using: String.Encoding.utf8, allowLossyConversion: false)!)
             resolution.0 = (resolution.0 * 480) / resolution.1
             resolution.1 = 480
+            filterFileHandle.write("[tmp]scale=width=\(resolution.0):height=\(resolution.1)[tmp],\n".data(using: String.Encoding.utf8, allowLossyConversion: false)!)
         }
+        var padding = (0, 0)
+        if resolution.0 * 9 < resolution.1 * 16 {
+            // Enlarge width
+            padding.0 = resolution.1 * 16 / 9 - resolution.0
+            resolution.0 += padding.0
+        }
+        else {
+            padding.1 = resolution.0 * 9 / 16 - resolution.1
+            resolution.1 += padding.1
+        }
+        filterFileHandle.write("[tmp]pad=\(resolution.0):\(resolution.1):\(padding.0 / 2):\(padding.1 / 2)[tmp],\n".data(using: String.Encoding.utf8, allowLossyConversion: false)!)
         
         let guessedLineHeight = resolution.1 / Comment.maximumLine
         
