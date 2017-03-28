@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		476658D2A46286BC3170742D /* Pods_NicoDownloaderTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2992436EA5924EDB8CFAADF /* Pods_NicoDownloaderTests.framework */; };
+		571885081E821472007D6988 /* Arial Unicode.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 571885071E82146C007D6988 /* Arial Unicode.ttf */; };
 		572B875C1E332A79008BC5AE /* ProgressViewController+Tableview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */; };
 		572B875E1E332AB3008BC5AE /* ProgressViewController+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */; };
 		573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573B9A0C1E3DC755001C4F5D /* PowerManager.swift */; };
@@ -22,6 +23,8 @@
 		5784FDCD1E3075AC004BD160 /* NicoDownloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDCC1E3075AC004BD160 /* NicoDownloaderTests.swift */; };
 		5784FDD81E307B49004BD160 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDD71E307B49004BD160 /* ProgressViewController.swift */; };
 		579253D61E6548780041E2C8 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579253D51E6548780041E2C8 /* Comment.swift */; };
+		57A337D31E84D546008AE550 /* String+UnicodeScalar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */; };
+		57A337D51E84D617008AE550 /* NSFont+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D41E84D617008AE550 /* NSFont+Init.swift */; };
 		57AA47C11E34633E006777CB /* ViewController+OpenDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */; };
 		57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CEC1E69184800499029 /* NSColor+Hex.swift */; };
 		57C25CEF1E692FA900499029 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = 57C25CEE1E692FA900499029 /* ffmpeg */; };
@@ -50,12 +53,14 @@
 			dstSubfolderSpec = 7;
 			files = (
 				57EC4C2A1E7D570C00C1DE41 /* ヒラギノ角ゴシック W4.ttc in CopyFiles */,
+				571885081E821472007D6988 /* Arial Unicode.ttf in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		571885071E82146C007D6988 /* Arial Unicode.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Arial Unicode.ttf"; sourceTree = "<group>"; };
 		572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ProgressViewController+Tableview.swift"; path = "NicoDownloader/Extensions/ProgressViewController+Tableview.swift"; sourceTree = SOURCE_ROOT; };
 		572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ProgressViewController+Download.swift"; path = "NicoDownloader/Extensions/ProgressViewController+Download.swift"; sourceTree = SOURCE_ROOT; };
 		573B9A0C1E3DC755001C4F5D /* PowerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerManager.swift; sourceTree = "<group>"; };
@@ -74,6 +79,8 @@
 		5784FDCE1E3075AC004BD160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5784FDD71E307B49004BD160 /* ProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
 		579253D51E6548780041E2C8 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+UnicodeScalar.swift"; sourceTree = "<group>"; };
+		57A337D41E84D617008AE550 /* NSFont+Init.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSFont+Init.swift"; sourceTree = "<group>"; };
 		57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ViewController+OpenDialog.swift"; path = "NicoDownloader/Extensions/ViewController+OpenDialog.swift"; sourceTree = SOURCE_ROOT; };
 		57C25CEC1E69184800499029 /* NSColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
 		57C25CEE1E692FA900499029 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = "<group>"; };
@@ -205,6 +212,7 @@
 			children = (
 				57C25CEE1E692FA900499029 /* ffmpeg */,
 				576FF7CC1E751B45008F11A2 /* ffprobe */,
+				571885071E82146C007D6988 /* Arial Unicode.ttf */,
 				57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */,
 			);
 			path = Resources;
@@ -219,6 +227,8 @@
 				57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */,
 				57C25CEC1E69184800499029 /* NSColor+Hex.swift */,
 				575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */,
+				57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */,
+				57A337D41E84D617008AE550 /* NSFont+Init.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -441,9 +451,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				572B875C1E332A79008BC5AE /* ProgressViewController+Tableview.swift in Sources */,
+				57A337D51E84D617008AE550 /* NSFont+Init.swift in Sources */,
 				57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */,
 				575D45D11E30A80F00F9E623 /* Item.swift in Sources */,
 				5784FDD81E307B49004BD160 /* ProgressViewController.swift in Sources */,
+				57A337D31E84D546008AE550 /* String+UnicodeScalar.swift in Sources */,
 				573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */,
 				57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */,
 				5784FDBD1E3075AC004BD160 /* ViewController.swift in Sources */,

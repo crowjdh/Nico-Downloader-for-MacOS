@@ -217,7 +217,7 @@ extension Comment {
             let escapedComment = comment.comment.replacingOccurrences(of: "'", with: "'\\\\\\\''")
                 .replacingOccurrences(of: ":", with: "\\\\\\:")
             let x = comment.position == .naka ? ":x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(comment.duration)" : ":x=(w-tw)/2"
-            var line = "[tmp]drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(Comment.fontPath)" + x + ":y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(escapedComment)':borderw=1:bordercolor=#333333:shadowx=1.5:shadowcolor=#333333:enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + comment.duration))'[tmp],\n"
+            var line = "[tmp]drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(comment.fontPath)" + x + ":y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(escapedComment)':borderw=1:bordercolor=#333333:shadowx=1.5:shadowcolor=#333333:enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + comment.duration))'[tmp],\n"
             
             // Remove ",\n" for last item
             if idx == comments.count - 1 {
@@ -282,7 +282,39 @@ extension Comment {
     }
 }
 
+struct Font {
+    let fontFilePath: String
+    let fontFamilyName: String
+    private let fontWithNoSize: NSFont
+    
+    init(fontFilePath: String, fontFamilyName: String) {
+        self.fontFilePath = fontFilePath
+        self.fontFamilyName = fontFamilyName
+        self.fontWithNoSize = Font.nsfont(fontFamilyName: fontFamilyName, withSize: Float(0.0))
+    }
+    
+    func contains(content: String) -> Bool {
+        return content.rangeOfCharacter(from: fontWithNoSize.coveredCharacterSet.inverted) == nil
+    }
+    
+    func nsfont(withSize fontSize: Float) -> NSFont {
+        // TODO: Cache if possible
+        return Font.nsfont(fontFamilyName: fontFamilyName, withSize: fontSize)
+    }
+    
+    static func nsfont(fontFamilyName: String, withSize fontSize: Float) -> NSFont {
+        return NSFont(name: fontFamilyName, size: CGFloat(fontSize))!
+    }
+}
+
 extension Comment {
+    static let basicFont = Font(
+        fontFilePath: Bundle.main.path(forResource: "ヒラギノ角ゴシック W4", ofType: "ttc", inDirectory: "Fonts")!,
+        fontFamilyName: "HiraginoSans-W4")
+    static let unicodeFont = Font(
+        fontFilePath: Bundle.main.path(forResource: "Arial Unicode", ofType: "ttf", inDirectory: "Fonts")!,
+        fontFamilyName: "ArialUnicodeMS")
+    
     var fontSize: Float {
         let videoHeight = Float(videoResolution.1)
         guard position == .shita || position == .ue else {
@@ -310,7 +342,6 @@ extension Comment {
     var duration: Float {
         return position == .naka ? Float(4) : Float(3)
     }
-    static let fontPath = Bundle.main.path(forResource: "ヒラギノ角ゴシック W4", ofType: "ttc", inDirectory: "Fonts")!
     
     private var boundingRectSize: CGSize {
         return boundingRectSize(withFontSize: fontSize)
@@ -327,6 +358,18 @@ extension Comment {
         }
         let lineInScreen = line - Comment.maximumLine * (line / Comment.maximumLine)
         return (Comment.maximumLine - 1) - lineInScreen
+    }
+    var font: Font {
+        let font: Font
+        if Comment.basicFont.contains(content: comment) {
+            font = Comment.basicFont
+        } else {
+            font = Comment.unicodeFont
+        }
+        return font
+    }
+    var fontPath: String {
+        return font.fontFilePath
     }
     
     private func calculateFontSize(withSize: Size, videoHeight: Float) -> Float {
@@ -359,12 +402,12 @@ extension Comment {
     
     private func boundingRectSize(withFontSize: Float) -> CGSize {
         let nsText = comment as NSString
-        let dict: [String: NSFont] = [NSFontAttributeName: font(withSize: withFontSize)]
+        let dict: [String: NSFont] = [NSFontAttributeName: nsfont(withSize: withFontSize)]
         return nsText.size(withAttributes: dict)
     }
     
-    func font(withSize fontSize: Float) -> NSFont {
-        return NSFont(name: "HiraginoSans-W4", size: CGFloat(fontSize))!
+    func nsfont(withSize fontSize: Float) -> NSFont {
+        return font.nsfont(withSize: fontSize)
     }
     
     func isVisible(currentTime: Float) -> Bool {

@@ -18,6 +18,7 @@ func filterVideo(inputFilePath: String, outputFilePath: String,
         "-y",
         "-i", inputFilePath,
         "-filter_script:v", filterPath,
+        "-vcodec", "h264",
         outputFilePath
     ]
     return requestProcess(bundleName: "ffmpeg", arguments: arguments) { processResult in
