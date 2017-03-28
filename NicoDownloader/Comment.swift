@@ -110,7 +110,7 @@ struct Comment {
     var line: Int!
     
     var startTimeSec: Float {
-        return Float(vpos)/100.0 - (position == .naka ? 1.5 : 0)
+        return min(0, Float(vpos)/100.0 - (position == .naka ? 1.5 : 0))
     }
     
     init(no: Int, vpos: Int, size: Size, position: Position, color: String, comment: String, videoResolution: VideoResolution) {
