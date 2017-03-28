@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		476658D2A46286BC3170742D /* Pods_NicoDownloaderTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B2992436EA5924EDB8CFAADF /* Pods_NicoDownloaderTests.framework */; };
 		571885081E821472007D6988 /* Arial Unicode.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 571885071E82146C007D6988 /* Arial Unicode.ttf */; };
+		571E14FF1E8A80B5000963E3 /* TestUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571E14FE1E8A80B5000963E3 /* TestUtil.swift */; };
 		572B875C1E332A79008BC5AE /* ProgressViewController+Tableview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */; };
 		572B875E1E332AB3008BC5AE /* ProgressViewController+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */; };
 		573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573B9A0C1E3DC755001C4F5D /* PowerManager.swift */; };
@@ -61,6 +62,7 @@
 
 /* Begin PBXFileReference section */
 		571885071E82146C007D6988 /* Arial Unicode.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Arial Unicode.ttf"; sourceTree = "<group>"; };
+		571E14FE1E8A80B5000963E3 /* TestUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestUtil.swift; sourceTree = "<group>"; };
 		572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ProgressViewController+Tableview.swift"; path = "NicoDownloader/Extensions/ProgressViewController+Tableview.swift"; sourceTree = SOURCE_ROOT; };
 		572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ProgressViewController+Download.swift"; path = "NicoDownloader/Extensions/ProgressViewController+Download.swift"; sourceTree = SOURCE_ROOT; };
 		573B9A0C1E3DC755001C4F5D /* PowerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerManager.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 			children = (
 				573B9A0C1E3DC755001C4F5D /* PowerManager.swift */,
 				57C25CF11E69309400499029 /* FFMpegUtil.swift */,
+				571E14FE1E8A80B5000963E3 /* TestUtil.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -463,6 +466,7 @@
 				579253D61E6548780041E2C8 /* Comment.swift in Sources */,
 				5784FDBB1E3075AC004BD160 /* AppDelegate.swift in Sources */,
 				575C68E11E683F7A00B56D34 /* Enum+Iterable.swift in Sources */,
+				571E14FF1E8A80B5000963E3 /* TestUtil.swift in Sources */,
 				57C25CF21E69309400499029 /* FFMpegUtil.swift in Sources */,
 				57F30F711E30D40500BB2445 /* Metadata.swift in Sources */,
 				57AA47C11E34633E006777CB /* ViewController+OpenDialog.swift in Sources */,
