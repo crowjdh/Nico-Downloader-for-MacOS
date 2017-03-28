@@ -183,11 +183,12 @@ extension Comment {
         filterFileHandle.seekToEndOfFile()
         
         var resolution = getVideoResolution(inputFilePath: item.destinationString)!
-        if resolution.1 < 480 {
-            resolution.0 = (resolution.0 * 480) / resolution.1
-            resolution.1 = 480
-            filterFileHandle.write("[tmp]scale=width=\(resolution.0):height=\(resolution.1)[tmp],\n".data(using: String.Encoding.utf8, allowLossyConversion: false)!)
-        }
+        // Disabled due to large output file size
+//        if resolution.1 < 480 {
+//            resolution.0 = (resolution.0 * 480) / resolution.1
+//            resolution.1 = 480
+//            filterFileHandle.write("[tmp]scale=width=\(resolution.0):height=\(resolution.1)[tmp],\n".data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+//        }
         var padding = (0, 0)
         if resolution.0 * 9 < resolution.1 * 16 {
             // Enlarge width
