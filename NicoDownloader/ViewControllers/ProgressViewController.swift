@@ -30,6 +30,8 @@ class ProgressViewController: NSViewController {
     var cancelled = false
     var downloadRequests: [DownloadRequest] = []
     var downloadWorkItem: DispatchWorkItem?
+    var filterProcesses: [Process] = []
+    var filterWorkItems: [DispatchWorkItem] = []
     var semaphore: DispatchSemaphore?
     var allDone: Bool {
         get {
@@ -124,6 +126,12 @@ extension ProgressViewController: NSWindowDelegate {
         }
         for downloadRequest in self.downloadRequests {
             downloadRequest.cancel()
+        }
+        for filterWorkItem in self.filterWorkItems {
+            filterWorkItem.cancel()
+        }
+        for filterProcess in self.filterProcesses {
+            filterProcess.interrupt()
         }
         dismissViewController(self)
     }

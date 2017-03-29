@@ -12,6 +12,7 @@ enum Status {
     case sleeping
     case fetching
     case downloading
+    case filtering
     case done
     case error
     
@@ -23,6 +24,8 @@ enum Status {
             return "Fetching"
         case .downloading:
             return "Downloading"
+        case .filtering:
+            return "Filtering"
         case .done:
             return "Done"
         case .error:
@@ -36,9 +39,15 @@ struct Item {
     var name: String!
     var pubdate: Date?
     var status: Status = .sleeping
-    var videoUrl: String?
+    var apiInfo: [String: String]!
+    var destinationURL: URL!
+    var filterURL: URL?
     
     var progress: Double = 0
+    
+    var destinationString: String! {
+        return destinationURL.absoluteString.removingPercentEncoding
+    }
     
     init(videoId: String) {
         self.videoId = videoId

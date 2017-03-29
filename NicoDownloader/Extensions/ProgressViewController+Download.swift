@@ -15,6 +15,30 @@ import PromiseKit
 
 typealias DoubleCallback = (Double) -> Void
 
+struct NicoCommentEncoding: ParameterEncoding {
+    private let threadId: String
+    
+    init(threadId: String) {
+        self.threadId = threadId
+    }
+    
+    func encode(_ urlRequest: URLRequestConvertible, with parameters: Parameters?) throws -> URLRequest {
+        guard var urlRequest = urlRequest.urlRequest else {
+            throw NicoError.UnknownError("URLRequestConvertible has no URLRequest")
+        }
+        
+        let xml = "<thread res_from='-1000' version='20061206' thread='\(threadId)' />"
+        
+        if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
+            urlRequest.setValue("text/xml", forHTTPHeaderField: "Content-Type")
+        }
+        
+        urlRequest.httpBody = xml.data(using: .utf8)
+        
+        return urlRequest
+    }
+}
+
 extension ProgressViewController {
     
     func initSessionManager() {
@@ -101,6 +125,20 @@ extension ProgressViewController {
         }
     }
     
+    func reloadTableViewData() {
+        DispatchQueue.main.async(execute: {
+            self.downloadProgressTableView.reloadData()
+        })
+    }
+    
+    func checkIfAllDone() {
+        if self.allDone {
+            DispatchQueue.main.async {
+                self.updateStatusMessage(message: "DONE")
+            }
+        }
+    }
+    
     func download() {
         self.updateStatusMessage(message: "Downloading items...")
         downloadWorkItem = DispatchWorkItem {
@@ -108,39 +146,53 @@ extension ProgressViewController {
             for (idx, item) in self.items.enumerated() {
                 Thread.sleep(forTimeInterval: 3)
                 self.items[idx].status = .fetching
+                self.reloadTableViewData()
                 
                 firstly {
-                    self.getVideoUrlWith(item: item)
-                }.then { url -> Promise<String> in
-                    self.items[idx].videoUrl = url
+                    self.getVideoApiInfoWith(item: item)
+                }.then { apiInfo -> Promise<String> in
+                    self.items[idx].apiInfo = apiInfo
+                    // TODO: Change to thumbnail api
+                    // TODO: Also, add referer(http://www.nicovideo.jp/watch/[動画番号]) to download request
                     return self.prefetchVideoPage(videoId: item.videoId)
-                }.then { title -> Promise<Void> in
+                }.then { title -> Promise<URL> in
                     self.items[idx].name = self.items[idx].name ?? title
                     self.items[idx].status = .downloading
-                    return self.downloadVideo(item: self.items[idx], url: self.items[idx].videoUrl!, progressCallback: {
+                    let item = self.items[idx]
+
+                    // TODO: Remove below when test is over
+//                    return Promise<URL>(value: URL(fileURLWithPath: "/Volumes/JetDrive Lite/playground/test5.flv"))
+                    return self.downloadVideo(item: item, url: item.apiInfo["url"]!, progressCallback: {
                         self.items[idx].progress = $0
-                        DispatchQueue.main.async(execute: {
-                            self.downloadProgressTableView.reloadData()
-                        })
+                        self.reloadTableViewData()
                     })
+                }.then { destinationURL -> Promise<URL?> in
+                    self.items[idx].destinationURL = destinationURL
+                    return self.downloadCommentXml(item: self.items[idx])
+                }.then { filterURL -> Promise<Void> in
+                    self.items[idx].filterURL = filterURL
+                    self.items[idx].status = .filtering
+                    self.reloadTableViewData()
+                    // TODO: Consider showing progress
+                    return self.applyComment(item: self.items[idx])
                 }.then { _ -> Void in
                     self.items[idx].status = .done
                     self.togglePreventSleep()
                     semaphore.signal()
-                    DispatchQueue.main.async {
-                        self.downloadProgressTableView.reloadData()
-                        
-                        if self.allDone {
-                            self.updateStatusMessage(message: "DONE")
-                        }
-                    }
+                    self.reloadTableViewData()
+                    self.checkIfAllDone()
                 }.catch { error in
+                    switch error {
+                    case NicoError.UnknownError(let msg):
+                        print(msg)
+                    default:
+                        print(error.localizedDescription)
+                    }
                     self.items[idx].status = .error
                     semaphore.signal()
                     self.togglePreventSleep()
-                    DispatchQueue.main.async {
-                        self.downloadProgressTableView.reloadData()
-                    }
+                    self.reloadTableViewData()
+                    self.checkIfAllDone()
                 }
                 let _ = semaphore.wait(timeout: .distantFuture)
                 if self.cancelled {
@@ -151,7 +203,7 @@ extension ProgressViewController {
         DispatchQueue.global(qos: .default).async(execute: downloadWorkItem!)
     }
     
-    func getVideoUrlWith(item: Item) -> Promise<String> {
+    func getVideoApiInfoWith(item: Item) -> Promise<[String: String]> {
         return Promise { fulfill, reject in
             let videoApiUrl = "http://flapi.nicovideo.jp/api/getflv/\(item.videoId)?as3=1"
             sessionManager.request(videoApiUrl).responseString { response in
@@ -159,15 +211,22 @@ extension ProgressViewController {
                     reject(NicoError.VideoAPIError)
                     return
                 }
-                let url = htmlString.components(separatedBy: "&")
-                    .map { $0.components(separatedBy: "=") }
-                    .filter { $0[0] == "url" }
-                    .map { $0[1] }[0]
-                guard let decodedUrl = url.removingPercentEncoding else {
-                    reject(NicoError.VideoAPIError)
-                    return
+                var apiInfo = [String: String]()
+                let apiInfoArray = htmlString.components(separatedBy: "&")
+                for component in apiInfoArray {
+                    let keyValueTuple = component.components(separatedBy: "=")
+                    let key = keyValueTuple[0]
+                    var value = keyValueTuple[1]
+                    if key.contains("url") || key.contains("ms") {
+                        guard let decodedUrl = value.removingPercentEncoding else {
+                            reject(NicoError.VideoAPIError)
+                            return
+                        }
+                        value = decodedUrl
+                    }
+                    apiInfo[key] = value
                 }
-                fulfill(decodedUrl)
+                fulfill(apiInfo)
             }
         }
     }
@@ -187,7 +246,7 @@ extension ProgressViewController {
         }
     }
     
-    func downloadVideo(item: Item, url: String, progressCallback: @escaping DoubleCallback) -> Promise<Void> {
+    func downloadVideo(item: Item, url: String, progressCallback: @escaping DoubleCallback) -> Promise<URL> {
         return Promise { fulfill, reject in
             guard !cancelled else {
                 reject(NicoError.Cancelled)
@@ -195,7 +254,7 @@ extension ProgressViewController {
             }
             let destination: DownloadRequest.DownloadFileDestination = { temporaryURL, response in
                 let downloadsURL = self.options.saveDirectory
-                var fileURL = downloadsURL.appendingPathComponent(item.name)
+                var fileURL = downloadsURL.appendingPathComponent(item.name, isDirectory: false)
                 if let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension {
                     fileURL = fileURL.appendingPathExtension(fileExtension)
                 }
@@ -206,13 +265,73 @@ extension ProgressViewController {
                 .downloadProgress { progress in
                     progressCallback(progress.fractionCompleted)
                 }.responseData { response in
-                    guard response.result.value != nil else {
+                    guard let fileURL = response.destinationURL, response.result.value != nil else {
                         reject(NicoError.UnknownError("Download failed"))
                         return
                     }
-                    fulfill()
+                    fulfill(fileURL)
             }
             downloadRequests.append(request)
+        }
+    }
+    
+    func downloadCommentXml(item: Item) -> Promise<URL?> {
+        return Promise { fulfill, reject in
+            sessionManager.request(item.apiInfo["ms"]!, method: .post, encoding: NicoCommentEncoding(threadId: item.apiInfo["thread_id"]!)).responseString(encoding: String.Encoding.utf8) { response in
+                switch response.result {
+                case .success(let xmlString):
+                    guard !self.cancelled else {
+                        reject(NicoError.Cancelled)
+                        return
+                    }
+                    var filterURL: URL? = nil
+                    do {
+                        try Comment.saveOriginalComment(
+                            fromXmlString: xmlString, item: item,
+                            directory: self.options.saveDirectory)
+                        filterURL = try Comment.saveFilterFile(
+                            fromXmlString: xmlString, item: item,
+                            directory: self.options.saveDirectory)
+                    } catch {
+                        print("Error occurred while saving comments")
+                    }
+                    fulfill(filterURL)
+                case .failure(let error):
+                    reject(error)
+                }
+            }
+        }
+    }
+    
+    func applyComment(item: Item) -> Promise<Void> {
+        return Promise { fulfill, reject in
+            guard let filterURL = item.filterURL else {
+                fulfill()
+                return
+            }
+            
+            // TODO: Refactor
+            var fileURL: URL! = item.destinationURL
+            let ext = fileURL.pathExtension
+            fileURL.deletePathExtension()
+            let name = fileURL.lastPathComponent
+            fileURL.deleteLastPathComponent()
+            fileURL.appendPathComponent("\(name)_filtered")
+            fileURL.appendPathExtension(ext)
+            
+            let res = filterVideo(inputFilePath: item.destinationURL.absoluteString.removingPercentEncoding!,
+                        outputFilePath: fileURL.absoluteString.removingPercentEncoding!,
+                        filterPath: filterURL.absoluteString.removingPercentEncoding!) { output, error, status in
+                            if status == 0 {
+                                fulfill()
+                            } else {
+                                reject(NicoError.UnknownError(error.joined(separator: "\n")))
+                            }
+            }
+            if let res = res {
+                self.filterProcesses.append(res.0)
+                self.filterWorkItems.append(res.1)
+            }
         }
     }
 }
