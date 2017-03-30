@@ -25,6 +25,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var advancedOptionsDisclosure: NSButton!
     @IBOutlet weak var advancedOptionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var concurrentDownloadCountButton: NSPopUpButton!
+    @IBOutlet weak var applyCommentCheckbox: NSButton!
     
     var sessionManager: SessionManager!
     var saveDirectory: URL?
@@ -99,7 +100,9 @@ class ViewController: NSViewController {
                 return nil
         }
         
-        var options = Options(videoInfo: videoInfo, concurrentDownloadCount: concurrentDownloadCount)
+        var options = Options(videoInfo: videoInfo,
+                              concurrentDownloadCount: concurrentDownloadCount,
+                              applyComment: applyCommentCheckbox.state == NSOnState)
         
         if let saveDirectory = saveDirectory {
             options.saveDirectory = saveDirectory
@@ -123,7 +126,7 @@ class ViewController: NSViewController {
         let box = animate ? advancedOptionsBox.animator() : advancedOptionsBox
         let disclosure = animate ? advancedOptionsDisclosure.animator() : advancedOptionsDisclosure
         
-        constraint!.constant = show ? 34 : 0
+        constraint!.constant = show ? 60 : 0
         box!.isHidden = !show
         disclosure!.state = show ? NSOnState : NSOffState
     }

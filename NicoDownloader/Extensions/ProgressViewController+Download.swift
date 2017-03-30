@@ -167,9 +167,15 @@ extension ProgressViewController {
                         self.reloadTableViewData()
                     })
                 }.then { destinationURL -> Promise<URL?> in
+                    guard self.options.applyComment else {
+                        return Promise<URL?>(value: nil)
+                    }
                     self.items[idx].destinationURL = destinationURL
                     return self.downloadCommentXml(item: self.items[idx])
                 }.then { filterURL -> Promise<Void> in
+                    guard let filterURL = filterURL else {
+                        return Promise<Void>.init(value: ())
+                    }
                     self.items[idx].filterURL = filterURL
                     self.items[idx].status = .filtering
                     self.reloadTableViewData()
