@@ -215,9 +215,18 @@ extension Comment {
             let yIdx = comment.normalizedLine
             
             let alignVariant = "-(\(guessedLineHeight)-lh)/2"
-            let escapedComment = comment.comment.replacingOccurrences(of: "\\", with: "\\\\\\\\")
-                .replacingOccurrences(of: "'", with: "'\\\\\\\''")
-                .replacingOccurrences(of: ":", with: "\\\\\\:")
+            let escapedComment = comment.comment.unicodeScalars.map { scalar in
+                switch scalar {
+                    case "\\":
+                        return "\\\\\\\\"
+                case "'":
+                    return "'\\\\\\\''"
+                case ":":
+                    return "\\\\\\:"
+                default:
+                    return String(scalar)
+                }
+            }.joined()
             let x = comment.position == .naka ? ":x=w-max(t-\(comment.startTimeSec)\\,0)*(w+tw)/\(comment.duration)" : ":x=(w-tw)/2"
             var line = "[tmp]drawtext=fontsize=\(comment.fontSize):fontcolor=\(comment.color):fontfile=\(comment.fontPath)" + x + ":y=\(guessedLineHeight)*(\(yIdx + 1)-\(Comment.maximumLine)*floor(\(yIdx)/\(Comment.maximumLine)))-lh" + alignVariant + ":text='\(escapedComment)':borderw=1:bordercolor=#333333:shadowx=1.5:shadowcolor=#333333:enable='between(t, \(comment.startTimeSec), \(comment.startTimeSec + comment.duration))'[tmp],\n"
             
