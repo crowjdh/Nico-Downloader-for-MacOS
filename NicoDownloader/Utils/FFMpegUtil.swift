@@ -51,7 +51,7 @@ private func requestProcess(bundleName: String, bundleType: String? = nil,
     let processMeta = createProcessMeta(bundleName: bundleName, bundleType: bundleType, arguments: arguments) {
         result = $0
     }
-    guard let process = processMeta?.0, let task = processMeta?.1 else {
+    guard let _ = processMeta?.0, let task = processMeta?.1 else {
         return nil
     }
     task.perform()
