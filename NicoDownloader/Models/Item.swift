@@ -42,8 +42,10 @@ struct Item {
     var apiInfo: [String: String]!
     var destinationURL: URL!
     var filterURL: URL?
+    var duration: Double!
     
     var progress: Double = 0
+    var filterProgress: Double = 0
     
     var destinationString: String! {
         return destinationURL.absoluteString.removingPercentEncoding

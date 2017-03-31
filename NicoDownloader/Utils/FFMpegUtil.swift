@@ -9,11 +9,13 @@
 import Foundation
 
 typealias ProcessMeta = (Process, DispatchWorkItem)
+typealias ProgressCallback = (String) -> Void
 typealias ProcessResult = ([String], [String], Int32)
 typealias VideoResolution = (Int, Int)
 
 func filterVideo(inputFilePath: String, outputFilePath: String,
-                 filterPath: String, callback: @escaping (ProcessResult) -> Void) -> (Process, DispatchWorkItem)? {
+                 filterPath: String, progressCallback: ProgressCallback? = nil,
+                 callback: @escaping (ProcessResult) -> Void) -> (Process, DispatchWorkItem)? {
     let arguments = [
         "-y",
         "-i", inputFilePath,
@@ -21,19 +23,15 @@ func filterVideo(inputFilePath: String, outputFilePath: String,
         "-vcodec", "h264",
         outputFilePath
     ]
-    return requestProcess(bundleName: "ffmpeg", arguments: arguments) { processResult in
+    return requestProcess(bundleName: "ffmpeg", arguments: arguments,
+                          progressCallback: progressCallback) { processResult in
         callback(processResult)
     }
 }
 
+// TODO: Consider force unwrapping return value
 func getVideoResolution(inputFilePath: String) -> VideoResolution? {
-    let arguments = [
-        "-v", "error",
-        "-show_entries", "stream=width,height",
-        "-of", "default=noprint_wrappers=1",
-        inputFilePath
-    ]
-    guard let output = requestProcess(bundleName: "ffprobe", arguments: arguments)?.0, output.count == 2 else {
+    guard let output = probe(inputFilePath: inputFilePath) else {
         return nil
     }
     let widthString = output[0].components(separatedBy: "=")[1]
@@ -43,6 +41,35 @@ func getVideoResolution(inputFilePath: String) -> VideoResolution? {
         return nil
     }
     return VideoResolution(width, height)
+}
+
+func getVideoDuration(inputFilePath: String) -> Double! {
+    let duration = probe(inputFilePath: inputFilePath)![2].components(separatedBy: "=")[1]
+    return Double(duration)
+}
+
+func probe(inputFilePath: String) -> [String]? {
+    let arguments = [
+        "-v", "error",
+        "-select_streams", "v:0",
+        "-v", "error",
+        "-show_entries", "stream=width,height,duration",
+        "-of", "default=noprint_wrappers=1",
+        inputFilePath
+    ]
+    guard let output = requestProcess(bundleName: "ffprobe", arguments: arguments)?.0, output.count == 3 else {
+        return nil
+    }
+    return output
+}
+
+func encodedTime(fromOutput output: String) -> Double? {
+    let pattern = "\\d\\d:\\d\\d:\\d\\d.\\d\\d"
+    guard let range = output.range(of: pattern, options: .regularExpression) else {
+        return nil
+    }
+    let timeComponents = output.substring(with: range).components(separatedBy: ":")
+    return Double(timeComponents[0])! * 60 * 60 + Double(timeComponents[1])! * 60 + Double(timeComponents[2])!
 }
 
 private func requestProcess(bundleName: String, bundleType: String? = nil,
@@ -61,8 +88,10 @@ private func requestProcess(bundleName: String, bundleType: String? = nil,
 }
 
 private func requestProcess(bundleName: String, bundleType: String? = nil,
-                    arguments: [String]?, callback: @escaping (ProcessResult) -> Void) -> ProcessMeta? {
-    guard let processMeta = createProcessMeta(bundleName: bundleName, bundleType: bundleType, arguments: arguments, callback: callback) else {
+                            arguments: [String]?,
+                            progressCallback: ProgressCallback? = nil,
+                            callback: @escaping (ProcessResult) -> Void) -> ProcessMeta? {
+    guard let processMeta = createProcessMeta(bundleName: bundleName, bundleType: bundleType, arguments: arguments, progressCallback: progressCallback, callback: callback) else {
         return nil
     }
     DispatchQueue.global(qos: .userInitiated).async(execute: processMeta.1)
@@ -71,7 +100,8 @@ private func requestProcess(bundleName: String, bundleType: String? = nil,
 }
 
 private func createProcessMeta(bundleName: String, bundleType: String? = nil,
-                           arguments: [String]?, callback: @escaping (ProcessResult) -> Void) -> ProcessMeta? {
+                               arguments: [String]?, progressCallback: ProgressCallback? = nil,
+                               callback: @escaping (ProcessResult) -> Void) -> ProcessMeta? {
     guard let launchPath = Bundle.main.path(forResource: bundleName, ofType: bundleType) else {
         return nil
     }
@@ -102,12 +132,18 @@ private func createProcessMeta(bundleName: String, bundleType: String? = nil,
         outpipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             outdata.append(data)
+            if let msg = String(data: data, encoding: .utf8) {
+                progressCallback?(msg)
+            }
             errorHandler(data)
         }
         var errdata = Data()
         errpipe.fileHandleForReading.readabilityHandler = { handle in
             let data = handle.availableData
             errdata.append(data)
+            if let msg = String(data: data, encoding: .utf8) {
+                progressCallback?(msg)
+            }
             errorHandler(data)
         }
         

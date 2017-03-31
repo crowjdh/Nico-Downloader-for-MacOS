@@ -178,9 +178,13 @@ extension ProgressViewController {
                     }
                     self.items[idx].filterURL = filterURL
                     self.items[idx].status = .filtering
+                    self.items[idx].duration = getVideoDuration(inputFilePath: self.items[idx].destinationString)
                     self.reloadTableViewData()
                     // TODO: Consider showing progress
-                    return self.applyComment(item: self.items[idx])
+                    return self.applyComment(item: self.items[idx]) {
+                        self.items[idx].filterProgress = $0 / self.items[idx].duration
+                        self.reloadTableViewData()
+                    }
                 }.then { _ -> Void in
                     self.items[idx].status = .done
                     self.togglePreventSleep()
@@ -309,7 +313,7 @@ extension ProgressViewController {
         }
     }
     
-    func applyComment(item: Item) -> Promise<Void> {
+    func applyComment(item: Item, progressCallback: @escaping DoubleCallback) -> Promise<Void> {
         return Promise { fulfill, reject in
             guard let filterURL = item.filterURL else {
                 fulfill()
@@ -325,14 +329,20 @@ extension ProgressViewController {
             fileURL.appendPathComponent("\(name)_filtered")
             fileURL.appendPathExtension(ext)
             
-            let res = filterVideo(inputFilePath: item.destinationURL.absoluteString.removingPercentEncoding!,
-                        outputFilePath: fileURL.absoluteString.removingPercentEncoding!,
-                        filterPath: filterURL.absoluteString.removingPercentEncoding!) { output, error, status in
-                            if status == 0 {
-                                fulfill()
-                            } else {
-                                reject(NicoError.UnknownError(error.joined(separator: "\n")))
-                            }
+            let res = filterVideo(
+                inputFilePath: item.destinationURL.absoluteString.removingPercentEncoding!,
+                outputFilePath: fileURL.absoluteString.removingPercentEncoding!,
+                filterPath: filterURL.absoluteString.removingPercentEncoding!,
+                progressCallback: { output in
+                    if let encodedTime = encodedTime(fromOutput: output) {
+                        progressCallback(encodedTime)
+                    }
+            }) { output, error, status in
+                if status == 0 {
+                    fulfill()
+                } else {
+                    reject(NicoError.UnknownError(error.joined(separator: "\n")))
+                }
             }
             if let res = res {
                 self.filterProcesses.append(res.0)

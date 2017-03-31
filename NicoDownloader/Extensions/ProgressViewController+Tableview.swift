@@ -37,7 +37,9 @@ extension ProgressViewController: NSTableViewDelegate {
             }
         case tableView.tableColumns[2]:
             if let cell = tableView.make(withIdentifier: CellIdentifiers.ProgressCell, owner: nil) as? ProgressTableCellView {
-                cell.progressIndicator.doubleValue = Double(item.progress)
+                cell.progressIndicator.doubleValue = item.status == .filtering
+                    ? item.filterProgress
+                    : Double(item.progress)
                 return cell
             }
         default:
