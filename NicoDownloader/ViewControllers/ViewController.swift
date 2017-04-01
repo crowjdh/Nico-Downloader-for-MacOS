@@ -39,10 +39,11 @@ class ViewController: NSViewController {
             passwordField.stringValue = password
         }
         
-        
         if let saveDirectory = UserDefaults.standard.url(forKey: "saveDirectory") {
             setSaveDirectory(url: saveDirectory)
         }
+        
+        applyCommentCheckbox.state = UserDefaults.standard.bool(forKey: "applyComment") ? NSOnState : NSOffState
         
         toggleAdvancedOptions(animate: false)
     }
@@ -80,6 +81,10 @@ class ViewController: NSViewController {
             setSaveDirectory(url: directoryUrl)
             UserDefaults.standard.set(saveDirectory, forKey: "saveDirectory")
         }
+    }
+    
+    @IBAction func toggleApplyCommentOption(_ sender: Any) {
+        UserDefaults.standard.set(applyCommentCheckbox.state == NSOnState, forKey: "applyComment")
     }
     
     private func createOptions() -> Options? {

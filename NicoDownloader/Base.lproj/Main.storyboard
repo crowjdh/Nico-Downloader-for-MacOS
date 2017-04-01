@@ -683,6 +683,9 @@
                                                 <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                                 <font key="font" metaFont="system"/>
                                             </buttonCell>
+                                            <connections>
+                                                <action selector="toggleApplyCommentOption:" target="XfG-lQ-9wD" id="Wdm-WF-Zz4"/>
+                                            </connections>
                                         </button>
                                     </subviews>
                                     <constraints>
