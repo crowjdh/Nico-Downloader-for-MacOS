@@ -34,21 +34,27 @@ enum Status {
     }
 }
 
-struct Item {
+struct FilterItem {
+    var videoFileURL: URL? = nil
+    var filterFileURL: URL? = nil
+    var filterProgress: Double = 0
+}
+
+struct NicoItem {
     let videoId: String
     var name: String!
     var pubdate: Date?
     var status: Status = .sleeping
     var apiInfo: [String: String]!
-    var destinationURL: URL!
-    var filterURL: URL?
+    var videoFileURL: URL!
+    var filterFileURL: URL?
     var duration: Double!
     
     var progress: Double = 0
     var filterProgress: Double = 0
     
-    var destinationString: String! {
-        return destinationURL.absoluteString.removingPercentEncoding
+    var videoFilePath: String! {
+        return videoFileURL.absoluteString.removingPercentEncoding
     }
     
     init(videoId: String) {
