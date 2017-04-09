@@ -161,28 +161,28 @@ extension Comment {
 extension Comment {
     static let commentExtension = "comment"
     
-    private static func createDirectory(ofItem item: Item, at directory: URL) throws -> URL {
+    private static func createDirectory(ofItem item: NicoItem, at directory: URL) throws -> URL {
         let dirURL = directory.appendingPathComponent(item.name, isDirectory: true)
         try FileManager.default.createDirectory(
             at: dirURL, withIntermediateDirectories: true, attributes: nil)
         return dirURL
     }
     
-    static func saveOriginalComment(fromXmlString xmlString: String, item: Item, directory: URL) throws {
+    static func saveOriginalComment(fromXmlString xmlString: String, item: NicoItem, directory: URL) throws {
         let dirURL = try createDirectory(ofItem: item, at: directory)
         let fileURL = dirURL.appendingPathComponent("original").appendingPathExtension(commentExtension)
         try xmlString.write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
     }
     
-    static func saveFilterFile(fromXmlString xmlString: String, item: Item, directory: URL) throws -> URL {
+    static func saveFilterFile(fromXmlString xmlString: String, item: NicoItem, directory: URL) throws -> URL {
         let dirURL = try createDirectory(ofItem: item, at: directory)
-        let filterURL = dirURL.appendingPathComponent("filter").appendingPathExtension(commentExtension)
+        let filterURL = dirURL.appendingPathComponent("filter")
         
         try "[in]fps=60[tmp],\n".write(to: filterURL, atomically: false, encoding: String.Encoding.utf8)
         let filterFileHandle = try FileHandle(forWritingTo: filterURL)
         filterFileHandle.seekToEndOfFile()
         
-        var resolution = getVideoResolution(inputFilePath: item.destinationString)!
+        var resolution = getVideoResolution(inputFilePath: item.videoFilePath)!
         // Disabled due to large output file size
 //        if resolution.1 < 480 {
 //            resolution.0 = (resolution.0 * 480) / resolution.1
