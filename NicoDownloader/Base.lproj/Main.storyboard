@@ -346,7 +346,7 @@
                                         <menuItem title="Comment Burner" keyEquivalent="c" id="aCn-mk-CIl">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
                                             <connections>
-                                                <segue destination="4Gt-7D-EXU" kind="show" id="hcg-pK-waP"/>
+                                                <segue destination="4Gt-7D-EXU" kind="show" identifier="showCommentBurner" id="hcg-pK-waP"/>
                                             </connections>
                                         </menuItem>
                                     </items>
@@ -795,14 +795,14 @@
                                 <rect key="frame" x="20" y="61" width="1240" height="559"/>
                                 <subviews>
                                     <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="xGC-7k-JPM">
-                                        <rect key="frame" x="0.0" y="0.0" width="571.5" height="559"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="572" height="559"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <clipView key="contentView" id="Wx8-TY-pqX">
-                                            <rect key="frame" x="1" y="0.0" width="569.5" height="558"/>
+                                            <rect key="frame" x="1" y="0.0" width="570" height="558"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView identifier="VideoTableViewID" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnSelection="YES" autosaveColumns="NO" rowSizeStyle="automatic" headerView="j7s-7e-AZV" viewBased="YES" id="o6z-yb-H5D">
-                                                    <rect key="frame" x="0.0" y="0.0" width="569.5" height="535"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="570" height="535"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <size key="intercellSpacing" width="3" height="2"/>
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -845,7 +845,7 @@
                                                                 </tableCellView>
                                                             </prototypeCellViews>
                                                         </tableColumn>
-                                                        <tableColumn width="523.5" minWidth="40" maxWidth="1000" id="aDD-Jd-Ymc">
+                                                        <tableColumn width="524" minWidth="40" maxWidth="1000" id="aDD-Jd-Ymc">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Video Name">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -859,7 +859,7 @@
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                             <prototypeCellViews>
                                                                 <tableCellView identifier="VideoCellID" id="Cbr-46-glh">
-                                                                    <rect key="frame" x="44" y="1" width="523.5" height="17"/>
+                                                                    <rect key="frame" x="44" y="1" width="524" height="17"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1hs-ts-XcD">
@@ -887,7 +887,7 @@
                                             </subviews>
                                         </clipView>
                                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="mli-9H-hal">
-                                            <rect key="frame" x="1" y="542" width="569.5" height="16"/>
+                                            <rect key="frame" x="1" y="542" width="570" height="16"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="Lyo-dR-bg1">
@@ -895,19 +895,19 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <tableHeaderView key="headerView" id="j7s-7e-AZV">
-                                            <rect key="frame" x="0.0" y="0.0" width="569.5" height="23"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="570" height="23"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableHeaderView>
                                     </scrollView>
                                     <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="42" horizontalPageScroll="10" verticalLineScroll="42" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="0g6-5y-saZ">
-                                        <rect key="frame" x="581.5" y="0.0" width="658.5" height="559"/>
+                                        <rect key="frame" x="582" y="0.0" width="658" height="559"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         <clipView key="contentView" id="4xY-LN-1qr">
-                                            <rect key="frame" x="1" y="0.0" width="656.5" height="558"/>
+                                            <rect key="frame" x="1" y="0.0" width="656" height="558"/>
                                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                             <subviews>
                                                 <tableView identifier="FilterTableViewID" verticalHuggingPriority="750" allowsExpansionToolTips="YES" alternatingRowBackgroundColors="YES" columnReordering="NO" columnSelection="YES" autosaveColumns="NO" rowHeight="40" rowSizeStyle="automatic" headerView="2UA-6o-ZDo" viewBased="YES" id="PNr-UM-H7n" userLabel="Filter Table View">
-                                                    <rect key="frame" x="0.0" y="0.0" width="659" height="535"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="656.5" height="535"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <size key="intercellSpacing" width="3" height="2"/>
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -950,7 +950,7 @@
                                                                 </tableCellView>
                                                             </prototypeCellViews>
                                                         </tableColumn>
-                                                        <tableColumn width="510" minWidth="10" maxWidth="3.4028234663852886e+38" id="WOm-mu-cw5">
+                                                        <tableColumn width="507.5" minWidth="10" maxWidth="3.4028234663852886e+38" id="WOm-mu-cw5">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Comment File Name">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -964,11 +964,11 @@
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                             <prototypeCellViews>
                                                                 <tableCellView identifier="CommentFileNameID" id="OVn-sk-346">
-                                                                    <rect key="frame" x="44" y="1" width="510" height="40"/>
+                                                                    <rect key="frame" x="44" y="1" width="507" height="40"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
                                                                         <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xc0-as-XsX">
-                                                                            <rect key="frame" x="0.0" y="12" width="510" height="17"/>
+                                                                            <rect key="frame" x="0.0" y="12" width="507" height="17"/>
                                                                             <textFieldCell key="cell" lineBreakMode="truncatingHead" sendsActionOnEndEditing="YES" title="Table View Cell" id="RVg-WY-NHz">
                                                                                 <font key="font" metaFont="system"/>
                                                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
@@ -1001,10 +1001,10 @@
                                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                                             <prototypeCellViews>
                                                                 <tableCellView identifier="ProgressCellID" id="ZwJ-jC-T9S" customClass="ProgressTableCellView" customModule="NicoDownloader" customModuleProvider="target">
-                                                                    <rect key="frame" x="557" y="1" width="100" height="40"/>
+                                                                    <rect key="frame" x="554.5" y="1" width="100" height="40"/>
                                                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                                     <subviews>
-                                                                        <progressIndicator wantsLayer="YES" maxValue="100" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="bfK-kc-pFX">
+                                                                        <progressIndicator wantsLayer="YES" maxValue="1" style="bar" translatesAutoresizingMaskIntoConstraints="NO" id="bfK-kc-pFX">
                                                                             <rect key="frame" x="3" y="10" width="94" height="20"/>
                                                                         </progressIndicator>
                                                                     </subviews>
@@ -1024,7 +1024,7 @@
                                             </subviews>
                                         </clipView>
                                         <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="6lW-7d-hdF">
-                                            <rect key="frame" x="1" y="542" width="656.5" height="16"/>
+                                            <rect key="frame" x="1" y="542" width="656" height="16"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="l9I-gF-jJB">
@@ -1032,7 +1032,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                         </scroller>
                                         <tableHeaderView key="headerView" id="2UA-6o-ZDo">
-                                            <rect key="frame" x="0.0" y="0.0" width="659" height="23"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="656.5" height="23"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableHeaderView>
                                     </scrollView>
@@ -1046,8 +1046,8 @@
                                 </holdingPriorities>
                             </splitView>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="xWd-yI-jqx">
-                                <rect key="frame" x="14" y="13" width="81" height="32"/>
-                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4LY-9y-gWW">
+                                <rect key="frame" x="14" y="13" width="70" height="32"/>
+                                <buttonCell key="cell" type="push" title="Load" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="4LY-9y-gWW">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
@@ -1056,11 +1056,14 @@
                                 </connections>
                             </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="dhm-OU-g2D">
-                                <rect key="frame" x="1185" y="13" width="81" height="32"/>
-                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8ak-Jn-b9h">
+                                <rect key="frame" x="1196" y="13" width="70" height="32"/>
+                                <buttonCell key="cell" type="push" title="Start" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8ak-Jn-b9h">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="applyCommentButtonDidClick:" target="4Gt-7D-EXU" id="G3M-2L-OSO"/>
+                                </connections>
                             </button>
                         </subviews>
                         <constraints>
