@@ -72,8 +72,8 @@ extension CommentBurnerViewController: NSTableViewDelegate {
                 movingURLs.append(self.items[idx].videoFileURL)
                 self.items[idx].videoFileURL = nil
             } else {
-                movingURLs.append(self.items[idx].filterFileURL)
-                self.items[idx].filterFileURL = nil
+                movingURLs.append(self.items[idx].commentFileURL)
+                self.items[idx].commentFileURL = nil
             }
         }
         
@@ -93,7 +93,7 @@ extension CommentBurnerViewController: NSTableViewDelegate {
             if isVideoTable {
                 items[idx].videoFileURL = movingURLs.removeFirst()
             } else {
-                items[idx].filterFileURL = movingURLs.removeFirst()
+                items[idx].commentFileURL = movingURLs.removeFirst()
             }
         }
         
@@ -141,7 +141,7 @@ extension CommentBurnerViewController: NSTableViewDelegate {
             }
         case tableView.tableColumns[1]:
             if let cell = tableView.make(withIdentifier: CellIdentifiers.CommentFileName, owner: nil) as? NSTableCellView {
-                cell.textField?.stringValue = item.filterFileURL?.absoluteString.removingPercentEncoding ?? ""
+                cell.textField?.stringValue = item.commentFileURL?.absoluteString.removingPercentEncoding ?? ""
                 return cell
             }
         default:

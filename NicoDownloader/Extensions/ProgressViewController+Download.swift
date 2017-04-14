@@ -39,7 +39,7 @@ struct NicoCommentEncoding: ParameterEncoding {
     }
 }
 
-extension ProgressViewController {
+extension ProgressViewController: CommentBurnerable {
     
     func initSessionManager() {
         let configuration = URLSessionConfiguration.default
@@ -297,11 +297,9 @@ extension ProgressViewController {
                     var filterURL: URL? = nil
                     do {
                         try Comment.saveOriginalComment(
-                            fromXmlString: xmlString, item: item,
-                            directory: self.options.saveDirectory)
+                            fromXmlString: xmlString, item: item)
                         filterURL = try Comment.saveFilterFile(
-                            fromXmlString: xmlString, item: item,
-                            directory: self.options.saveDirectory)
+                            fromXmlString: xmlString, item: item)
                     } catch {
                         print("Error occurred while saving comments")
                     }
@@ -319,31 +317,15 @@ extension ProgressViewController {
                 fulfill()
                 return
             }
-            
-            // TODO: Refactor
-            var fileURL: URL! = item.videoFileURL
-            let ext = fileURL.pathExtension
-            fileURL.deletePathExtension()
-            let name = fileURL.lastPathComponent
-            fileURL.deleteLastPathComponent()
-            fileURL.appendPathComponent("\(name)_filtered")
-            fileURL.appendPathExtension(ext)
-            
-            let res = filterVideo(
-                inputFilePath: item.videoFileURL.absoluteString.removingPercentEncoding!,
-                outputFilePath: fileURL.absoluteString.removingPercentEncoding!,
-                filterPath: filterURL.absoluteString.removingPercentEncoding!,
-                progressCallback: { output in
-                    if let encodedTime = encodedTime(fromOutput: output) {
-                        progressCallback(encodedTime)
-                    }
-            }) { output, error, status in
-                if status == 0 {
-                    fulfill()
-                } else {
-                    reject(NicoError.UnknownError(error.joined(separator: "\n")))
-                }
-            }
+            let res = applyComment(videoFileURL: item.videoFileURL,
+                         filterFileURL: filterURL,
+                         progressCallback: progressCallback, callback: { output, error, status in
+                            if status == 0 {
+                                fulfill()
+                            } else {
+                                reject(NicoError.UnknownError(error.joined(separator: "\n")))
+                            }
+            })
             if let res = res {
                 self.filterProcesses.append(res.0)
                 self.filterWorkItems.append(res.1)

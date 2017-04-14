@@ -36,8 +36,20 @@ enum Status {
 
 struct FilterItem {
     var videoFileURL: URL? = nil
+    var commentFileURL: URL? = nil
     var filterFileURL: URL? = nil
+    var videoDuration: Double!
     var filterProgress: Double = 0
+    var status: Status = .sleeping
+    
+    init(videoFileURL: URL?, commentFileURL: URL?) {
+        self.videoFileURL = videoFileURL
+        self.commentFileURL = commentFileURL
+    }
+    
+    var videoFilePath: String? {
+        return videoFileURL?.absoluteString.removingPercentEncoding
+    }
 }
 
 struct NicoItem {

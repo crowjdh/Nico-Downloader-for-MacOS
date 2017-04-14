@@ -13,6 +13,8 @@ typealias ProgressCallback = (String) -> Void
 typealias ProcessResult = ([String], [String], Int32)
 typealias VideoResolution = (Int, Int)
 
+fileprivate let probeUnavailable = "N/A"
+
 func filterVideo(inputFilePath: String, outputFilePath: String,
                  filterPath: String, progressCallback: ProgressCallback? = nil,
                  callback: @escaping (ProcessResult) -> Void) -> (Process, DispatchWorkItem)? {
@@ -31,7 +33,16 @@ func filterVideo(inputFilePath: String, outputFilePath: String,
 
 // TODO: Consider force unwrapping return value
 func getVideoResolution(inputFilePath: String) -> VideoResolution? {
-    guard let output = probe(inputFilePath: inputFilePath) else {
+    let arguments = [
+        "-v", "error",
+        "-select_streams", "v:0",
+        "-show_entries", "stream=width,height",
+        "-of", "default=noprint_wrappers=1",
+        inputFilePath
+    ]
+    guard let output = requestProcess(bundleName: "ffprobe", arguments: arguments)?.0,
+        output.count == 2,
+        output[0] != probeUnavailable, output[1] != probeUnavailable else {
         return nil
     }
     let widthString = output[0].components(separatedBy: "=")[1]
@@ -44,23 +55,19 @@ func getVideoResolution(inputFilePath: String) -> VideoResolution? {
 }
 
 func getVideoDuration(inputFilePath: String) -> Double! {
-    let duration = probe(inputFilePath: inputFilePath)![2].components(separatedBy: "=")[1]
-    return Double(duration)
-}
-
-func probe(inputFilePath: String) -> [String]? {
     let arguments = [
         "-v", "error",
         "-select_streams", "v:0",
-        "-v", "error",
-        "-show_entries", "stream=width,height,duration",
+        "-show_entries", "format=duration",
         "-of", "default=noprint_wrappers=1",
         inputFilePath
     ]
-    guard let output = requestProcess(bundleName: "ffprobe", arguments: arguments)?.0, output.count == 3 else {
+    guard let output = requestProcess(bundleName: "ffprobe", arguments: arguments)?.0,
+        output.count == 1, output[0] != probeUnavailable else {
         return nil
     }
-    return output
+    let duration = output[0].components(separatedBy: "=")[1]
+    return Double(duration)
 }
 
 func encodedTime(fromOutput output: String) -> Double? {
