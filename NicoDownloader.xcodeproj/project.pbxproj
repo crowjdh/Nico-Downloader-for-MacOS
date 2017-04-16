@@ -14,6 +14,7 @@
 		572B875E1E332AB3008BC5AE /* ProgressViewController+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */; };
 		57341F331E99D71C000D4502 /* CommentBurnerable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57341F321E99D71C000D4502 /* CommentBurnerable.swift */; };
 		57341F351E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */; };
+		5737478F1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */; };
 		573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573B9A0C1E3DC755001C4F5D /* PowerManager.swift */; };
 		5752D03D1E9A52E8002753FF /* URL+Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5752D03C1E9A52E8002753FF /* URL+Paths.swift */; };
 		575C68E11E683F7A00B56D34 /* Enum+Iterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */; };
@@ -75,6 +76,7 @@
 		572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ProgressViewController+Download.swift"; path = "NicoDownloader/Extensions/ProgressViewController+Download.swift"; sourceTree = SOURCE_ROOT; };
 		57341F321E99D71C000D4502 /* CommentBurnerable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentBurnerable.swift; sourceTree = "<group>"; };
 		57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CommentBurnerViewController+ApplyComment.swift"; sourceTree = "<group>"; };
+		5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSUserNotificationCenter+ShortenedDeliver.swift"; sourceTree = "<group>"; };
 		573B9A0C1E3DC755001C4F5D /* PowerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerManager.swift; sourceTree = "<group>"; };
 		5752D03C1E9A52E8002753FF /* URL+Paths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+Paths.swift"; sourceTree = "<group>"; };
 		575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Enum+Iterable.swift"; sourceTree = "<group>"; };
@@ -256,6 +258,7 @@
 				57341F321E99D71C000D4502 /* CommentBurnerable.swift */,
 				57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */,
 				5752D03C1E9A52E8002753FF /* URL+Paths.swift */,
+				5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -488,6 +491,7 @@
 				577F8DA11E9242A300324C33 /* MimeType.swift in Sources */,
 				573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */,
 				57341F351E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift in Sources */,
+				5737478F1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift in Sources */,
 				57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */,
 				57F3418B1E8FC5B800D90BF4 /* Levenshtein.swift in Sources */,
 				57B224EB1E8F58E3006E101A /* CommentBurnerViewController.swift in Sources */,

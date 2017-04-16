@@ -134,6 +134,11 @@ extension ProgressViewController: CommentBurnerable {
     func checkIfAllDone() {
         if self.allDone {
             DispatchQueue.main.async {
+                NSApplication.shared().requestUserAttention(.informationalRequest)
+                NSUserNotificationCenter.notifyTaskDone() { notification in
+                    notification.title = "All tasks done"
+                    notification.subtitle = "Downloaded all videos"
+                }
                 self.updateStatusMessage(message: "DONE")
             }
         }
