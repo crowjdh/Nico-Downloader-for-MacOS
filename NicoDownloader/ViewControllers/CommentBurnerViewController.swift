@@ -53,6 +53,10 @@ class CommentBurnerViewController: NSViewController {
             openPanel.resolvesAliases = true
             openPanel.title = "Titlee"
             openPanel.message = "Messageee"
+            
+            var allowedFileTypes:[String] = videoExtensions
+            allowedFileTypes.append(commentExtension)
+            openPanel.allowedFileTypes = allowedFileTypes
         }
         iterateURLs(fileURLs: fileURLs) { fileURL, isDirectory in
             if !isDirectory {

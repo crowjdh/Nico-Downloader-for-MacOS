@@ -2,7 +2,7 @@ import Foundation
 
 internal let defaultMimeType = "application/octet-stream"
 
-internal let mimeTypes = [
+let mimeTypes = [
     "html": "text/html",
     "htm": "text/html",
     "shtml": "text/html",
@@ -115,7 +115,7 @@ internal func mimeTypeOf(extension ext: String?) -> String {
     return defaultMimeType
 }
 
-internal func topLevelMimeTypeOf(mimeType: String) -> String? {
+func topLevelMimeTypeOf(mimeType: String) -> String? {
     let components = mimeType.components(separatedBy: "/")
     guard components.count >= 2 else {
         return nil
