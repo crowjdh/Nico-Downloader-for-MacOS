@@ -47,6 +47,18 @@ extension CommentBurnerViewController: CommentBurnerable {
         })
     }
     
+    func checkIfAllDone() {
+        if self.allDone {
+            DispatchQueue.main.async {
+                NSApplication.shared().requestUserAttention(.informationalRequest)
+                NSUserNotificationCenter.notifyTaskDone() { notification in
+                    notification.title = "All tasks done"
+                    notification.subtitle = "Applied comments to all videos"
+                }
+            }
+        }
+    }
+    
     func startTask() {
         task = DispatchWorkItem {
             // TODO: Consider retrieve below as option
@@ -73,6 +85,7 @@ extension CommentBurnerViewController: CommentBurnerable {
                     self.togglePreventSleep()
                     semaphore.signal()
                     self.reloadTableViewData()
+                    self.checkIfAllDone()
                 }.catch { error in
                     switch error {
                     case NicoError.UnknownError(let msg):
@@ -84,6 +97,7 @@ extension CommentBurnerViewController: CommentBurnerable {
                     semaphore.signal()
                     self.togglePreventSleep()
                     self.reloadTableViewData()
+                    self.checkIfAllDone()
                 }
                 
                 let _ = semaphore.wait(timeout: .distantFuture)
