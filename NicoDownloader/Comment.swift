@@ -9,6 +9,10 @@
 import Foundation
 import Kanna
 
+let videoExtensions: [String] = mimeTypes.filter { topLevelMimeTypeOf(mimeType: $0.value) == "video" }.flatMap { $0.0 }
+let commentExtension = "comment"
+let filterExtension = "filter"
+
 enum Size: String, Iterable {
     case small
     case medium
