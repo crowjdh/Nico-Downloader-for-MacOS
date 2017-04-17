@@ -9,6 +9,10 @@
 import Foundation
 import Kanna
 
+let videoExtensions: [String] = mimeTypes.filter { topLevelMimeTypeOf(mimeType: $0.value) == "video" }.flatMap { $0.0 }
+let commentExtension = "comment"
+let filterExtension = "filter"
+
 enum Size: String, Iterable {
     case small
     case medium
@@ -159,30 +163,41 @@ extension Comment {
 }
 
 extension Comment {
-    static let commentExtension = "comment"
     
-    private static func createDirectory(ofItem item: Item, at directory: URL) throws -> URL {
-        let dirURL = directory.appendingPathComponent(item.name, isDirectory: true)
+    private static func createDirectory(url: URL) throws {
         try FileManager.default.createDirectory(
-            at: dirURL, withIntermediateDirectories: true, attributes: nil)
-        return dirURL
+            at: url, withIntermediateDirectories: true, attributes: nil)
     }
     
-    static func saveOriginalComment(fromXmlString xmlString: String, item: Item, directory: URL) throws {
-        let dirURL = try createDirectory(ofItem: item, at: directory)
-        let fileURL = dirURL.appendingPathComponent("original").appendingPathExtension(commentExtension)
+    static func saveOriginalComment(fromXmlString xmlString: String, item: NicoItem) throws {
+        try createDirectory(url: item.videoFileURL.filterFileRootURL)
+        
+        let fileURL = item.videoFileURL.commentFileURL
         try xmlString.write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
     }
     
-    static func saveFilterFile(fromXmlString xmlString: String, item: Item, directory: URL) throws -> URL {
-        let dirURL = try createDirectory(ofItem: item, at: directory)
-        let filterURL = dirURL.appendingPathComponent("filter").appendingPathExtension(commentExtension)
+    static func saveFilterFile(fromCommentFile commentFileURL: URL, item: FilterItem) throws -> URL? {
+        guard let videoFileURL = item.videoFileURL else {
+            return nil
+        }
+        let xmlString = try String(contentsOf: commentFileURL, encoding: .utf8)
+        return try saveFilterFile(fromXmlString: xmlString, videoFileURL: videoFileURL)
+    }
+    
+    static func saveFilterFile(fromXmlString xmlString: String, item: NicoItem) throws -> URL {
+        return try saveFilterFile(fromXmlString: xmlString, videoFileURL: item.videoFileURL)
+    }
+    
+    static func saveFilterFile(fromXmlString xmlString: String,
+                               videoFileURL: URL) throws -> URL {
+        try createDirectory(url: videoFileURL.filterFileRootURL)
+        let filterURL = videoFileURL.filterFileURL
         
         try "[in]fps=60[tmp],\n".write(to: filterURL, atomically: false, encoding: String.Encoding.utf8)
         let filterFileHandle = try FileHandle(forWritingTo: filterURL)
         filterFileHandle.seekToEndOfFile()
         
-        var resolution = getVideoResolution(inputFilePath: item.destinationString)!
+        var resolution = getVideoResolution(inputFilePath: videoFileURL.absoluteString.removingPercentEncoding!)!
         // Disabled due to large output file size
 //        if resolution.1 < 480 {
 //            resolution.0 = (resolution.0 * 480) / resolution.1

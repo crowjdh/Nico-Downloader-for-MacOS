@@ -39,7 +39,7 @@ struct NicoCommentEncoding: ParameterEncoding {
     }
 }
 
-extension ProgressViewController {
+extension ProgressViewController: CommentBurnerable {
     
     func initSessionManager() {
         let configuration = URLSessionConfiguration.default
@@ -71,7 +71,7 @@ extension ProgressViewController {
         }
     }
     
-    func createItems(fromMylist mylist: Mylist) -> Promise<Array<Item>> {
+    func createItems(fromMylist mylist: Mylist) -> Promise<Array<NicoItem>> {
         return Promise { fulfill, reject in
             self.updateStatusMessage(message: "Fetching items...")
             let url = "http://www.nicovideo.jp/mylist/\(mylist.id)?rss=2.0"
@@ -92,7 +92,7 @@ extension ProgressViewController {
                         return
                     }
                     
-                    var items: [Item] = []
+                    var items: [NicoItem] = []
                     for itemXml in itemXmls {
                         guard let link = itemXml.at_xpath("link")?.text,
                             let videoId = link.components(separatedBy: "/").last,
@@ -102,7 +102,7 @@ extension ProgressViewController {
                                 continue
                         }
                         
-                        items.append(Item(videoId: videoId, name: title, pubdate: pubdate))
+                        items.append(NicoItem(videoId: videoId, name: title, pubdate: pubdate))
                     }
                     items.sort(by: { (lhs, rhs) -> Bool in
                         // Force unwrap since we're setting pubdate from above
@@ -134,6 +134,11 @@ extension ProgressViewController {
     func checkIfAllDone() {
         if self.allDone {
             DispatchQueue.main.async {
+                NSApplication.shared().requestUserAttention(.informationalRequest)
+                NSUserNotificationCenter.notifyTaskDone() { notification in
+                    notification.title = "All tasks done"
+                    notification.subtitle = "Downloaded all videos"
+                }
                 self.updateStatusMessage(message: "DONE")
             }
         }
@@ -161,24 +166,21 @@ extension ProgressViewController {
                     let item = self.items[idx]
 
                     // TODO: Remove below when test is over
-//                    return Promise<URL>(value: URL(fileURLWithPath: "/Volumes/JetDrive Lite/playground/test5.flv"))
+//                    return Promise<URL>(value: URL(fileURLWithPath: "/Volumes/JetDrive Lite/test.mp4"))
                     return self.downloadVideo(item: item, url: item.apiInfo["url"]!, progressCallback: {
                         self.items[idx].progress = $0
                         self.reloadTableViewData()
                     })
                 }.then { destinationURL -> Promise<URL?> in
-                    guard self.options.applyComment else {
-                        return Promise<URL?>(value: nil)
-                    }
-                    self.items[idx].destinationURL = destinationURL
+                    self.items[idx].videoFileURL = destinationURL
                     return self.downloadCommentXml(item: self.items[idx])
                 }.then { filterURL -> Promise<Void> in
-                    guard let filterURL = filterURL else {
+                    guard let filterURL = filterURL, self.options.applyComment else {
                         return Promise<Void>.init(value: ())
                     }
-                    self.items[idx].filterURL = filterURL
+                    self.items[idx].filterFileURL = filterURL
                     self.items[idx].status = .filtering
-                    self.items[idx].duration = getVideoDuration(inputFilePath: self.items[idx].destinationString)
+                    self.items[idx].duration = getVideoDuration(inputFilePath: self.items[idx].videoFilePath)
                     self.reloadTableViewData()
                     // TODO: Consider showing progress
                     return self.applyComment(item: self.items[idx]) {
@@ -213,7 +215,7 @@ extension ProgressViewController {
         DispatchQueue.global(qos: .default).async(execute: downloadWorkItem!)
     }
     
-    func getVideoApiInfoWith(item: Item) -> Promise<[String: String]> {
+    func getVideoApiInfoWith(item: NicoItem) -> Promise<[String: String]> {
         return Promise { fulfill, reject in
             let videoApiUrl = "http://flapi.nicovideo.jp/api/getflv/\(item.videoId)?as3=1"
             sessionManager.request(videoApiUrl).responseString { response in
@@ -256,7 +258,7 @@ extension ProgressViewController {
         }
     }
     
-    func downloadVideo(item: Item, url: String, progressCallback: @escaping DoubleCallback) -> Promise<URL> {
+    func downloadVideo(item: NicoItem, url: String, progressCallback: @escaping DoubleCallback) -> Promise<URL> {
         return Promise { fulfill, reject in
             guard !cancelled else {
                 reject(NicoError.Cancelled)
@@ -285,7 +287,7 @@ extension ProgressViewController {
         }
     }
     
-    func downloadCommentXml(item: Item) -> Promise<URL?> {
+    func downloadCommentXml(item: NicoItem) -> Promise<URL?> {
         return Promise { fulfill, reject in
             sessionManager.request(item.apiInfo["ms"]!, method: .post, encoding: NicoCommentEncoding(threadId: item.apiInfo["thread_id"]!)).responseString(encoding: String.Encoding.utf8) { response in
                 switch response.result {
@@ -297,11 +299,9 @@ extension ProgressViewController {
                     var filterURL: URL? = nil
                     do {
                         try Comment.saveOriginalComment(
-                            fromXmlString: xmlString, item: item,
-                            directory: self.options.saveDirectory)
+                            fromXmlString: xmlString, item: item)
                         filterURL = try Comment.saveFilterFile(
-                            fromXmlString: xmlString, item: item,
-                            directory: self.options.saveDirectory)
+                            fromXmlString: xmlString, item: item)
                     } catch {
                         print("Error occurred while saving comments")
                     }
@@ -313,37 +313,21 @@ extension ProgressViewController {
         }
     }
     
-    func applyComment(item: Item, progressCallback: @escaping DoubleCallback) -> Promise<Void> {
+    func applyComment(item: NicoItem, progressCallback: @escaping DoubleCallback) -> Promise<Void> {
         return Promise { fulfill, reject in
-            guard let filterURL = item.filterURL else {
+            guard let filterURL = item.filterFileURL else {
                 fulfill()
                 return
             }
-            
-            // TODO: Refactor
-            var fileURL: URL! = item.destinationURL
-            let ext = fileURL.pathExtension
-            fileURL.deletePathExtension()
-            let name = fileURL.lastPathComponent
-            fileURL.deleteLastPathComponent()
-            fileURL.appendPathComponent("\(name)_filtered")
-            fileURL.appendPathExtension(ext)
-            
-            let res = filterVideo(
-                inputFilePath: item.destinationURL.absoluteString.removingPercentEncoding!,
-                outputFilePath: fileURL.absoluteString.removingPercentEncoding!,
-                filterPath: filterURL.absoluteString.removingPercentEncoding!,
-                progressCallback: { output in
-                    if let encodedTime = encodedTime(fromOutput: output) {
-                        progressCallback(encodedTime)
-                    }
-            }) { output, error, status in
-                if status == 0 {
-                    fulfill()
-                } else {
-                    reject(NicoError.UnknownError(error.joined(separator: "\n")))
-                }
-            }
+            let res = applyComment(videoFileURL: item.videoFileURL,
+                         filterFileURL: filterURL,
+                         progressCallback: progressCallback, callback: { output, error, status in
+                            if status == 0 {
+                                fulfill()
+                            } else {
+                                reject(NicoError.UnknownError(error.joined(separator: "\n")))
+                            }
+            })
             if let res = res {
                 self.filterProcesses.append(res.0)
                 self.filterWorkItems.append(res.1)

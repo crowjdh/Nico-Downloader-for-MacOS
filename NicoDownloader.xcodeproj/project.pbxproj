@@ -12,11 +12,16 @@
 		571E14FF1E8A80B5000963E3 /* TestUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571E14FE1E8A80B5000963E3 /* TestUtil.swift */; };
 		572B875C1E332A79008BC5AE /* ProgressViewController+Tableview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */; };
 		572B875E1E332AB3008BC5AE /* ProgressViewController+Download.swift in Sources */ = {isa = PBXBuildFile; fileRef = 572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */; };
+		57341F331E99D71C000D4502 /* CommentBurnerable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57341F321E99D71C000D4502 /* CommentBurnerable.swift */; };
+		57341F351E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */; };
+		5737478F1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */; };
 		573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573B9A0C1E3DC755001C4F5D /* PowerManager.swift */; };
+		5752D03D1E9A52E8002753FF /* URL+Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5752D03C1E9A52E8002753FF /* URL+Paths.swift */; };
 		575C68E11E683F7A00B56D34 /* Enum+Iterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */; };
 		575D45CB1E3093B000F9E623 /* ProgressTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575D45CA1E3093B000F9E623 /* ProgressTableCellView.swift */; };
 		575D45D11E30A80F00F9E623 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575D45D01E30A80F00F9E623 /* Item.swift */; };
 		576FF7CD1E751B45008F11A2 /* ffprobe in Resources */ = {isa = PBXBuildFile; fileRef = 576FF7CC1E751B45008F11A2 /* ffprobe */; };
+		577F8DA11E9242A300324C33 /* MimeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 577F8DA01E9242A300324C33 /* MimeType.swift */; };
 		5784FDBB1E3075AC004BD160 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDBA1E3075AC004BD160 /* AppDelegate.swift */; };
 		5784FDBD1E3075AC004BD160 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDBC1E3075AC004BD160 /* ViewController.swift */; };
 		5784FDBF1E3075AC004BD160 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5784FDBE1E3075AC004BD160 /* Assets.xcassets */; };
@@ -27,12 +32,16 @@
 		57A337D31E84D546008AE550 /* String+UnicodeScalar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */; };
 		57A337D51E84D617008AE550 /* NSFont+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D41E84D617008AE550 /* NSFont+Init.swift */; };
 		57AA47C11E34633E006777CB /* ViewController+OpenDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */; };
+		57B224EB1E8F58E3006E101A /* CommentBurnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B224EA1E8F58E3006E101A /* CommentBurnerViewController.swift */; };
+		57B224ED1E8F5B5D006E101A /* CommentBurnerViewController+TableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B224EC1E8F5B5D006E101A /* CommentBurnerViewController+TableView.swift */; };
 		57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CEC1E69184800499029 /* NSColor+Hex.swift */; };
 		57C25CEF1E692FA900499029 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = 57C25CEE1E692FA900499029 /* ffmpeg */; };
 		57C25CF21E69309400499029 /* FFMpegUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CF11E69309400499029 /* FFMpegUtil.swift */; };
 		57EC4C2A1E7D570C00C1DE41 /* ヒラギノ角ゴシック W4.ttc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */; };
 		57F30F711E30D40500BB2445 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F701E30D40500BB2445 /* Metadata.swift */; };
 		57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */; };
+		57F341891E8F94CD00D90BF4 /* NSViewController+FileChooser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F341881E8F94CD00D90BF4 /* NSViewController+FileChooser.swift */; };
+		57F3418B1E8FC5B800D90BF4 /* Levenshtein.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F3418A1E8FC5B800D90BF4 /* Levenshtein.swift */; };
 		6D9FE5F9E7119651CF4565BC /* Pods_NicoDownloader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD01B2271764A4CCDCB412AC /* Pods_NicoDownloader.framework */; };
 /* End PBXBuildFile section */
 
@@ -65,11 +74,16 @@
 		571E14FE1E8A80B5000963E3 /* TestUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestUtil.swift; sourceTree = "<group>"; };
 		572B875B1E332A79008BC5AE /* ProgressViewController+Tableview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ProgressViewController+Tableview.swift"; path = "NicoDownloader/Extensions/ProgressViewController+Tableview.swift"; sourceTree = SOURCE_ROOT; };
 		572B875D1E332AB3008BC5AE /* ProgressViewController+Download.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ProgressViewController+Download.swift"; path = "NicoDownloader/Extensions/ProgressViewController+Download.swift"; sourceTree = SOURCE_ROOT; };
+		57341F321E99D71C000D4502 /* CommentBurnerable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentBurnerable.swift; sourceTree = "<group>"; };
+		57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CommentBurnerViewController+ApplyComment.swift"; sourceTree = "<group>"; };
+		5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSUserNotificationCenter+ShortenedDeliver.swift"; sourceTree = "<group>"; };
 		573B9A0C1E3DC755001C4F5D /* PowerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerManager.swift; sourceTree = "<group>"; };
+		5752D03C1E9A52E8002753FF /* URL+Paths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+Paths.swift"; sourceTree = "<group>"; };
 		575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Enum+Iterable.swift"; sourceTree = "<group>"; };
 		575D45CA1E3093B000F9E623 /* ProgressTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressTableCellView.swift; sourceTree = "<group>"; };
 		575D45D01E30A80F00F9E623 /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Item.swift; path = Models/Item.swift; sourceTree = "<group>"; };
 		576FF7CC1E751B45008F11A2 /* ffprobe */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffprobe; sourceTree = "<group>"; };
+		577F8DA01E9242A300324C33 /* MimeType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MimeType.swift; sourceTree = "<group>"; };
 		5784FDB71E3075AB004BD160 /* NicoDownloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NicoDownloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5784FDBA1E3075AC004BD160 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5784FDBC1E3075AC004BD160 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -84,12 +98,16 @@
 		57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+UnicodeScalar.swift"; sourceTree = "<group>"; };
 		57A337D41E84D617008AE550 /* NSFont+Init.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSFont+Init.swift"; sourceTree = "<group>"; };
 		57AA47C01E34633E006777CB /* ViewController+OpenDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "ViewController+OpenDialog.swift"; path = "NicoDownloader/Extensions/ViewController+OpenDialog.swift"; sourceTree = SOURCE_ROOT; };
+		57B224EA1E8F58E3006E101A /* CommentBurnerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentBurnerViewController.swift; sourceTree = "<group>"; };
+		57B224EC1E8F5B5D006E101A /* CommentBurnerViewController+TableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CommentBurnerViewController+TableView.swift"; sourceTree = "<group>"; };
 		57C25CEC1E69184800499029 /* NSColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
 		57C25CEE1E692FA900499029 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = "<group>"; };
 		57C25CF11E69309400499029 /* FFMpegUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFMpegUtil.swift; sourceTree = "<group>"; };
 		57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ヒラギノ角ゴシック W4.ttc"; sourceTree = "<group>"; };
 		57F30F701E30D40500BB2445 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Date+XMLPubDate.swift"; path = "NicoDownloader/Extensions/Date+XMLPubDate.swift"; sourceTree = SOURCE_ROOT; };
+		57F341881E8F94CD00D90BF4 /* NSViewController+FileChooser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSViewController+FileChooser.swift"; sourceTree = "<group>"; };
+		57F3418A1E8FC5B800D90BF4 /* Levenshtein.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Levenshtein.swift; sourceTree = "<group>"; };
 		B271A42538ECAC7DDF04181C /* Pods-NicoDownloader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NicoDownloader.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader.debug.xcconfig"; sourceTree = "<group>"; };
 		B2992436EA5924EDB8CFAADF /* Pods_NicoDownloaderTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NicoDownloaderTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDF62ECA7FC02A783FBB742D /* Pods-NicoDownloader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NicoDownloader.release.xcconfig"; path = "Pods/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader.release.xcconfig"; sourceTree = "<group>"; };
@@ -130,9 +148,11 @@
 		573B9A0A1E3DC731001C4F5D /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				57F3418A1E8FC5B800D90BF4 /* Levenshtein.swift */,
 				573B9A0C1E3DC755001C4F5D /* PowerManager.swift */,
 				57C25CF11E69309400499029 /* FFMpegUtil.swift */,
 				571E14FE1E8A80B5000963E3 /* TestUtil.swift */,
+				577F8DA01E9242A300324C33 /* MimeType.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -142,6 +162,7 @@
 			children = (
 				5784FDBC1E3075AC004BD160 /* ViewController.swift */,
 				5784FDD71E307B49004BD160 /* ProgressViewController.swift */,
+				57B224EA1E8F58E3006E101A /* CommentBurnerViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -232,6 +253,12 @@
 				575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */,
 				57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */,
 				57A337D41E84D617008AE550 /* NSFont+Init.swift */,
+				57F341881E8F94CD00D90BF4 /* NSViewController+FileChooser.swift */,
+				57B224EC1E8F5B5D006E101A /* CommentBurnerViewController+TableView.swift */,
+				57341F321E99D71C000D4502 /* CommentBurnerable.swift */,
+				57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */,
+				5752D03C1E9A52E8002753FF /* URL+Paths.swift */,
+				5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -455,21 +482,30 @@
 			files = (
 				572B875C1E332A79008BC5AE /* ProgressViewController+Tableview.swift in Sources */,
 				57A337D51E84D617008AE550 /* NSFont+Init.swift in Sources */,
+				5752D03D1E9A52E8002753FF /* URL+Paths.swift in Sources */,
 				57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */,
 				575D45D11E30A80F00F9E623 /* Item.swift in Sources */,
+				57B224ED1E8F5B5D006E101A /* CommentBurnerViewController+TableView.swift in Sources */,
 				5784FDD81E307B49004BD160 /* ProgressViewController.swift in Sources */,
 				57A337D31E84D546008AE550 /* String+UnicodeScalar.swift in Sources */,
+				577F8DA11E9242A300324C33 /* MimeType.swift in Sources */,
 				573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */,
+				57341F351E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift in Sources */,
+				5737478F1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift in Sources */,
 				57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */,
+				57F3418B1E8FC5B800D90BF4 /* Levenshtein.swift in Sources */,
+				57B224EB1E8F58E3006E101A /* CommentBurnerViewController.swift in Sources */,
 				5784FDBD1E3075AC004BD160 /* ViewController.swift in Sources */,
 				575D45CB1E3093B000F9E623 /* ProgressTableCellView.swift in Sources */,
 				579253D61E6548780041E2C8 /* Comment.swift in Sources */,
+				57341F331E99D71C000D4502 /* CommentBurnerable.swift in Sources */,
 				5784FDBB1E3075AC004BD160 /* AppDelegate.swift in Sources */,
 				575C68E11E683F7A00B56D34 /* Enum+Iterable.swift in Sources */,
 				571E14FF1E8A80B5000963E3 /* TestUtil.swift in Sources */,
 				57C25CF21E69309400499029 /* FFMpegUtil.swift in Sources */,
 				57F30F711E30D40500BB2445 /* Metadata.swift in Sources */,
 				57AA47C11E34633E006777CB /* ViewController+OpenDialog.swift in Sources */,
+				57F341891E8F94CD00D90BF4 /* NSViewController+FileChooser.swift in Sources */,
 				572B875E1E332AB3008BC5AE /* ProgressViewController+Download.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
