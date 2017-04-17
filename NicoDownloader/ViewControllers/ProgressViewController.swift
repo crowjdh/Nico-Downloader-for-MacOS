@@ -25,11 +25,13 @@ class ProgressViewController: NSViewController {
     
     var account: Account!
     var options: Options!
-    var items: [Item] = []
+    var items: [NicoItem] = []
     var sessionManager: Alamofire.SessionManager!
     var cancelled = false
     var downloadRequests: [DownloadRequest] = []
     var downloadWorkItem: DispatchWorkItem?
+    var filterProcesses: [Process] = []
+    var filterWorkItems: [DispatchWorkItem] = []
     var semaphore: DispatchSemaphore?
     var allDone: Bool {
         get {
@@ -48,12 +50,12 @@ class ProgressViewController: NSViewController {
         
         firstly {
             login()
-        }.then { () -> Promise<Array<Item>> in
+        }.then { () -> Promise<Array<NicoItem>> in
             switch self.options.videoInfo {
             case let mylist as Mylist:
                 return self.createItems(fromMylist: mylist)
             case let videos as Videos:
-                return Promise<Array<Item>>(value: videos.ids.map { Item(videoId: $0) })
+                return Promise<Array<NicoItem>>(value: videos.ids.map { NicoItem(videoId: $0) })
             default:
                 throw NicoError.UnknownError("Invalid videoInfo.")
             }
@@ -124,6 +126,12 @@ extension ProgressViewController: NSWindowDelegate {
         }
         for downloadRequest in self.downloadRequests {
             downloadRequest.cancel()
+        }
+        for filterWorkItem in self.filterWorkItems {
+            filterWorkItem.cancel()
+        }
+        for filterProcess in self.filterProcesses {
+            filterProcess.interrupt()
         }
         dismissViewController(self)
     }

@@ -12,19 +12,15 @@ import Cocoa
 extension ViewController {
     
     func showSaveDirectoryChooser() -> URL? {
-        let myFiledialog = NSOpenPanel()
-        
-        myFiledialog.prompt = "Open"
-        myFiledialog.worksWhenModal = true
-        myFiledialog.allowsMultipleSelection = false
-        myFiledialog.canChooseDirectories = true
-        myFiledialog.canChooseFiles = false
-        myFiledialog.resolvesAliases = true
-        myFiledialog.title = "Titlee"
-        myFiledialog.message = "Messageee"
-        
-        let directorySelected = myFiledialog.runModal() == NSFileHandlingPanelOKButton
-        
-        return directorySelected ? myFiledialog.url : nil
+        return showOpenPanel { openPanel in
+            openPanel.prompt = "Open"
+            openPanel.worksWhenModal = true
+            openPanel.allowsMultipleSelection = false
+            openPanel.canChooseDirectories = true
+            openPanel.canChooseFiles = false
+            openPanel.resolvesAliases = true
+            openPanel.title = "Titlee"
+            openPanel.message = "Messageee"
+        }.first
     }
 }

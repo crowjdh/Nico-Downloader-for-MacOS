@@ -16,11 +16,13 @@ struct Account {
 struct Options {
     let videoInfo: VideoInfo
     let concurrentDownloadCount: Int
+    let applyComment: Bool
     var saveDirectory: URL = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask)[0]
     
-    init(videoInfo: VideoInfo, concurrentDownloadCount: Int) {
+    init(videoInfo: VideoInfo, concurrentDownloadCount: Int, applyComment: Bool) {
         self.videoInfo = videoInfo
         self.concurrentDownloadCount = concurrentDownloadCount
+        self.applyComment = applyComment
     }
 }
 
