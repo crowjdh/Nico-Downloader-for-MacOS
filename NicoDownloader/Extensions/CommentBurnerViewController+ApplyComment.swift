@@ -65,7 +65,7 @@ extension CommentBurnerViewController: CommentBurnerable {
             let concurrentDownloadCount = 2
             let semaphore = DispatchSemaphore(value: concurrentDownloadCount - 1)
             for (idx, item) in self.items.enumerated() {
-                guard let videoFileURL = item.videoFileURL,
+                guard let _ = item.videoFileURL,
                     let commentFileURL = item.commentFileURL,
                     let videoFilePath = item.videoFilePath else {
                     continue

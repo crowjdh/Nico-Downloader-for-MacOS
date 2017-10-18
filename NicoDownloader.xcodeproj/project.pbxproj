@@ -28,6 +28,7 @@
 		5784FDC21E3075AC004BD160 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5784FDC01E3075AC004BD160 /* Main.storyboard */; };
 		5784FDCD1E3075AC004BD160 /* NicoDownloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDCC1E3075AC004BD160 /* NicoDownloaderTests.swift */; };
 		5784FDD81E307B49004BD160 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDD71E307B49004BD160 /* ProgressViewController.swift */; };
+		5785A8CB1F974D990025BB80 /* String+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5785A8CA1F974D990025BB80 /* String+JSON.swift */; };
 		579253D61E6548780041E2C8 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579253D51E6548780041E2C8 /* Comment.swift */; };
 		57A337D31E84D546008AE550 /* String+UnicodeScalar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */; };
 		57A337D51E84D617008AE550 /* NSFont+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D41E84D617008AE550 /* NSFont+Init.swift */; };
@@ -94,6 +95,7 @@
 		5784FDCC1E3075AC004BD160 /* NicoDownloaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoDownloaderTests.swift; sourceTree = "<group>"; };
 		5784FDCE1E3075AC004BD160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5784FDD71E307B49004BD160 /* ProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
+		5785A8CA1F974D990025BB80 /* String+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+JSON.swift"; sourceTree = "<group>"; };
 		579253D51E6548780041E2C8 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+UnicodeScalar.swift"; sourceTree = "<group>"; };
 		57A337D41E84D617008AE550 /* NSFont+Init.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSFont+Init.swift"; sourceTree = "<group>"; };
@@ -259,6 +261,7 @@
 				57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */,
 				5752D03C1E9A52E8002753FF /* URL+Paths.swift */,
 				5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */,
+				5785A8CA1F974D990025BB80 /* String+JSON.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -492,6 +495,7 @@
 				573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */,
 				57341F351E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift in Sources */,
 				5737478F1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift in Sources */,
+				5785A8CB1F974D990025BB80 /* String+JSON.swift in Sources */,
 				57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */,
 				57F3418B1E8FC5B800D90BF4 /* Levenshtein.swift in Sources */,
 				57B224EB1E8F58E3006E101A /* CommentBurnerViewController.swift in Sources */,
