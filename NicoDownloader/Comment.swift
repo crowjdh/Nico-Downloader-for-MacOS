@@ -68,6 +68,49 @@ enum Position: String, Iterable {
     case naka
 }
 
+enum NGLevel: Int {
+    case none = 0, low, mid, high
+    
+    static let defaultValue = NGLevel.mid
+    
+    var validScoreRange: ClosedRange<Int> {
+        switch self {
+        case .none:
+            return Int.min...0
+        case .low:
+            return -10000+1...0
+        case .mid:
+            return -4800+1...0
+        default:
+            return -1000+1...0
+        }
+    }
+    
+    func shouldDisplay(score: Int) -> Bool {
+        return validScoreRange.contains(score)
+    }
+    
+    func shouldNotDisplay(score: Int) -> Bool {
+        return !shouldDisplay(score: score)
+    }
+    
+    static func from(value: Int) -> NGLevel? {
+        return NGLevel(rawValue: value)
+    }
+    
+    static func load() -> NGLevel {
+        guard let rawNgLevel = UserDefaults.standard.value(forKey: "ngLevel") as? Int,
+            let ngLevel = NGLevel(rawValue: rawNgLevel) else {
+                return defaultValue
+        }
+        return ngLevel
+    }
+    
+    static func save(ngLevel: NGLevel) {
+        UserDefaults.standard.set(ngLevel.rawValue, forKey: "ngLevel")
+    }
+}
+
 func nicoColorToHex(hexColor: String) -> String? {
     switch hexColor {
     case "white": return "#FFFFFF"
@@ -133,8 +176,14 @@ extension Comment {
         guard let doc = try? Kanna.XML(xml: xml, encoding: .utf8) else {
             return
         }
+        let ngLevel = NGLevel.load()
         let chatXmls = doc.xpath("//chat")
         for (index, chatXml) in chatXmls.enumerated() {
+            if let score_text = chatXml.at_xpath("@score")?.text,
+                let score = Int(score_text),
+                ngLevel.shouldNotDisplay(score: score) {
+                continue
+            }
             guard let no = chatXml.at_xpath("@no")?.text,
                 let vpos = chatXml.at_xpath("@vpos")?.text,
                 chatXml.at_xpath("@deleted") == nil,

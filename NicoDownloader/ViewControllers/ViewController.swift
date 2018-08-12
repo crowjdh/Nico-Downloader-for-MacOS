@@ -25,6 +25,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var advancedOptionsDisclosure: NSButton!
     @IBOutlet weak var advancedOptionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var concurrentDownloadCountButton: NSPopUpButton!
+    @IBOutlet weak var ngLevelSlider: NSSlider!
     @IBOutlet weak var applyCommentCheckbox: NSButton!
     
     var sessionManager: SessionManager!
@@ -42,6 +43,7 @@ class ViewController: NSViewController {
         if let saveDirectory = UserDefaults.standard.url(forKey: "saveDirectory") {
             setSaveDirectory(url: saveDirectory)
         }
+        ngLevelSlider.integerValue = NGLevel.load().rawValue
         
         applyCommentCheckbox.state = UserDefaults.standard.bool(forKey: "applyComment") ? NSOnState : NSOffState
         
@@ -81,6 +83,13 @@ class ViewController: NSViewController {
             setSaveDirectory(url: directoryUrl)
             UserDefaults.standard.set(saveDirectory, forKey: "saveDirectory")
         }
+    }
+    
+    @IBAction func ngSliderValueDidChange(_ sender: NSSlider) {
+        guard let ngLevel = NGLevel.from(value: sender.integerValue) else {
+            return
+        }
+        NGLevel.save(ngLevel: ngLevel)
     }
     
     @IBAction func toggleApplyCommentOption(_ sender: Any) {
@@ -131,7 +140,7 @@ class ViewController: NSViewController {
         let box = animate ? advancedOptionsBox.animator() : advancedOptionsBox
         let disclosure = animate ? advancedOptionsDisclosure.animator() : advancedOptionsDisclosure
         
-        constraint!.constant = show ? 60 : 0
+        constraint!.constant = show ? 104 : 0
         box!.isHidden = !show
         disclosure!.state = show ? NSOnState : NSOffState
     }

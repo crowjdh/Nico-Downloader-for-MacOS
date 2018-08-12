@@ -38,7 +38,7 @@ struct NicoCommentEncoding: ParameterEncoding {
             threadKeyAPIInfo = "threadkey='\(threadAPIResult.0)' force_184='\(threadAPIResult.1)'"
         }
         
-        let xml = "<thread res_from='-1000' version='20061206' user_id='\(userID)' thread='\(threadID)' \(threadKeyAPIInfo) />"
+        let xml = "<thread res_from='-1000' version='20061206' scores='1' user_id='\(userID)' thread='\(threadID)' \(threadKeyAPIInfo) />"
         
         if urlRequest.value(forHTTPHeaderField: "Content-Type") == nil {
             urlRequest.setValue("text/xml", forHTTPHeaderField: "Content-Type")
@@ -179,7 +179,7 @@ extension ProgressViewController: CommentBurnerable {
                     let item = self.items[idx]
 
                     // TODO: Remove below when test is over
-//                    return Promise<URL>(value: URL(fileURLWithPath: "/Volumes/JetDrive Lite/_ジョジョの奇妙な冒険/working/【ジョジョ第3部】うろ覚えで振り返る 承太郎の奇妙な冒険 PART41.mp4"))
+//                    return Promise<URL>(value: URL(fileURLWithPath: "/Users/jeong/Downloads/nico/【実況】いい大人達がプリンセスメーカー２を本気で遊んでみた。part1 - Niconico Video.mp4"))
                     return self.downloadVideo(item: item, progressCallback: {
                         self.items[idx].progress = $0
                         self.reloadTableViewData()
