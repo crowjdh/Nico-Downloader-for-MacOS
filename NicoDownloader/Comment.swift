@@ -130,7 +130,7 @@ struct Comment {
 
 extension Comment {
     static func parseXml(_ xml: String, videoResolution: VideoResolution, parsed: (Comment, Bool) -> Void) {
-        guard let doc = Kanna.XML(xml: xml, encoding: .utf8) else {
+        guard let doc = try? Kanna.XML(xml: xml, encoding: .utf8) else {
             return
         }
         let chatXmls = doc.xpath("//chat")
@@ -406,7 +406,13 @@ extension Comment {
         let videoWidth = Float(videoResolution.0)
         var minFontSize = Float(videoResolution.1) / Float(Size.videoHeightDenominator(ofSize: nil))
         var maxFontSize = fontSize
+        // FIX:boundingRectSize(withFontSize: Float) gives wrong width
         guard Float(boundingRectSize(withFontSize: minFontSize).width) < videoWidth else {
+            var newWidth: Float
+            repeat {
+                minFontSize -= 1
+                newWidth = Float(boundingRectSize(withFontSize: minFontSize).width)
+            } while newWidth > videoWidth
             return minFontSize
         }
         var found: Float! = nil

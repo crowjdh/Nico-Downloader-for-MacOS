@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0830"
+   LastUpgradeVersion = "0930"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CFB13625A744C1B1B7A9F5873BFF6282"
+               BlueprintIdentifier = "932833334825E3C6D4E88244F2408E0B"
                BuildableName = "Pods_NicoDownloaderTests.framework"
                BlueprintName = "Pods-NicoDownloaderTests"
                ReferencedContainer = "container:Pods.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "CFB13625A744C1B1B7A9F5873BFF6282"
+            BlueprintIdentifier = "932833334825E3C6D4E88244F2408E0B"
             BuildableName = "Pods_NicoDownloaderTests.framework"
             BlueprintName = "Pods-NicoDownloaderTests"
             ReferencedContainer = "container:Pods.xcodeproj">

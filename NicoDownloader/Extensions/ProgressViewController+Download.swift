@@ -70,7 +70,8 @@ extension ProgressViewController: CommentBurnerable {
                         reject(NicoError.Cancelled)
                         return
                     }
-                    if let doc = HTML(html: htmlString, encoding: .utf8), doc.css("div.notice.error").count == 0 {
+                    if let doc = try? HTML(html: htmlString, encoding: .utf8),
+                        doc.css("div.notice.error").count == 0 {
                         fulfill()
                     } else {
                         reject(NicoError.LoginError)
@@ -93,7 +94,7 @@ extension ProgressViewController: CommentBurnerable {
                         reject(NicoError.Cancelled)
                         return
                     }
-                    guard let doc = Kanna.XML(xml: xmlString, encoding: .utf8) else {
+                    guard let doc = try? Kanna.XML(xml: xmlString, encoding: .utf8) else {
                         reject(NicoError.FetchVideoIdsError("Malformed xml"))
                         return
                     }
@@ -264,7 +265,7 @@ extension ProgressViewController: CommentBurnerable {
             ]
             sessionManager.request(videoUrl, headers: headers).responseString { [weak self] response in
                 guard let htmlString = response.result.value,
-                    let doc = HTML(html: htmlString, encoding: .utf8),
+                    let doc = try? HTML(html: htmlString, encoding: .utf8),
                     let title = doc.title?.replacingOccurrences(of: "/", with: "／") else {
                     reject(NicoError.FetchVideoPageError)
                     return
