@@ -104,7 +104,7 @@ extension ProgressViewController: CommentBurnerable {
                         return
                     }
                     
-                    var items: [NicoItem] = []
+                    var items: [NicoVideoItem] = []
                     for itemXml in itemXmls {
                         guard let link = itemXml.at_xpath("link")?.text,
                             let videoId = link.components(separatedBy: "/").last,
@@ -114,7 +114,7 @@ extension ProgressViewController: CommentBurnerable {
                                 continue
                         }
                         
-                        items.append(NicoItem(videoId: videoId, name: title, pubdate: pubdate))
+                        items.append(NicoVideoItem(videoId: videoId, name: title, pubdate: pubdate))
                     }
                     items.sort(by: { (lhs, rhs) -> Bool in
                         // Force unwrap since we're setting pubdate from above
@@ -160,38 +160,23 @@ extension ProgressViewController: CommentBurnerable {
         self.updateStatusMessage(message: "Downloading items...")
         downloadWorkItem = DispatchWorkItem {
             let semaphore = DispatchSemaphore(value: self.options.concurrentDownloadCount - 1)
-            for (idx, item) in self.items.enumerated() {
+            for idx in 0..<self.items.count {
+                let item = self.items[idx]
+                
                 Thread.sleep(forTimeInterval: 3)
                 self.items[idx].status = .fetching
                 self.reloadTableViewData()
                 
-                firstly {
-                    self.getVideoApiInfoWith(item: item)
-                }.then { apiInfo -> Promise<VideoPageInfo> in
-                    self.items[idx].apiInfo = apiInfo
-                    // TODO: Change to thumbnail api
-                    // TODO: Also, add referer(http://www.nicovideo.jp/watch/[動画番号]) to download request
-                    return self.prefetchVideoPage(videoId: item.videoId)
-                }.then { videoPageInfo -> Promise<URL> in
-                    self.items[idx].name = self.items[idx].name ?? videoPageInfo.0
-                    self.items[idx].apiInfo["url_alt"] = videoPageInfo.1
-                    self.items[idx].status = .downloading
-                    let item = self.items[idx]
-
-                    // TODO: Remove below when test is over
-//                    return Promise<URL>(value: URL(fileURLWithPath: "/Users/jeong/Downloads/nico/【実況】いい大人達がプリンセスメーカー２を本気で遊んでみた。part1 - Niconico Video.mp4"))
-                    return self.downloadVideo(item: item, progressCallback: {
-                        self.items[idx].progress = $0
-                        self.reloadTableViewData()
-                    })
-                }.then { destinationURL -> Promise<URL?> in
-                    self.items[idx].videoFileURL = destinationURL
-                    return self.downloadCommentXml(item: self.items[idx])
-                }.then { filterURL -> Promise<Void> in
-                    guard let filterURL = filterURL, self.options.applyComment else {
+                var downloadPromise: Promise<Void>! = nil
+                if let item = self.items[idx] as? NicoVideoItem {
+                    downloadPromise = self.downloadNicoVideoAndComment(item: item)
+                } else if let item = item as? NicoNamaItem {
+                    downloadPromise = self.downloadNicoNamaVideoAndComment(item: item)
+                }
+                downloadPromise.then { _ -> Promise<Void> in
+                    guard self.options.applyComment else {
                         return Promise<Void>.init(value: ())
                     }
-                    self.items[idx].filterFileURL = filterURL
                     self.items[idx].status = .filtering
                     self.items[idx].duration = getVideoDuration(inputFilePath: self.items[idx].videoFilePath)
                     self.reloadTableViewData()
@@ -228,7 +213,62 @@ extension ProgressViewController: CommentBurnerable {
         DispatchQueue.global(qos: .default).async(execute: downloadWorkItem!)
     }
     
-    func getVideoApiInfoWith(item: NicoItem) -> Promise<[String: String]> {
+    func downloadNicoVideoAndComment(item: NicoVideoItem) -> Promise<Void> {
+        return firstly {
+            self.getVideoApiInfoWith(item: item)
+        }.then { apiInfo -> Promise<VideoPageInfo> in
+            item.apiInfo = apiInfo
+            // TODO: Change to thumbnail api
+            // TODO: Also, add referer(http://www.nicovideo.jp/watch/[動画番号]) to download request
+            return self.prefetchVideoPage(videoId: item.videoId)
+        }.then { videoPageInfo -> Promise<URL> in
+            item.name = item.name ?? videoPageInfo.0
+            item.apiInfo["url_alt"] = videoPageInfo.1
+            item.status = .downloading
+            
+            // TODO: Remove below when test is over
+//            return Promise<URL>(value: URL(fileURLWithPath: "/Users/jeong/Downloads/nico/【実況】いい大人達がプリンセスメーカー２を本気で遊んでみた。part1 - Niconico Video.mp4"))
+            return self.downloadVideo(item: item, progressCallback: {
+                item.progress = $0
+                self.reloadTableViewData()
+            })
+        }.then { destinationURL -> Promise<URL?> in
+            item.videoFileURL = destinationURL
+            return self.downloadCommentXml(item: item)
+        }.then { filterURL -> Promise<Void> in
+            if let filterURL = filterURL {
+                item.filterFileURL = filterURL
+            }
+            return Promise<Void>.init(value: ())
+        }
+    }
+    
+    func downloadNicoNamaVideoAndComment(item: NicoNamaItem) -> Promise<Void> {
+        return firstly {
+            self.getNamaVideoApiInfoWith(item: item)
+        }.then { apiInfo -> Promise<URL> in
+            item.apiInfo = apiInfo
+            item.name = item.name ?? apiInfo["title"]
+            item.status = .downloading
+            
+            // TODO: Remove below when test is over
+//            return Promise<URL>(value: URL(fileURLWithPath: "/Users/jeong/Downloads/temp/[ãªã»ãã©å¾253æ¥ç®]ã´ã£ã¯ããªï¼¾ï½[ãã«ãåé].flv"))
+            return self.downloadNamaVideo(item: item, progressCallback: {
+                item.progress = $0
+                self.reloadTableViewData()
+            })
+        }.then { destinationURL -> Promise<URL?> in
+            item.videoFileURL = destinationURL
+            return self.downloadNamaCommentXml(item: item)
+        }.then { filterURL -> Promise<Void> in
+            if let filterURL = filterURL {
+                item.filterFileURL = filterURL
+            }
+            return Promise<Void>.init(value: ())
+        }
+    }
+    
+    func getVideoApiInfoWith(item: NicoVideoItem) -> Promise<[String: String]> {
         return Promise { fulfill, reject in
             let videoApiUrl = "http://flapi.nicovideo.jp/api/getflv/\(item.videoId)?as3=1"
             sessionManager.request(videoApiUrl).responseString { response in
@@ -252,6 +292,61 @@ extension ProgressViewController: CommentBurnerable {
                     apiInfo[key] = value
                 }
                 fulfill(apiInfo)
+            }
+        }
+    }
+    
+    func getNamaVideoApiInfoWith(item: NicoNamaItem) -> Promise<[String: String]> {
+        return Promise { fulfill, reject in
+            let videoApiUrl = "http://watch.live.nicovideo.jp/api/getplayerstatus?v=\(item.videoId)"
+            sessionManager.request(videoApiUrl).responseString(encoding: String.Encoding.utf8) { response in
+                switch response.result {
+                case .success(let xmlString):
+                    guard let doc = try? Kanna.XML(xml: xmlString, encoding: .utf8) else {
+                        reject(NicoError.FetchVideoIdsError("Malformed xml"))
+                        return
+                    }
+                    let rtmpPath = doc.at_xpath("//rtmp")
+                    
+                    let regex = try? NSRegularExpression(pattern: "publish (lv\\d+) ([\\w:/.]*),([/\\w.\\?:]*)", options: .caseInsensitive)
+                    let groups = doc.at_xpath("//quesheet")?.xpath("que").compactMap({ pathObject -> [String?]? in
+                        guard let text = pathObject.text else {
+                            return nil
+                        }
+                        return regex?.firstMatch(in: text, options: [], range: NSRange(text.startIndex..., in: text))?.groups(src: text)
+                    })
+                    
+                    guard let title = doc.at_xpath("//title")?.text,
+                        let videoUrl = rtmpPath?.at_xpath("url")?.text,
+                        let ticket = rtmpPath?.at_xpath("ticket")?.text,
+                        let ms = doc.at_xpath("//ms"),
+                        let addr = ms.at_xpath("addr")?.text,
+                        let port = ms.at_xpath("port")?.text,
+                        let thread = ms.at_xpath("thread")?.text,
+                        groups?.count ?? 0 > 0,
+                        let found = groups?[0] else {
+                        reject(NicoError.FetchVideoIdsError("Essential element(s) missing"))
+                        return
+                    }
+                    let videoId = found[1]
+                    let quePrefix = found[2]
+                    let quePostfix = found[3]
+                    
+                    var apiInfo = [String: String]()
+                    apiInfo["title"] = title
+                    apiInfo["url"] = videoUrl
+                    apiInfo["ticket"] = ticket
+                    apiInfo["video_id"] = videoId
+                    apiInfo["quePrefix"] = quePrefix
+                    apiInfo["quePostfix"] = quePostfix
+                    apiInfo["addr"] = addr
+                    apiInfo["port"] = port
+                    apiInfo["thread"] = thread
+                    
+                    fulfill(apiInfo)
+                case .failure(let error):
+                    reject(error)
+                }
             }
         }
     }
@@ -335,7 +430,7 @@ extension ProgressViewController: CommentBurnerable {
         downloadRequests.append(request)
     }
     
-    func downloadCommentXml(item: NicoItem) -> Promise<URL?> {
+    func downloadCommentXml(item: NicoVideoItem) -> Promise<URL?> {
         return Promise { fulfill, reject in
             let hasNumaricVideoId = Int(item.videoId) != nil
             if hasNumaricVideoId {
@@ -390,7 +485,7 @@ extension ProgressViewController: CommentBurnerable {
         }
     }
     
-    func downloadCommentXml(item: NicoItem, threadAPIResult: ThreadKeyAPIResult?) -> Promise<URL?> {
+    func downloadCommentXml(item: NicoVideoItem, threadAPIResult: ThreadKeyAPIResult?) -> Promise<URL?> {
         return Promise { fulfill, reject in
             guard let host = item.apiInfo["ms"], let threadID = item.apiInfo["thread_id"], let userID = item.apiInfo["user_id"] else {
                 reject(NicoError.UnknownError("Insufficient api information"))
@@ -419,6 +514,98 @@ extension ProgressViewController: CommentBurnerable {
                 }
             }
         }
+    }
+    
+    func downloadNamaCommentXml(item: NicoNamaItem) -> Promise<URL?> {
+        return Promise { fulfill, reject in
+            guard let portTable = loadNicoNamaPortTable(),
+                let addr = item.apiInfo["addr"],
+                let port = item.apiInfo["port"],
+                let convertedPort = portTable[port],
+                let thread = item.apiInfo["thread"] else {
+                    reject(NicoError.UnknownError("Can't download nico nama comment"))
+                    return
+            }
+            let url = "http://\(addr):\(convertedPort)/api/thread?version=20061206&thread=\(thread)&res_from=-1000"
+            sessionManager.request(url).responseString(encoding: String.Encoding.utf8) { response in
+                switch response.result {
+                case .success(let xmlString):
+                    guard !self.cancelled else {
+                        reject(NicoError.Cancelled)
+                        return
+                    }
+                    
+                    var filterURL: URL? = nil
+                    do {
+                        try Comment.saveOriginalComment(
+                            fromXmlString: xmlString, item: item)
+                        filterURL = try Comment.saveFilterFile(
+                            fromXmlString: xmlString, item: item)
+                    } catch {
+                        print("Error occurred while saving comments")
+                    }
+                    fulfill(filterURL)
+                case .failure(let error):
+                    reject(error)
+                }
+            }
+        }
+    }
+    
+    func downloadNamaVideo(item: NicoNamaItem, progressCallback: @escaping DoubleCallback) -> Promise<URL> {
+        return Promise { fulfill, reject in
+            guard let url = item.apiInfo["url"],
+                let ticket = item.apiInfo["ticket"],
+                let videoId = item.apiInfo["video_id"],
+                let quePrefix = item.apiInfo["quePrefix"],
+                let quePostfix = item.apiInfo["quePostfix"] else {
+                    return
+            }
+            let offset = 0
+            
+            let downloadsURL = self.options.saveDirectory
+            let outputFileURL = downloadsURL.appendingPathComponent(item.name, isDirectory: false).appendingPathExtension("flv")
+            
+            let arguments = [
+                "-vr", "\(url)/\(videoId).f4v_\(offset)",
+                "-C", "S:\(ticket)",
+                "-E", "nlPlayNotice,S:\(quePrefix)|S:mp4:\(quePostfix)|S:\(videoId).f4v_\(offset)|N:\(offset)",
+                "-o", outputFileURL.path.removingPercentEncoding!
+            ]
+            let res = rtmpdump(withArguments: arguments, progressCallback: { output in
+                if let encodedTime = encodePercentage(fromOutput: output) {
+                    progressCallback(encodedTime / 100)
+                }
+            }) { output, error, status in
+                if status == 0 {
+                    fulfill(outputFileURL)
+                } else {
+                    reject(NicoError.UnknownError(error.joined(separator: "\n")))
+                }
+            }
+            if let res = res {
+                self.rtmpdumpProcesses.append(res.0)
+                self.rtmpdumpWorkItems.append(res.1)
+            }
+        }
+    }
+    
+    func loadNicoNamaPortTable() -> [String:String]? {
+        do {
+            let path = Bundle.main.path(forResource: "ports", ofType: nil)!
+            let result = try String(contentsOfFile: path)
+            var portTable = [String:String]()
+            result.enumerateLines { str, bool in
+                let ports = str.split(separator: " ")
+                let lhs = String(ports[0])
+                let rhs = String(ports[1])
+                portTable[lhs] = rhs
+            }
+            
+            return portTable
+        } catch { }
+        
+        return nil
     }
     
     func applyComment(item: NicoItem, progressCallback: @escaping DoubleCallback) -> Promise<Void> {

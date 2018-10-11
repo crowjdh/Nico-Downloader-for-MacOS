@@ -30,6 +30,8 @@ class ProgressViewController: NSViewController {
     var cancelled = false
     var downloadRequests: [DownloadRequest] = []
     var downloadWorkItem: DispatchWorkItem?
+    var rtmpdumpProcesses: [Process] = []
+    var rtmpdumpWorkItems: [DispatchWorkItem] = []
     var filterProcesses: [Process] = []
     var filterWorkItems: [DispatchWorkItem] = []
     var semaphore: DispatchSemaphore?
@@ -55,7 +57,9 @@ class ProgressViewController: NSViewController {
             case let mylist as Mylist:
                 return self.createItems(fromMylist: mylist)
             case let videos as Videos:
-                return Promise<Array<NicoItem>>(value: videos.ids.map { NicoItem(videoId: $0) })
+                return Promise<Array<NicoItem>>(value: videos.ids.map { NicoVideoItem(videoId: $0) })
+            case let lives as Lives:
+                return Promise<Array<NicoItem>>(value: lives.ids.map { NicoNamaItem(videoId: $0) })
             default:
                 throw NicoError.UnknownError("Invalid videoInfo.")
             }
@@ -91,7 +95,7 @@ class ProgressViewController: NSViewController {
     }
     
     @IBAction func stopAndClose(_ sender: Any) {
-        if downloadRequests.count == 0 || allDone {
+        if (downloadRequests.count == 0 && rtmpdumpProcesses.count == 0) || allDone {
             cancelled = true
             cancelAllTasksAndDismiss()
         } else if !cancelled {
@@ -126,6 +130,12 @@ extension ProgressViewController: NSWindowDelegate {
         }
         for downloadRequest in self.downloadRequests {
             downloadRequest.cancel()
+        }
+        for rtmpdumpWorkItem in self.rtmpdumpWorkItems {
+            rtmpdumpWorkItem.cancel()
+        }
+        for rtmpdumpProcess in self.rtmpdumpProcesses {
+            rtmpdumpProcess.interrupt()
         }
         for filterWorkItem in self.filterWorkItems {
             filterWorkItem.cancel()

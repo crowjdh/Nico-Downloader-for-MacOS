@@ -52,7 +52,25 @@ struct FilterItem {
     }
 }
 
-struct NicoItem {
+protocol NicoItem {
+    var name: String! { get set }
+    var status: Status { get set }
+    var apiInfo: [String: String]! { get set }
+    var videoFileURL: URL! { get set }
+    var filterFileURL: URL? { get set }
+    var duration: Double! { get set }
+    
+    var progress: Double { get set }
+    var filterProgress: Double { get set }
+}
+
+extension NicoItem {
+    var videoFilePath: String! {
+        return videoFileURL.absoluteString.removingPercentEncoding
+    }
+}
+
+class NicoVideoItem: NicoItem {
     let videoId: String
     var name: String!
     var pubdate: Date?
@@ -65,17 +83,30 @@ struct NicoItem {
     var progress: Double = 0
     var filterProgress: Double = 0
     
-    var videoFilePath: String! {
-        return videoFileURL.absoluteString.removingPercentEncoding
-    }
-    
     init(videoId: String) {
         self.videoId = videoId
     }
     
-    init(videoId: String, name: String, pubdate: Date) {
+    convenience init(videoId: String, name: String, pubdate: Date) {
         self.init(videoId: videoId)
         self.name = name
         self.pubdate = pubdate
+    }
+}
+
+class NicoNamaItem: NicoItem {
+    let videoId: String
+    var name: String!
+    var status: Status = .sleeping
+    var apiInfo: [String: String]!
+    var videoFileURL: URL!
+    var filterFileURL: URL?
+    var duration: Double!
+    
+    var progress: Double = 0
+    var filterProgress: Double = 0
+    
+    init(videoId: String) {
+        self.videoId = videoId
     }
 }

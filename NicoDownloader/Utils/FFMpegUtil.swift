@@ -23,9 +23,18 @@ func filterVideo(inputFilePath: String, outputFilePath: String,
         "-i", inputFilePath,
         "-filter_script:v", filterPath,
         "-vcodec", "h264",
+        "-acodec", "copy",
         outputFilePath
     ]
     return requestProcess(bundleName: "ffmpeg", arguments: arguments,
+                          progressCallback: progressCallback) { processResult in
+        callback(processResult)
+    }
+}
+
+func rtmpdump(withArguments arguments: [String], progressCallback: ProgressCallback? = nil,
+              callback: @escaping (ProcessResult) -> Void) -> (Process, DispatchWorkItem)? {
+    return requestProcess(bundleName: "rtmpdump", arguments: arguments,
                           progressCallback: progressCallback) { processResult in
         callback(processResult)
     }
@@ -79,6 +88,20 @@ func encodedTime(fromOutput output: String) -> Double? {
     return Double(timeComponents[0])! * 60 * 60 + Double(timeComponents[1])! * 60 + Double(timeComponents[2])!
 }
 
+func encodePercentage(fromOutput output: String) -> Double? {
+    let pattern = "\\((.*)%\\)"
+    guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+        let firstMatch = regex.firstMatch(in: output, options: [], range: NSRange(output.startIndex..., in: output)) else {
+        return nil
+    }
+    let groups = firstMatch.groups(src: output)
+    guard groups.count > 1, let progress = groups[1] else {
+        return nil
+    }
+    
+    return Double(progress)
+}
+
 private func requestProcess(bundleName: String, bundleType: String? = nil,
                             arguments: [String]?) -> ProcessResult? {
     var result: ProcessResult? = nil
@@ -127,8 +150,7 @@ private func createProcessMeta(bundleName: String, bundleType: String? = nil,
         process.standardInput = FileHandle.nullDevice
         
         let errorHandler: (Data) -> Void = { data in
-            if let str = String(data: data, encoding: .utf8) {
-                print(str)
+            if let str = String(data: data, encoding: .utf8), str.length > 0 {
                 if str.contains("Error while decoding stream") {
                     process.interrupt()
                 }

@@ -21,6 +21,7 @@ class ViewController: NSViewController {
     @IBOutlet weak var rememberAccountCheckbox: NSButton!
     @IBOutlet weak var modeTabView: NSTabView!
     @IBOutlet weak var videoIdsTextField: NSTextField!
+    @IBOutlet weak var liveIdsTextField: NSTextField!
     @IBOutlet weak var advancedOptionsBox: NSBox!
     @IBOutlet weak var advancedOptionsDisclosure: NSButton!
     @IBOutlet weak var advancedOptionHeightConstraint: NSLayoutConstraint!
@@ -101,6 +102,8 @@ class ViewController: NSViewController {
         switch modeTabView.selectedTabViewItem?.label {
         case .some("Video"):
             videoInfo = Videos(ids: videoIdsTextField.stringValue.components(separatedBy: " "))
+        case .some("Live"):
+            videoInfo = Lives(ids: liveIdsTextField.stringValue.components(separatedBy: " "))
         default:
             var mylist = Mylist(id: mylistIdField.stringValue)
             let rangeComponenets = rangeTextField.stringValue.components(separatedBy: ":")

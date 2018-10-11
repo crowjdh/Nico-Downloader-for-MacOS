@@ -29,6 +29,7 @@
 		5784FDCD1E3075AC004BD160 /* NicoDownloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDCC1E3075AC004BD160 /* NicoDownloaderTests.swift */; };
 		5784FDD81E307B49004BD160 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDD71E307B49004BD160 /* ProgressViewController.swift */; };
 		5785A8CB1F974D990025BB80 /* String+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5785A8CA1F974D990025BB80 /* String+JSON.swift */; };
+		5789E653216DB87E00ECEF21 /* rtmpdump in Resources */ = {isa = PBXBuildFile; fileRef = 5789E652216DB87E00ECEF21 /* rtmpdump */; };
 		579253D61E6548780041E2C8 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579253D51E6548780041E2C8 /* Comment.swift */; };
 		57A337D31E84D546008AE550 /* String+UnicodeScalar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */; };
 		57A337D51E84D617008AE550 /* NSFont+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D41E84D617008AE550 /* NSFont+Init.swift */; };
@@ -38,6 +39,8 @@
 		57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CEC1E69184800499029 /* NSColor+Hex.swift */; };
 		57C25CEF1E692FA900499029 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = 57C25CEE1E692FA900499029 /* ffmpeg */; };
 		57C25CF21E69309400499029 /* FFMpegUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CF11E69309400499029 /* FFMpegUtil.swift */; };
+		57DFC25B216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DFC25A216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift */; };
+		57DFC25D216E1E1D00168FF5 /* ports in Resources */ = {isa = PBXBuildFile; fileRef = 57DFC25C216E1E1D00168FF5 /* ports */; };
 		57EC4C2A1E7D570C00C1DE41 /* ヒラギノ角ゴシック W4.ttc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */; };
 		57F30F711E30D40500BB2445 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F701E30D40500BB2445 /* Metadata.swift */; };
 		57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */; };
@@ -96,6 +99,7 @@
 		5784FDCE1E3075AC004BD160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5784FDD71E307B49004BD160 /* ProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
 		5785A8CA1F974D990025BB80 /* String+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+JSON.swift"; sourceTree = "<group>"; };
+		5789E652216DB87E00ECEF21 /* rtmpdump */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = rtmpdump; sourceTree = "<group>"; };
 		579253D51E6548780041E2C8 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+UnicodeScalar.swift"; sourceTree = "<group>"; };
 		57A337D41E84D617008AE550 /* NSFont+Init.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSFont+Init.swift"; sourceTree = "<group>"; };
@@ -105,6 +109,8 @@
 		57C25CEC1E69184800499029 /* NSColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
 		57C25CEE1E692FA900499029 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = "<group>"; };
 		57C25CF11E69309400499029 /* FFMpegUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFMpegUtil.swift; sourceTree = "<group>"; };
+		57DFC25A216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTextCheckingResult+Groups.swift"; sourceTree = "<group>"; };
+		57DFC25C216E1E1D00168FF5 /* ports */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ports; sourceTree = "<group>"; };
 		57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ヒラギノ角ゴシック W4.ttc"; sourceTree = "<group>"; };
 		57F30F701E30D40500BB2445 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Date+XMLPubDate.swift"; path = "NicoDownloader/Extensions/Date+XMLPubDate.swift"; sourceTree = SOURCE_ROOT; };
@@ -236,8 +242,10 @@
 		57C25CF01E692FB400499029 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5789E652216DB87E00ECEF21 /* rtmpdump */,
 				57C25CEE1E692FA900499029 /* ffmpeg */,
 				576FF7CC1E751B45008F11A2 /* ffprobe */,
+				57DFC25C216E1E1D00168FF5 /* ports */,
 				571885071E82146C007D6988 /* Arial Unicode.ttf */,
 				57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */,
 			);
@@ -262,6 +270,7 @@
 				5752D03C1E9A52E8002753FF /* URL+Paths.swift */,
 				5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */,
 				5785A8CA1F974D990025BB80 /* String+JSON.swift */,
+				57DFC25A216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -331,7 +340,7 @@
 				TargetAttributes = {
 					5784FDB61E3075AB004BD160 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = SHURBSH97H;
+						DevelopmentTeam = MLP3L3AX37;
 						ProvisioningStyle = Automatic;
 					};
 					5784FDC71E3075AC004BD160 = {
@@ -369,7 +378,9 @@
 				5784FDBF1E3075AC004BD160 /* Assets.xcassets in Resources */,
 				5784FDC21E3075AC004BD160 /* Main.storyboard in Resources */,
 				57C25CEF1E692FA900499029 /* ffmpeg in Resources */,
+				57DFC25D216E1E1D00168FF5 /* ports in Resources */,
 				576FF7CD1E751B45008F11A2 /* ffprobe in Resources */,
+				5789E653216DB87E00ECEF21 /* rtmpdump in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -468,6 +479,7 @@
 				57B224EB1E8F58E3006E101A /* CommentBurnerViewController.swift in Sources */,
 				5784FDBD1E3075AC004BD160 /* ViewController.swift in Sources */,
 				575D45CB1E3093B000F9E623 /* ProgressTableCellView.swift in Sources */,
+				57DFC25B216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift in Sources */,
 				579253D61E6548780041E2C8 /* Comment.swift in Sources */,
 				57341F331E99D71C000D4502 /* CommentBurnerable.swift in Sources */,
 				5784FDBB1E3075AC004BD160 /* AppDelegate.swift in Sources */,
@@ -609,7 +621,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = SHURBSH97H;
+				DEVELOPMENT_TEAM = MLP3L3AX37;
 				INFOPLIST_FILE = NicoDownloader/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kr.blogspot.crowjdh.NicoDownloader;
@@ -626,7 +638,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = SHURBSH97H;
+				DEVELOPMENT_TEAM = MLP3L3AX37;
 				INFOPLIST_FILE = NicoDownloader/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = kr.blogspot.crowjdh.NicoDownloader;

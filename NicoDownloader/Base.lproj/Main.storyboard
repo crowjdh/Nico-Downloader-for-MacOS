@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
-        <capability name="box content view" minToolsVersion="7.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -436,7 +435,7 @@
         <scene sceneID="R2V-B0-nI4">
             <objects>
                 <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <rect key="contentRect" x="200" y="600" width="300" height="170"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
@@ -482,7 +481,7 @@
                                 <rect key="frame" x="91" y="380" width="262" height="22"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" placeholderString="id@domain.com" drawsBackground="YES" id="hc4-K4-YDE">
                                     <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
@@ -493,7 +492,7 @@
                                 <rect key="frame" x="91" y="355" width="262" height="22"/>
                                 <secureTextFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" drawsBackground="YES" usesSingleLineMode="YES" id="CnT-pF-EPI">
                                     <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <allowedInputSourceLocales>
                                         <string>NSAllRomanInputSourcesLocaleIdentifier</string>
@@ -522,7 +521,7 @@
                                 <rect key="frame" x="91" y="329" width="182" height="22"/>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="nUE-A8-TOe">
                                     <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                                 <connections>
@@ -669,7 +668,7 @@
                                                     </constraints>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="MFR-ik-JUP">
                                                         <font key="font" metaFont="system"/>
-                                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
                                                     <connections>
@@ -688,7 +687,7 @@
                                                     <rect key="frame" x="116" y="10" width="194" height="22"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" placeholderString="from:to(Optional)" drawsBackground="YES" id="dIN-qZ-N2v">
                                                         <font key="font" metaFont="system"/>
-                                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
                                                     <connections>
@@ -730,7 +729,7 @@
                                                     <rect key="frame" x="84" y="35" width="226" height="22"/>
                                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" placeholderString="sm12342345 sm12342346" drawsBackground="YES" id="lsN-gj-L8u">
                                                         <font key="font" metaFont="system"/>
-                                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                         <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     </textFieldCell>
                                                     <connections>
@@ -745,6 +744,41 @@
                                                 <constraint firstItem="lVU-hq-8Du" firstAttribute="leading" secondItem="h6L-gM-BkJ" secondAttribute="leading" constant="17" id="qZR-v0-9CE"/>
                                                 <constraint firstAttribute="bottom" secondItem="NEu-jC-kzE" secondAttribute="bottom" constant="35" id="x1r-Wx-sW8"/>
                                                 <constraint firstAttribute="trailing" secondItem="NEu-jC-kzE" secondAttribute="trailing" constant="17" id="yG3-ib-wDf"/>
+                                            </constraints>
+                                        </view>
+                                    </tabViewItem>
+                                    <tabViewItem label="Live" identifier="3" id="kn0-5u-goF">
+                                        <view key="view" id="MMC-pd-Tge">
+                                            <rect key="frame" x="10" y="33" width="327" height="60"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <subviews>
+                                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="qfc-0M-CNQ">
+                                                    <rect key="frame" x="15" y="40" width="52" height="17"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Live IDs" id="HMW-UT-IAX">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                </textField>
+                                                <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="7Lf-1S-QND" userLabel="Live ids Text Field">
+                                                    <rect key="frame" x="73" y="35" width="237" height="22"/>
+                                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" placeholderString="lv123456789 lv123456789" drawsBackground="YES" id="xTc-Kq-7Rs">
+                                                        <font key="font" metaFont="system"/>
+                                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                    </textFieldCell>
+                                                    <connections>
+                                                        <action selector="performClick:" target="7wB-Z1-VFf" id="Z2Y-fL-JVE"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="qfc-0M-CNQ" firstAttribute="leading" secondItem="MMC-pd-Tge" secondAttribute="leading" constant="17" id="94O-aK-ZOQ"/>
+                                                <constraint firstItem="qfc-0M-CNQ" firstAttribute="top" secondItem="7Lf-1S-QND" secondAttribute="top" id="dRh-Sj-iV8"/>
+                                                <constraint firstItem="7Lf-1S-QND" firstAttribute="leading" secondItem="qfc-0M-CNQ" secondAttribute="trailing" constant="8" symbolic="YES" id="qA5-a9-wJP"/>
+                                                <constraint firstAttribute="bottom" secondItem="7Lf-1S-QND" secondAttribute="bottom" constant="35" id="sdk-HJ-c8D"/>
+                                                <constraint firstItem="qfc-0M-CNQ" firstAttribute="top" secondItem="MMC-pd-Tge" secondAttribute="top" constant="3" id="tNC-hq-iTN"/>
+                                                <constraint firstAttribute="trailing" secondItem="7Lf-1S-QND" secondAttribute="trailing" constant="17" id="u7U-aa-Edo"/>
                                             </constraints>
                                         </view>
                                     </tabViewItem>
@@ -795,6 +829,7 @@
                         <outlet property="applyCommentCheckbox" destination="1UO-z9-O4g" id="BUc-3i-GXu"/>
                         <outlet property="concurrentDownloadCountButton" destination="jui-HF-axQ" id="soH-Ak-QNT"/>
                         <outlet property="emailField" destination="qqe-ie-sAD" id="bne-Pr-WX4"/>
+                        <outlet property="liveIdsTextField" destination="7Lf-1S-QND" id="oBc-CJ-H3t"/>
                         <outlet property="modeTabView" destination="BNv-Yj-Kqq" id="m4h-7G-vk6"/>
                         <outlet property="mylistIdField" destination="fxF-v9-enf" id="d2c-gM-AGq"/>
                         <outlet property="ngLevelSlider" destination="DOy-V1-pZb" id="Kmc-j9-EY9"/>
@@ -835,7 +870,7 @@
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                     <tableColumns>
-                                                        <tableColumn identifier="" width="40" minWidth="40" maxWidth="1000" id="U6T-Yc-QXt">
+                                                        <tableColumn width="40" minWidth="40" maxWidth="1000" id="U6T-Yc-QXt">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="right" title="#">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -872,7 +907,7 @@
                                                                 </tableCellView>
                                                             </prototypeCellViews>
                                                         </tableColumn>
-                                                        <tableColumn identifier="" width="524" minWidth="40" maxWidth="1000" id="aDD-Jd-Ymc">
+                                                        <tableColumn width="524" minWidth="40" maxWidth="1000" id="aDD-Jd-Ymc">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Video Name">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -940,7 +975,7 @@
                                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                                     <tableColumns>
-                                                        <tableColumn identifier="" width="40" minWidth="40" maxWidth="40" id="SP7-sx-BpR">
+                                                        <tableColumn width="40" minWidth="40" maxWidth="40" id="SP7-sx-BpR">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="right" title="#">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -977,7 +1012,7 @@
                                                                 </tableCellView>
                                                             </prototypeCellViews>
                                                         </tableColumn>
-                                                        <tableColumn identifier="" width="507.5" minWidth="10" maxWidth="3.4028234663852886e+38" id="WOm-mu-cw5">
+                                                        <tableColumn width="507.5" minWidth="10" maxWidth="3.4028234663852886e+38" id="WOm-mu-cw5">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Comment File Name">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1014,7 +1049,7 @@
                                                                 </tableCellView>
                                                             </prototypeCellViews>
                                                         </tableColumn>
-                                                        <tableColumn identifier="" width="100" minWidth="100" maxWidth="200" id="i9D-S1-otP">
+                                                        <tableColumn width="100" minWidth="100" maxWidth="200" id="i9D-S1-otP">
                                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Progress">
                                                                 <font key="font" metaFont="smallSystem"/>
                                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1134,7 +1169,7 @@
                                             <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                             <tableColumns>
-                                                <tableColumn identifier="" width="79" minWidth="60" maxWidth="80" id="zoA-Ke-djR">
+                                                <tableColumn width="79" minWidth="60" maxWidth="80" id="zoA-Ke-djR">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="right" title="#">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1171,7 +1206,7 @@
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
-                                                <tableColumn identifier="" width="337" minWidth="200" maxWidth="1000" id="5nn-A3-Psx">
+                                                <tableColumn width="337" minWidth="200" maxWidth="1000" id="5nn-A3-Psx">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1208,7 +1243,7 @@
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
-                                                <tableColumn identifier="" width="30" minWidth="30" maxWidth="30" id="nJR-Er-3SL">
+                                                <tableColumn width="30" minWidth="30" maxWidth="30" id="nJR-Er-3SL">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="center" title="%">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -1241,7 +1276,7 @@
                                                         </tableCellView>
                                                     </prototypeCellViews>
                                                 </tableColumn>
-                                                <tableColumn identifier="" width="100" minWidth="100" maxWidth="100" id="6Gt-HM-V3E">
+                                                <tableColumn width="100" minWidth="100" maxWidth="100" id="6Gt-HM-V3E">
                                                     <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Status">
                                                         <font key="font" metaFont="smallSystem"/>
                                                         <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
