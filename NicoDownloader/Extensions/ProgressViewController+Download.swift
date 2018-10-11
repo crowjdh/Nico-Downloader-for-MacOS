@@ -584,8 +584,7 @@ extension ProgressViewController: CommentBurnerable {
                 }
             }
             if let res = res {
-                self.rtmpdumpProcesses.append(res.0)
-                self.rtmpdumpWorkItems.append(res.1)
+                self.rtmpdumpProcesses.append(res)
             }
         }
     }
@@ -624,8 +623,7 @@ extension ProgressViewController: CommentBurnerable {
                             }
             })
             if let res = res {
-                self.filterProcesses.append(res.0)
-                self.filterWorkItems.append(res.1)
+                self.filterProcesses.append(res)
             }
         }
     }

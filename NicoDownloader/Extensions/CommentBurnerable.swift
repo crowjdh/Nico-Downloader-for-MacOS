@@ -13,7 +13,7 @@ protocol CommentBurnerable {}
 extension CommentBurnerable {
     func applyComment(videoFileURL: URL, filterFileURL: URL,
                       progressCallback: @escaping DoubleCallback,
-                      callback: @escaping (ProcessResult) -> Void) -> (Process, DispatchWorkItem)? {
+                      callback: @escaping (ProcessResult) -> Void) -> Process? {
         return filterVideo(
             inputFilePath: videoFileURL.absoluteString.removingPercentEncoding!,
             outputFilePath: videoFileURL.commentedVideoURL.absoluteString.removingPercentEncoding!,

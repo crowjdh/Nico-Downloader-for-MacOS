@@ -31,9 +31,7 @@ class ProgressViewController: NSViewController {
     var downloadRequests: [DownloadRequest] = []
     var downloadWorkItem: DispatchWorkItem?
     var rtmpdumpProcesses: [Process] = []
-    var rtmpdumpWorkItems: [DispatchWorkItem] = []
     var filterProcesses: [Process] = []
-    var filterWorkItems: [DispatchWorkItem] = []
     var semaphore: DispatchSemaphore?
     var allDone: Bool {
         get {
@@ -131,14 +129,8 @@ extension ProgressViewController: NSWindowDelegate {
         for downloadRequest in self.downloadRequests {
             downloadRequest.cancel()
         }
-        for rtmpdumpWorkItem in self.rtmpdumpWorkItems {
-            rtmpdumpWorkItem.cancel()
-        }
         for rtmpdumpProcess in self.rtmpdumpProcesses {
             rtmpdumpProcess.interrupt()
-        }
-        for filterWorkItem in self.filterWorkItems {
-            filterWorkItem.cancel()
         }
         for filterProcess in self.filterProcesses {
             filterProcess.interrupt()

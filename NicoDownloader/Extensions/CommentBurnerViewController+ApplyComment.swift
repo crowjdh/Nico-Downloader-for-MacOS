@@ -32,8 +32,7 @@ extension CommentBurnerViewController: CommentBurnerable {
                                     }
             })
             if let res = res {
-                self.filterProcesses.append(res.0)
-                self.filterWorkItems.append(res.1)
+                self.filterProcesses.append(res)
             } else {
                 reject(NicoError.UnknownError("Error occurred while applying comment"))
             }
