@@ -206,7 +206,7 @@ extension Comment {
     
     static func fromXml(_ xml: String, videoResolution: VideoResolution) -> [Comment] {
         var comments = [Comment]()
-        parseXml(xml, videoResolution: videoResolution) { comments.append($0.0) }
+        parseXml(xml, videoResolution: videoResolution) { comment, _ in comments.append(comment) }
         return comments
     }
 }
@@ -267,8 +267,8 @@ extension Comment {
         
         let guessedLineHeight = resolution.1 / Comment.maximumLine
         
-        let rawComments = Comment.fromXml(xmlString, videoResolution: resolution).sorted {
-            $0.0.vpos != $0.1.vpos ? $0.0.vpos < $0.1.vpos : $0.0.no < $0.1.no
+        let rawComments = Comment.fromXml(xmlString, videoResolution: resolution).sorted { lhs, rhs in
+            lhs.vpos != rhs.vpos ? lhs.vpos < rhs.vpos : lhs.no < rhs.no
         }
         let comments = Comment.assignLinesToComments(comments: rawComments, videoWidth: Float(resolution.0))
         
@@ -483,7 +483,7 @@ extension Comment {
     
     private func boundingRectSize(withFontSize: Float) -> CGSize {
         let nsText = comment as NSString
-        let dict: [String: NSFont] = [NSFontAttributeName: nsfont(withSize: withFontSize)]
+        let dict: [NSAttributedString.Key: NSFont] = [NSAttributedString.Key.font: nsfont(withSize: withFontSize)]
         return nsText.size(withAttributes: dict)
     }
     

@@ -60,47 +60,47 @@ extension ProgressViewController: CommentBurnerable {
     }
     
     func login() -> Promise<Void> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             self.updateStatusMessage(message: "Logging in...")
             let url = "https://secure.nicovideo.jp/secure/login?site=niconico&mail=\(account.email)&password=\(account.password)"
             sessionManager.request(url, method: .post).responseString { response in
                 switch response.result {
                 case .success(let htmlString):
                     guard !self.cancelled else {
-                        reject(NicoError.Cancelled)
+                        seal.reject(NicoError.Cancelled)
                         return
                     }
                     if let doc = try? HTML(html: htmlString, encoding: .utf8),
                         doc.css("div.notice.error").count == 0 {
-                        fulfill()
+                        seal.fulfill_()
                     } else {
-                        reject(NicoError.LoginError)
+                        seal.reject(NicoError.LoginError)
                     }
                 case .failure(let error):
-                    reject(error)
+                    seal.reject(error)
                 }
             }
         }
     }
     
     func createItems(fromMylist mylist: Mylist) -> Promise<Array<NicoItem>> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             self.updateStatusMessage(message: "Fetching items...")
             let url = "http://www.nicovideo.jp/mylist/\(mylist.id)?rss=2.0"
             sessionManager.request(url, method: .get).responseString { response in
                 switch response.result {
                 case .success(let xmlString):
                     guard !self.cancelled else {
-                        reject(NicoError.Cancelled)
+                        seal.reject(NicoError.Cancelled)
                         return
                     }
                     guard let doc = try? Kanna.XML(xml: xmlString, encoding: .utf8) else {
-                        reject(NicoError.FetchVideoIdsError("Malformed xml"))
+                        seal.reject(NicoError.FetchVideoIdsError("Malformed xml"))
                         return
                     }
                     let itemXmls = doc.xpath("//item")
                     guard itemXmls.count > 0 else {
-                        reject(NicoError.FetchVideoIdsError("Invalid mylist ID"))
+                        seal.reject(NicoError.FetchVideoIdsError("Invalid mylist ID"))
                         return
                     }
                     
@@ -128,9 +128,9 @@ extension ProgressViewController: CommentBurnerable {
                         items = Array(items[from...to])
                     }
                     
-                    fulfill(items)
+                    seal.fulfill(items)
                 case .failure(let error):
-                    reject(error)
+                    seal.reject(error)
                 }
             }
             
@@ -146,7 +146,7 @@ extension ProgressViewController: CommentBurnerable {
     func checkIfAllDone() {
         if self.allDone {
             DispatchQueue.main.async {
-                NSApplication.shared().requestUserAttention(.informationalRequest)
+                NSApplication.shared.requestUserAttention(.informationalRequest)
                 NSUserNotificationCenter.notifyTaskDone() { notification in
                     notification.title = "All tasks done"
                     notification.subtitle = "Downloaded all videos"
@@ -175,7 +175,7 @@ extension ProgressViewController: CommentBurnerable {
                 }
                 downloadPromise.then { _ -> Promise<Void> in
                     guard self.options.applyComment else {
-                        return Promise<Void>.init(value: ())
+                        return Promise<Void>.value
                     }
                     self.items[idx].status = .filtering
                     self.items[idx].duration = getVideoDuration(inputFilePath: self.items[idx].videoFilePath)
@@ -185,7 +185,7 @@ extension ProgressViewController: CommentBurnerable {
                         self.items[idx].filterProgress = $0 / self.items[idx].duration
                         self.reloadTableViewData()
                     }
-                }.then { _ -> Void in
+                }.done { _ -> Void in
                     self.items[idx].status = .done
                     self.togglePreventSleep()
                     semaphore.signal()
@@ -239,7 +239,7 @@ extension ProgressViewController: CommentBurnerable {
             if let filterURL = filterURL {
                 item.filterFileURL = filterURL
             }
-            return Promise<Void>.init(value: ())
+            return Promise<Void>.init()
         }
     }
     
@@ -264,16 +264,16 @@ extension ProgressViewController: CommentBurnerable {
             if let filterURL = filterURL {
                 item.filterFileURL = filterURL
             }
-            return Promise<Void>.init(value: ())
+            return Promise<Void>.init()
         }
     }
     
     func getVideoApiInfoWith(item: NicoVideoItem) -> Promise<[String: String]> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             let videoApiUrl = "http://flapi.nicovideo.jp/api/getflv/\(item.videoId)?as3=1"
             sessionManager.request(videoApiUrl).responseString { response in
                 guard let htmlString = response.result.value else {
-                    reject(NicoError.VideoAPIError)
+                    seal.reject(NicoError.VideoAPIError)
                     return
                 }
                 var apiInfo = [String: String]()
@@ -284,26 +284,26 @@ extension ProgressViewController: CommentBurnerable {
                     var value = keyValueTuple[1]
                     if key.contains("url") || key.contains("ms") {
                         guard let decodedUrl = value.removingPercentEncoding else {
-                            reject(NicoError.VideoAPIError)
+                            seal.reject(NicoError.VideoAPIError)
                             return
                         }
                         value = decodedUrl
                     }
                     apiInfo[key] = value
                 }
-                fulfill(apiInfo)
+                seal.fulfill(apiInfo)
             }
         }
     }
     
     func getNamaVideoApiInfoWith(item: NicoNamaItem) -> Promise<[String: String]> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             let videoApiUrl = "http://watch.live.nicovideo.jp/api/getplayerstatus?v=\(item.videoId)"
             sessionManager.request(videoApiUrl).responseString(encoding: String.Encoding.utf8) { response in
                 switch response.result {
                 case .success(let xmlString):
                     guard let doc = try? Kanna.XML(xml: xmlString, encoding: .utf8) else {
-                        reject(NicoError.FetchVideoIdsError("Malformed xml"))
+                        seal.reject(NicoError.FetchVideoIdsError("Malformed xml"))
                         return
                     }
                     let rtmpPath = doc.at_xpath("//rtmp")
@@ -325,7 +325,7 @@ extension ProgressViewController: CommentBurnerable {
                         let thread = ms.at_xpath("thread")?.text,
                         groups?.count ?? 0 > 0,
                         let found = groups?[0] else {
-                        reject(NicoError.FetchVideoIdsError("Essential element(s) missing"))
+                        seal.reject(NicoError.FetchVideoIdsError("Essential element(s) missing"))
                         return
                     }
                     let videoId = found[1]
@@ -343,16 +343,16 @@ extension ProgressViewController: CommentBurnerable {
                     apiInfo["port"] = port
                     apiInfo["thread"] = thread
                     
-                    fulfill(apiInfo)
+                    seal.fulfill(apiInfo)
                 case .failure(let error):
-                    reject(error)
+                    seal.reject(error)
                 }
             }
         }
     }
     
     func prefetchVideoPage(videoId: String) -> Promise<VideoPageInfo> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             let videoUrl = "http://www.nicovideo.jp/watch/\(videoId)?watch_harmful=1"
             
             let headers: HTTPHeaders = [
@@ -362,12 +362,12 @@ extension ProgressViewController: CommentBurnerable {
                 guard let htmlString = response.result.value,
                     let doc = try? HTML(html: htmlString, encoding: .utf8),
                     let title = doc.title?.replacingOccurrences(of: "/", with: "／") else {
-                    reject(NicoError.FetchVideoPageError)
+                    seal.reject(NicoError.FetchVideoPageError)
                     return
                 }
                 let videoURL = self?.getVideoURLFromVideoPage(document: doc)
                 
-                fulfill((title, videoURL))
+                seal.fulfill((title, videoURL))
             }
         }
     }
@@ -384,9 +384,9 @@ extension ProgressViewController: CommentBurnerable {
     }
     
     func downloadVideo(item: NicoItem, progressCallback: @escaping DoubleCallback) -> Promise<URL> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             guard !cancelled else {
-                reject(NicoError.Cancelled)
+                seal.reject(NicoError.Cancelled)
                 return
             }
             let destination: DownloadRequest.DownloadFileDestination = { temporaryURL, response in
@@ -400,15 +400,15 @@ extension ProgressViewController: CommentBurnerable {
             }
             
             downloadVideoFromURL(url: item.apiInfo["url"]!, to: destination,
-                progressCallback: progressCallback, fulfill: fulfill,
+                progressCallback: progressCallback, fulfill: seal.fulfill,
                 reject: { [weak self] error in
                     guard let me = self else {
                         return
                     }
                     me.downloadVideoFromURL(url: item.apiInfo["url_alt"]!, to: destination,
-                         progressCallback: progressCallback, fulfill: fulfill,
+                         progressCallback: progressCallback, fulfill: seal.fulfill,
                          reject: { error in
-                            reject(error)
+                            seal.reject(error)
                     })
             })
         }
@@ -431,21 +431,21 @@ extension ProgressViewController: CommentBurnerable {
     }
     
     func downloadCommentXml(item: NicoVideoItem) -> Promise<URL?> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             let hasNumaricVideoId = Int(item.videoId) != nil
             if hasNumaricVideoId {
                 getThreadKey(videoId: item.videoId).then { threadKeyAPIResult -> Promise<URL?> in
                     return self.downloadCommentXml(item: item, threadAPIResult: threadKeyAPIResult)
-                }.then { url -> Void in
-                    fulfill(url)
+                }.done { url -> Void in
+                    seal.fulfill(url)
                 }.catch { error in
-                    reject(error)
+                    seal.reject(error)
                 }
             } else {
-                downloadCommentXml(item: item, threadAPIResult: nil).then { url in
-                    fulfill(url)
+                downloadCommentXml(item: item, threadAPIResult: nil).done { url in
+                    seal.fulfill(url)
                 }.catch { error in
-                    reject(error)
+                    seal.reject(error)
                 }
             }
             
@@ -453,13 +453,13 @@ extension ProgressViewController: CommentBurnerable {
     }
     
     func getThreadKey(videoId: String) -> Promise<ThreadKeyAPIResult> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             sessionManager.request(
                 "http://flapi.nicovideo.jp/api/getthreadkey?thread=\(videoId)",
                 method: .get, headers: ["Content-Type":"text/xml"])
                 .responseString(encoding: String.Encoding.utf8) { response in
                     guard let htmlString = response.result.value else {
-                        reject(NicoError.UnknownError("Thread key not found"))
+                        seal.reject(NicoError.UnknownError("Thread key not found"))
                         return
                     }
                     let apiInfoArray = htmlString.components(separatedBy: "&")
@@ -477,25 +477,25 @@ extension ProgressViewController: CommentBurnerable {
                         }
                     }
                     if let threadKey = threadKey, let force184 = force184 {
-                        fulfill((threadKey, force184))
+                        seal.fulfill((threadKey, force184))
                     } else {
-                        reject(NicoError.UnknownError("Insufficient thread key information"))
+                        seal.reject(NicoError.UnknownError("Insufficient thread key information"))
                     }
             }
         }
     }
     
     func downloadCommentXml(item: NicoVideoItem, threadAPIResult: ThreadKeyAPIResult?) -> Promise<URL?> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             guard let host = item.apiInfo["ms"], let threadID = item.apiInfo["thread_id"], let userID = item.apiInfo["user_id"] else {
-                reject(NicoError.UnknownError("Insufficient api information"))
+                seal.reject(NicoError.UnknownError("Insufficient api information"))
                 return
             }
             sessionManager.request(host, method: .post, encoding: NicoCommentEncoding(threadID: threadID, userID: userID, threadAPIResult: threadAPIResult)).responseString(encoding: String.Encoding.utf8) { response in
                 switch response.result {
                 case .success(let xmlString):
                     guard !self.cancelled else {
-                        reject(NicoError.Cancelled)
+                        seal.reject(NicoError.Cancelled)
                         return
                     }
                     
@@ -508,22 +508,22 @@ extension ProgressViewController: CommentBurnerable {
                     } catch {
                         print("Error occurred while saving comments")
                     }
-                    fulfill(filterURL)
+                    seal.fulfill(filterURL)
                 case .failure(let error):
-                    reject(error)
+                    seal.reject(error)
                 }
             }
         }
     }
     
     func downloadNamaCommentXml(item: NicoNamaItem) -> Promise<URL?> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             guard let portTable = loadNicoNamaPortTable(),
                 let addr = item.apiInfo["addr"],
                 let port = item.apiInfo["port"],
                 let convertedPort = portTable[port],
                 let thread = item.apiInfo["thread"] else {
-                    reject(NicoError.UnknownError("Can't download nico nama comment"))
+                    seal.reject(NicoError.UnknownError("Can't download nico nama comment"))
                     return
             }
             let url = "http://\(addr):\(convertedPort)/api/thread?version=20061206&thread=\(thread)&res_from=-1000"
@@ -531,7 +531,7 @@ extension ProgressViewController: CommentBurnerable {
                 switch response.result {
                 case .success(let xmlString):
                     guard !self.cancelled else {
-                        reject(NicoError.Cancelled)
+                        seal.reject(NicoError.Cancelled)
                         return
                     }
                     
@@ -544,16 +544,16 @@ extension ProgressViewController: CommentBurnerable {
                     } catch {
                         print("Error occurred while saving comments")
                     }
-                    fulfill(filterURL)
+                    seal.fulfill(filterURL)
                 case .failure(let error):
-                    reject(error)
+                    seal.reject(error)
                 }
             }
         }
     }
     
     func downloadNamaVideo(item: NicoNamaItem, progressCallback: @escaping DoubleCallback) -> Promise<URL> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             guard let url = item.apiInfo["url"],
                 let ticket = item.apiInfo["ticket"],
                 let videoId = item.apiInfo["video_id"],
@@ -578,9 +578,9 @@ extension ProgressViewController: CommentBurnerable {
                 }
             }) { output, error, status in
                 if status == 0 {
-                    fulfill(outputFileURL)
+                    seal.fulfill(outputFileURL)
                 } else {
-                    reject(NicoError.UnknownError(error.joined(separator: "\n")))
+                    seal.reject(NicoError.UnknownError(error.joined(separator: "\n")))
                 }
             }
             if let res = res {
@@ -608,18 +608,18 @@ extension ProgressViewController: CommentBurnerable {
     }
     
     func applyComment(item: NicoItem, progressCallback: @escaping DoubleCallback) -> Promise<Void> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             guard let filterURL = item.filterFileURL else {
-                fulfill()
+                seal.fulfill_()
                 return
             }
             let res = applyComment(videoFileURL: item.videoFileURL,
                          filterFileURL: filterURL,
                          progressCallback: progressCallback, callback: { output, error, status in
                             if status == 0 {
-                                fulfill()
+                                seal.fulfill_()
                             } else {
-                                reject(NicoError.UnknownError(error.joined(separator: "\n")))
+                                seal.reject(NicoError.UnknownError(error.joined(separator: "\n")))
                             }
             })
             if let res = res {

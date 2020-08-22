@@ -40,7 +40,9 @@ public extension String {
         let char0 = index(startIndex, offsetBy: range.lowerBound)
         let charN = index(startIndex, offsetBy: range.upperBound)
         
-        return self[char0..<charN]
+//        let a = self[char0..<charN]
+        
+        return String(self[char0..<charN])
         
     }
     
@@ -90,8 +92,8 @@ public struct Array2D {
 
 public func levenshtein(source: String, target targetString: String) -> Int {
     
-    let targetLength = targetString.characters.count
-    let sourceLength = source.characters.count
+    let targetLength = targetString.count
+    let sourceLength = source.count
     guard targetLength > 0 && sourceLength > 0 else { return max(targetLength, sourceLength) }
     
     let source = Array(source.unicodeScalars)
@@ -145,7 +147,7 @@ public func levenshtein(source: String, target targetString: String) -> Int {
 
 public extension String {
     var length: Int {
-        return characters.count
+        return count
     }
     
     func levenshteinDistance(between target: String) -> Int {
@@ -155,6 +157,6 @@ public extension String {
     func levenshteinPortion(between target: String) -> Double {
         guard self.length > 0 && target.length > 0 else { return Double(max(self.length, target.length)) }
         let distance = levenshtein(source: self, target: target)
-        return Double(distance) / Double(max(self.characters.count, target.characters.count))
+        return Double(distance) / Double(max(self.count, target.count))
     }
 }

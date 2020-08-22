@@ -14,7 +14,7 @@ extension NSViewController {
         let openPanel = NSOpenPanel()
         config(openPanel)
         
-        return openPanel.runModal() == NSFileHandlingPanelOKButton ? openPanel.urls : []
+        return openPanel.runModal().rawValue == NSFileHandlingPanelOKButton ? openPanel.urls : []
     }
     
     func iterateURLs(fileURLs: [URL], callback: (URL, Bool) -> Void) {

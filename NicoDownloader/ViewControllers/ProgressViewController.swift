@@ -35,7 +35,7 @@ class ProgressViewController: NSViewController {
     var semaphore: DispatchSemaphore?
     var allDone: Bool {
         get {
-            return self.items.reduce(true) { $0.0 && ($0.1.status == .done || $0.1.status == .error) }
+            return self.items.reduce(true) { $0 && ($1.status == .done || $1.status == .error) }
         }
     }
     
@@ -55,13 +55,13 @@ class ProgressViewController: NSViewController {
             case let mylist as Mylist:
                 return self.createItems(fromMylist: mylist)
             case let videos as Videos:
-                return Promise<Array<NicoItem>>(value: videos.ids.map { NicoVideoItem(videoId: $0) })
+                return Promise.value(videos.ids.map { NicoVideoItem(videoId: $0) })
             case let lives as Lives:
-                return Promise<Array<NicoItem>>(value: lives.ids.map { NicoNamaItem(videoId: $0) })
+                return Promise.value(lives.ids.map { NicoNamaItem(videoId: $0) })
             default:
                 throw NicoError.UnknownError("Invalid videoInfo.")
             }
-        }.then{ items -> Void in
+        }.done{ items -> Void in
             self.items = items
             self.downloadProgressTableView.reloadData()
             self.download()
@@ -102,7 +102,7 @@ class ProgressViewController: NSViewController {
             alert.addButton(withTitle: "OK")
             alert.addButton(withTitle: "Cancel")
             alert.beginSheetModal(for: view.window!) { response in
-                if response == NSAlertFirstButtonReturn {
+                if response == NSApplication.ModalResponse.alertFirstButtonReturn {
                     self.cancelled = true
                 }
             }
@@ -135,7 +135,7 @@ extension ProgressViewController: NSWindowDelegate {
         for filterProcess in self.filterProcesses {
             filterProcess.interrupt()
         }
-        dismissViewController(self)
+        dismiss(self)
     }
 }
 

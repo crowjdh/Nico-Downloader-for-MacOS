@@ -12,7 +12,7 @@ extension NSTextCheckingResult {
     func groups(src: String) -> [String?] {
         var groups = [String?]()
         for i in  0 ..< self.numberOfRanges {
-            let group = String(src[Range(self.rangeAt(i), in: src)!]) ?? nil
+            let group = String(src[Range(self.range(at: i), in: src)!])
             groups.append(group)
         }
         return groups

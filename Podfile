@@ -5,9 +5,9 @@ target 'NicoDownloader' do
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
   use_frameworks!
   pod 'Alamofire', '~> 4.3'
-  pod 'Kanna', '~> 4.0.0'
-  pod 'PromiseKit/Alamofire', '~> 4.0'
-  pod 'KeychainAccess'
+  pod 'Kanna', '~> 5.0.0'
+  pod 'PromiseKit/Alamofire', '~> 6.0'
+  pod 'KeychainAccess', '~> 4.1'
 
   # Pods for NicoDownloader
 
