@@ -149,7 +149,7 @@ class ViewController: NSViewController {
         let box = animate ? advancedOptionsBox.animator() : advancedOptionsBox
         let disclosure = animate ? advancedOptionsDisclosure.animator() : advancedOptionsDisclosure
         
-        constraint!.constant = show ? 104 : 0
+        constraint!.constant = show ? 133 : 0
         box!.isHidden = !show
         disclosure!.state = show ? NSControl.StateValue.on : NSControl.StateValue.off
     }
