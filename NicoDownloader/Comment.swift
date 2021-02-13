@@ -8,10 +8,17 @@
 
 import Foundation
 import Kanna
+import SwiftyJSON
 
 let videoExtensions: [String] = mimeTypes.filter { topLevelMimeTypeOf(mimeType: $0.value) == "video" }.flatMap { $0.0 }
 let commentExtension = "comment"
 let filterExtension = "filter"
+
+enum CommentError: Error {
+    case XMLParseError
+    case JSONParseError
+    case RawSourceError
+}
 
 enum Size: String, Iterable {
     case small
@@ -171,42 +178,202 @@ struct Comment {
     }
 }
 
-extension Comment {
-    static func parseXml(_ xml: String, videoResolution: VideoResolution, parsed: (Comment, Bool) -> Void) {
-        guard let doc = try? Kanna.XML(xml: xml, encoding: .utf8) else {
-            return
+protocol CommentConvertable {
+    associatedtype T
+    
+    var score: Int? { get }
+    var no: Int? { get }
+    var vpos: Int? { get }
+    var deleted: Int? { get }
+    var position: Position { get }
+    var size: Size { get }
+    var colorHex: String { get }
+    var content: String? { get }
+    var commands: [String]? { get }
+    
+    static func from(rawConvertable: T) -> Self
+}
+
+extension CommentConvertable {
+    var position: Position {
+        commands?.compactMap { Position.init(rawValue: $0) }.first ?? Position.naka
+    }
+    var size: Size {
+        commands?.compactMap { Size.init(rawValue: $0) }.first ?? Size.medium
+    }
+    var colorHex: String {
+        commands?.compactMap { nicoColorToHex(hexColor: $0) }.first ?? nicoColorToHex(hexColor: "white")!
+    }
+}
+
+struct XMLComment: CommentConvertable {
+    
+    typealias T = Kanna.XMLElement
+    
+    var score: Int? {
+        integer(atPath: "@score")
+    }
+    var no: Int? {
+        integer(atPath: "@no")
+    }
+    var vpos: Int? {
+        integer(atPath: "@vpos")
+    }
+    var deleted: Int? {
+        integer(atPath: "@deleted")
+    }
+    var content: String? {
+        xmlElement.text
+    }
+    var commands: [String]? {
+        let command = string(atPath: "@mail") ?? ""
+        return command.components(separatedBy: " ")
+    }
+    
+    private var xmlElement: Kanna.XMLElement
+    
+    init(fromXmlElement xmlElement: Kanna.XMLElement) {
+        self.xmlElement = xmlElement
+    }
+    
+    static func from(rawConvertable: T) -> Self {
+        return XMLComment(fromXmlElement: rawConvertable)
+    }
+    
+    private func integer(atPath path: String) -> Int? {
+        guard let contentString = string(atPath: path),
+            let contentInt = Int(contentString) else {
+            return nil
         }
-        let ngLevel = NGLevel.load()
+        return contentInt
+    }
+    
+    private func string(atPath path: String) -> String? {
+        return xmlElement.at_xpath(path)?.text
+    }
+}
+
+struct JSONComment: CommentConvertable {
+    
+    typealias T = JSON
+    
+    var score: Int? {
+        jsonElement["score"].int
+    }
+    var no: Int? {
+        jsonElement["no"].int
+    }
+    var vpos: Int? {
+        jsonElement["vpos"].int
+    }
+    var deleted: Int? {
+        jsonElement["deleted"].int
+    }
+    var content: String? {
+        jsonElement["content"].string
+    }
+    var commands: [String]? {
+        let command = jsonElement["mail"].string ?? ""
+        return command.components(separatedBy: " ")
+    }
+    
+    private var jsonElement: JSON
+    
+    init(fromJsonElement jsonElement: JSON) {
+        self.jsonElement = jsonElement
+    }
+    
+    static func from(rawConvertable: T) -> Self {
+        return JSONComment(fromJsonElement: rawConvertable)
+    }
+}
+
+extension Comment {
+    
+    static func parseXml(_ xml: String, videoResolution: VideoResolution, parsed: (Comment, Bool) -> Void) throws {
+        guard let doc = try? Kanna.XML(xml: xml, encoding: .utf8) else {
+            throw CommentError.XMLParseError
+        }
         let chatXmls = doc.xpath("//chat")
-        for (index, chatXml) in chatXmls.enumerated() {
-            if let score_text = chatXml.at_xpath("@score")?.text,
-                let score = Int(score_text),
-                ngLevel.shouldNotDisplay(score: score) {
-                continue
-            }
-            guard let no = chatXml.at_xpath("@no")?.text,
-                let vpos = chatXml.at_xpath("@vpos")?.text,
-                chatXml.at_xpath("@deleted") == nil,
-                let comment = chatXml.text else {
-                    continue
-            }
-            let command = chatXml.at_xpath("@mail")?.text ?? ""
-            let commandElems = command.components(separatedBy: " ")
-            
-            let position = commandElems.flatMap { Position.init(rawValue: $0) }.first ?? Position.naka
-            let size = commandElems.flatMap { Size.init(rawValue: $0) }.first ?? Size.medium
-            let colorHex = commandElems.flatMap { nicoColorToHex(hexColor: $0) }.first ?? nicoColorToHex(hexColor: "white")!
-            
-            parsed(Comment(no: Int(no)!, vpos: Int(vpos)!, size: size,
-                           position: position, color: colorHex,
-                           comment: comment, videoResolution: videoResolution),
-                   index >= chatXmls.count-1)
+        guard chatXmls.count > 0 else {
+            throw CommentError.XMLParseError
+        }
+        
+        parse(chatXmls, videoResolution: videoResolution, adapter: XMLComment.self) { index, comment in
+            parsed(comment, index >= chatXmls.count - 1)
         }
     }
     
-    static func fromXml(_ xml: String, videoResolution: VideoResolution) -> [Comment] {
+    static func parseJson(_ jsonString: String, videoResolution: VideoResolution, parsed: (Comment, Bool) -> Void) throws {
+        let json = JSON(parseJSON: jsonString)
+        guard let chats = json.array?.filter({ $0["chat"].exists() }).compactMap({ $0["chat"] }) else {
+            throw CommentError.JSONParseError
+        }
+        
+        parse(chats, videoResolution: videoResolution, adapter: JSONComment.self) { index, comment in
+            parsed(comment, index >= chats.count - 1)
+        }
+    }
+    
+    static func parse<T: CommentConvertable, U: Sequence>(_ rawComments: U, videoResolution: VideoResolution, adapter: T.Type, each: (Int, Comment) -> Void) {
+        for (index, element) in rawComments.enumerated() {
+            guard let element = element as? T.T else {
+                continue
+            }
+            let convrtable = adapter.from(rawConvertable: element)
+            guard let comment = parseElement(commentConvertable: convrtable, videoResolution: videoResolution) else {
+                continue
+            }
+            
+            each(index, comment)
+        }
+    }
+    
+    static func parseElement<T: CommentConvertable>(commentConvertable: T, videoResolution: VideoResolution) -> Comment? {
+        let ngLevel = NGLevel.load()
+        if let score = commentConvertable.score,
+            ngLevel.shouldNotDisplay(score: score) {
+            return nil
+        }
+        guard let no = commentConvertable.no,
+              let vpos = commentConvertable.vpos,
+              commentConvertable.deleted == nil,
+              let comment = commentConvertable.content else {
+            return nil
+        }
+        
+        return Comment(no: no,
+                       vpos: vpos,
+                       size: commentConvertable.size,
+                       position: commentConvertable.position,
+                       color: commentConvertable.colorHex,
+                       comment: comment,
+                       videoResolution: videoResolution)
+    }
+    
+    static func from(_ rawComments: String, videoResolution: VideoResolution) throws -> [Comment] {
+        var comments: [Comment]? = nil
+        comments = try? fromXml(rawComments, videoResolution: videoResolution)
+        if comments == nil {
+            comments = try? fromJson(rawComments, videoResolution: videoResolution)
+        }
+        
+        if let comments = comments {
+            return comments
+        }
+        
+        throw CommentError.RawSourceError
+    }
+    
+    static func fromXml(_ xml: String, videoResolution: VideoResolution) throws -> [Comment] {
         var comments = [Comment]()
-        parseXml(xml, videoResolution: videoResolution) { comment, _ in comments.append(comment) }
+        try parseXml(xml, videoResolution: videoResolution) { comment, _ in comments.append(comment) }
+        return comments
+    }
+    
+    static func fromJson(_ jsonString: String, videoResolution: VideoResolution) throws -> [Comment] {
+        var comments = [Comment]()
+        try parseJson(jsonString, videoResolution: videoResolution) { comment, _ in comments.append(comment) }
         return comments
     }
 }
@@ -218,26 +385,26 @@ extension Comment {
             at: url, withIntermediateDirectories: true, attributes: nil)
     }
     
-    static func saveOriginalComment(fromXmlString xmlString: String, item: NicoItem) throws {
+    static func saveOriginalComment(fromSourceString sourceString: String, item: NicoItem) throws {
         try createDirectory(url: item.videoFileURL.filterFileRootURL)
         
         let fileURL = item.videoFileURL.commentFileURL
-        try xmlString.write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
+        try sourceString.write(to: fileURL, atomically: false, encoding: String.Encoding.utf8)
     }
     
     static func saveFilterFile(fromCommentFile commentFileURL: URL, item: FilterItem) throws -> URL? {
         guard let videoFileURL = item.videoFileURL else {
             return nil
         }
-        let xmlString = try String(contentsOf: commentFileURL, encoding: .utf8)
-        return try saveFilterFile(fromXmlString: xmlString, videoFileURL: videoFileURL)
+        let sourceString = try String(contentsOf: commentFileURL, encoding: .utf8)
+        return try saveFilterFile(fromSourceString: sourceString, videoFileURL: videoFileURL)
     }
     
-    static func saveFilterFile(fromXmlString xmlString: String, item: NicoItem) throws -> URL {
-        return try saveFilterFile(fromXmlString: xmlString, videoFileURL: item.videoFileURL)
+    static func saveFilterFile(fromSourceString sourceString: String, item: NicoItem) throws -> URL {
+        return try saveFilterFile(fromSourceString: sourceString, videoFileURL: item.videoFileURL)
     }
     
-    static func saveFilterFile(fromXmlString xmlString: String,
+    static func saveFilterFile(fromSourceString sourceString: String,
                                videoFileURL: URL) throws -> URL {
         try createDirectory(url: videoFileURL.filterFileRootURL)
         let filterURL = videoFileURL.filterFileURL
@@ -267,7 +434,7 @@ extension Comment {
         
         let guessedLineHeight = resolution.1 / Comment.maximumLine
         
-        let rawComments = Comment.fromXml(xmlString, videoResolution: resolution).sorted { lhs, rhs in
+        let rawComments = try Comment.from(sourceString, videoResolution: resolution).sorted { lhs, rhs in
             lhs.vpos != rhs.vpos ? lhs.vpos < rhs.vpos : lhs.no < rhs.no
         }
         let comments = Comment.assignLinesToComments(comments: rawComments, videoWidth: Float(resolution.0))

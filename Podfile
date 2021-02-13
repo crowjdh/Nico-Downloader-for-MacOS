@@ -8,6 +8,9 @@ target 'NicoDownloader' do
   pod 'Kanna', '~> 5.0.0'
   pod 'PromiseKit/Alamofire', '~> 6.0'
   pod 'KeychainAccess', '~> 4.1'
+  
+  pod 'SwiftSoup'
+  pod 'SwiftyJSON', '~> 4.0'
 
   # Pods for NicoDownloader
 

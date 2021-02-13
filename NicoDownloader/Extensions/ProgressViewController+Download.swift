@@ -62,8 +62,13 @@ extension ProgressViewController: CommentBurnerable {
     func login() -> Promise<Void> {
         return Promise { seal in
             self.updateStatusMessage(message: "Logging in...")
-            let url = "https://secure.nicovideo.jp/secure/login?site=niconico&mail=\(account.email)&password=\(account.password)"
-            sessionManager.request(url, method: .post).responseString { response in
+            let loginBody = [
+                "mail_tel":  account.email,
+                "password":  account.password,
+                "auth_id":  "2576668040",
+            ]
+            let url = "https://account.nicovideo.jp/login/redirector?show_button_twitter=1&site=niconico&show_button_facebook=1"
+            sessionManager.request(url, method: .post, parameters: loginBody).responseString { response in
                 switch response.result {
                 case .success(let htmlString):
                     guard !self.cancelled else {
@@ -169,7 +174,9 @@ extension ProgressViewController: CommentBurnerable {
                 
                 var downloadPromise: Promise<Void>! = nil
                 if let item = self.items[idx] as? NicoVideoItem {
-                    downloadPromise = self.downloadNicoVideoAndComment(item: item)
+                    // TODO: Currently haven't tested out enough. Remove after validating.
+//                    downloadPromise = self.downloadNicoVideoAndComment(item: item)
+                    downloadPromise = self.downloadNicoVideoAndCommentUsingNewAPI(item: item)
                 } else if let item = item as? NicoNamaItem {
                     downloadPromise = self.downloadNicoNamaVideoAndComment(item: item)
                 }
@@ -502,9 +509,9 @@ extension ProgressViewController: CommentBurnerable {
                     var filterURL: URL? = nil
                     do {
                         try Comment.saveOriginalComment(
-                            fromXmlString: xmlString, item: item)
+                            fromSourceString: xmlString, item: item)
                         filterURL = try Comment.saveFilterFile(
-                            fromXmlString: xmlString, item: item)
+                            fromSourceString: xmlString, item: item)
                     } catch {
                         print("Error occurred while saving comments")
                     }
@@ -538,9 +545,9 @@ extension ProgressViewController: CommentBurnerable {
                     var filterURL: URL? = nil
                     do {
                         try Comment.saveOriginalComment(
-                            fromXmlString: xmlString, item: item)
+                            fromSourceString: xmlString, item: item)
                         filterURL = try Comment.saveFilterFile(
-                            fromXmlString: xmlString, item: item)
+                            fromSourceString: xmlString, item: item)
                     } catch {
                         print("Error occurred while saving comments")
                     }

@@ -31,6 +31,31 @@ func filterVideo(inputFilePath: String, outputFilePath: String,
     }
 }
 
+func concatVideos(inputFilesUrl: URL, fileExtension: String, outputFileURL: URL,
+                 callback: @escaping (ProcessResult) -> Void) -> Process? {
+    let concatInputFileName = "concat_input_file.txt"
+    let concatInputFilePath = inputFilesUrl.appendingPathComponent(concatInputFileName)
+    try? FileManager.default.contentsOfDirectory(at: inputFilesUrl, includingPropertiesForKeys: nil)
+        .filter { $0.pathExtension == fileExtension }
+        .sorted(by: { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending })
+        .map { (inputFileUrl: URL) -> String in
+            return "file '\(inputFileUrl.path)'"
+        }
+        .joined(separator: "\n")
+        .write(to: concatInputFilePath, atomically: true, encoding: .utf8)
+    let arguments = [
+        "-f", "concat",
+        "-safe", "0",
+        "-i", "\(concatInputFilePath.path)",
+        "-c", "copy",
+        outputFileURL.path
+    ]
+    return requestProcess(bundleName: "ffmpeg", arguments: arguments) { processResult in
+        callback(processResult)
+        try? FileManager.default.removeItem(at: concatInputFilePath)
+    }
+}
+
 func rtmpdump(withArguments arguments: [String], progressCallback: ProgressCallback? = nil,
               callback: @escaping (ProcessResult) -> Void) -> Process? {
     return requestProcess(bundleName: "rtmpdump", arguments: arguments,
@@ -49,8 +74,8 @@ func getVideoResolution(inputFilePath: String) -> VideoResolution? {
         inputFilePath
     ]
     guard let output = requestProcess(bundleName: "ffprobe", arguments: arguments)?.0,
-        output.count == 2,
-        output[0] != probeUnavailable, output[1] != probeUnavailable else {
+          output.count >= 2,
+          output[0] != probeUnavailable, output[1] != probeUnavailable else {
         return nil
     }
     let widthString = output[0].components(separatedBy: "=")[1]
@@ -111,7 +136,14 @@ private func requestProcess(bundleName: String, bundleType: String? = nil,
         return nil
     }
     process!.launch()
-    process!.waitUntilExit()
+    while true {
+        process!.waitUntilExit()
+        
+        if result != nil {
+            break
+        }
+        usleep(100)
+    }
     
     return result
 }

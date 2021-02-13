@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 enum Status {
     case sleeping
@@ -75,7 +76,9 @@ class NicoVideoItem: NicoItem {
     var name: String!
     var pubdate: Date?
     var status: Status = .sleeping
+    // XXX: Deprecated
     var apiInfo: [String: String]!
+    var apiDataJson: JSON!
     var videoFileURL: URL!
     var filterFileURL: URL?
     var duration: Double!
