@@ -14,6 +14,7 @@ enum NicoError: Error {
     case LoginError
     case FetchVideoIdsError(String)
     case VideoAPIError
+    case SessionAPIError(String)
     case FetchVideoPageError
     case Cancelled
     case UnknownError(String)

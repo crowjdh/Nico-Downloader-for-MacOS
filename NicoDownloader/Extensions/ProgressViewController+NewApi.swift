@@ -21,10 +21,6 @@ typealias Headers = [String:String]
 let maxCommentCnt = Int(72e3);
 let defaultCommentCntPerLeaf = 100;
 
-enum SomeError: Error {
-    case Some
-}
-
 class Retrier: RequestRetrier {
     let retryLimit = 3
     func should(_ manager: SessionManager, retry request: Request, with error: Error, completion: @escaping RequestRetryCompletion) {
@@ -69,13 +65,14 @@ extension ProgressViewController {
             .then { (videoPageResponse: StringResponse) -> Promise<URL> in
                 let videoPage = videoPageResponse.string
                 
-                item.apiDataJson = try! self.getApiDataJson(fromVideoPage: videoPage)
+                item.apiDataJson = try self.getApiDataJson(fromVideoPage: videoPage)
                 
                 item.name = item.apiDataJson["video"]["title"].stringValue
                 item.status = .downloading
+                
                 self.reloadTableViewData()
                 
-                return self.requestVideo(item: item, headers: headers)
+                return try self.requestVideo(item: item, headers: headers)
             }.then { (savedVideoURL: URL) -> Promise<StringResponse> in
                 item.videoFileURL = savedVideoURL
                 
@@ -85,39 +82,22 @@ extension ProgressViewController {
             }
     }
     
-    private func requestVideo(item: NicoVideoItem, headers: Headers) -> Promise<URL> {
-        let sessionData = self.createSessionData(fromApiDataJson: item.apiDataJson)
+    private func requestVideo(item: NicoVideoItem, headers: Headers) throws -> Promise<URL> {
+        let sessionData = try self.createSessionData(fromApiDataJson: item.apiDataJson)
         let outputDir = self.options.saveDirectory.appendingPathComponent(item.name, isDirectory: true)
-        try? FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true, attributes: nil)
+        try FileManager.default.createDirectory(at: outputDir, withIntermediateDirectories: true, attributes: nil)
         
         return sessionManager.upload(sessionData, to: "https://api.dmc.nico/api/sessions?_format=json").responseString()
             .then { (sessionResponse: StringResponse) -> Promise<(String, StringResponse)> in
-                let contentUri = try! self.getContentUri(responseString: sessionResponse.string, headers: headers)
+                let contentUri = try self.getContentUri(sessionResponseString: sessionResponse.string, headers: headers)
                 return self.sessionManager.request(contentUri, method: .get, headers: headers).responseString().map { (contentUri, $0) }
-            }.then { (contentUri: String, response: StringResponse) -> Promise<(String, StringResponse)> in
-                let playlistUri = self.getPlaylistUri(responseString: response.string, contentUri: contentUri)
+            }.then { (contentUri: String, contentResponse: StringResponse) -> Promise<(String, StringResponse)> in
+                let playlistUri = try self.getPlaylistUri(contentResponseString: contentResponse.string, contentUri: contentUri)
                 
                 return self.sessionManager.request(playlistUri, method: .get, headers: headers).responseString().map { (playlistUri, $0) }
-            }.then { (playlistUri: String, response: StringResponse) -> Promise<[DownloadResponse<Data>]> in
-                let tsUrls = self.getTsUrls(responseString: response.string, playlistUri: playlistUri)
-                var tsUrlSet = Set(tsUrls)
-                
-                let dest = { (url: URL, urlResponse: HTTPURLResponse) -> (destinationURL: URL, options: DownloadRequest.DownloadOptions) in
-                    let destURL = outputDir.appendingPathComponent(urlResponse.url!.lastPathComponent)
-                    return (destURL, [.removePreviousFile])
-                }
-                let downloadPromises = tsUrls.map { (tsUrl: String) -> Promise<DownloadResponse<Data>> in
-                    let request = self.sessionManager.download(tsUrl, method: .get, headers: headers, to: dest)
-                    request.validate(statusCode: [200])
-
-                    return request.responseData().then { (response: DownloadResponse<Data>) -> Promise<DownloadResponse<Data>> in
-                        tsUrlSet.remove(tsUrl)
-                        item.progress = (1 - Double(tsUrlSet.count) / Double(tsUrls.count))
-                        self.reloadTableViewData()
-                        
-                        return Promise.value(response)
-                    }
-                }
+            }.then { (playlistUri: String, playlistResponse: StringResponse) -> Promise<[DownloadResponse<Data>]> in
+                item.tsURLs = try self.getTsUrls(playlistResponseString: playlistResponse.string, playlistUri: playlistUri)
+                let downloadPromises = self.createDownloadTSVideoPromises(item: item, outputDir: outputDir, headers: headers)
 
                 return when(fulfilled: downloadPromises.makeIterator(), concurrently: 2)
             }.then { (downloadResponses: [DownloadResponse<Data>]) -> Promise<URL> in
@@ -129,6 +109,29 @@ extension ProgressViewController {
                     }
                 }
             }
+    }
+    
+    private func createDownloadTSVideoPromises(item: NicoVideoItem, outputDir: URL, headers: Headers) -> [Promise<DownloadResponse<Data>>] {
+        var tsUrlSet = Set(item.tsURLs)
+        
+        let dest = { (url: URL, urlResponse: HTTPURLResponse) -> (destinationURL: URL, options: DownloadRequest.DownloadOptions) in
+            let destURL = outputDir.appendingPathComponent(urlResponse.url!.lastPathComponent)
+            return (destURL, [.removePreviousFile])
+        }
+        let downloadPromises = item.tsURLs.map { (tsUrl: String) -> Promise<DownloadResponse<Data>> in
+            let request = self.sessionManager.download(tsUrl, method: .get, headers: headers, to: dest)
+            request.validate(statusCode: [200])
+
+            return request.responseData().then { (response: DownloadResponse<Data>) -> Promise<DownloadResponse<Data>> in
+                tsUrlSet.remove(tsUrl)
+                item.progress = (1 - Double(tsUrlSet.count) / Double(item.tsURLs.count))
+                self.reloadTableViewData()
+                
+                return Promise.value(response)
+            }
+        }
+        
+        return downloadPromises
     }
     
     private func requestComment(item: NicoVideoItem, headers: Headers) -> Promise<StringResponse> {
@@ -162,18 +165,23 @@ extension ProgressViewController {
         guard let doc = try? SwiftSoup.parse(videoPage),
             let temp = try? doc.select("div#js-initial-watch-data").first(),
             let apiData = try? temp.attr("data-api-data") else {
-                print("Error occurred while parsing.")
-                throw SomeError.Some
+            print("Error occurred while parsing.")
+            throw NicoError.VideoAPIError
         }
+        
         return JSON(parseJSON: apiData)
     }
 
-    private func createSessionData(fromApiDataJson apiDataJson: JSON) -> Data {
+    private func createSessionData(fromApiDataJson apiDataJson: JSON) throws -> Data {
         let sessionApi = apiDataJson["video"]["dmcInfo"]["session_api"]
         let session = createSession(sessionApi: sessionApi)
         let sessionString = JSON(session).description.split(separator: "\n").joined()
+        
+        guard let sessionData = sessionString.data(using: .utf8) else {
+            throw NicoError.SessionAPIError("Error while encoding session data: \(sessionString)")
+        }
 
-        return sessionString.data(using: .utf8)!
+        return sessionData
     }
     
     private func createApiJsonRequestBody(fromApiDataJson apiDataJson: JSON) -> String {
@@ -202,34 +210,38 @@ extension ProgressViewController {
         return "[{\"ping\":{\"content\":\"rs:0\"}},{\"ping\":{\"content\":\"ps:0\"}},{\"thread\":{\"thread\":\"\(threadId)\",\"version\":\"20090904\",\"fork\":0,\"language\":0,\"user_id\":\"\(userId)\",\"with_global\":1,\"scores\":1,\"nicoru\":3,\"userkey\":\"\(userKey)\"}},{\"ping\":{\"content\":\"pf:0\"}},{\"ping\":{\"content\":\"ps:1\"}},{\"thread_leaves\":{\"thread\":\"\(threadId)\",\"fork\":0,\"language\":0,\"user_id\":\"\(userId)\",\"content\":\"0-\(leafCnt):100,\(resFrom),nicoru:100\",\"scores\":1,\"nicoru\":3,\"userkey\":\"\(userKey)\"}},{\"ping\":{\"content\":\"pf:1\"}},{\"ping\":{\"content\":\"ps:2\"}},{\"thread\":{\"thread\":\"\(threadId)\",\"version\":\"20090904\",\"fork\":2,\"language\":0,\"user_id\":\"\(userId)\",\"with_global\":1,\"scores\":1,\"nicoru\":3,\"userkey\":\"\(userKey)\"}},{\"ping\":{\"content\":\"pf:2\"}},{\"ping\":{\"content\":\"ps:3\"}},{\"thread_leaves\":{\"thread\":\"\(threadId)\",\"fork\":2,\"language\":0,\"user_id\":\"\(userId)\",\"content\":\"0-\(leafCnt):25,nicoru:100\",\"scores\":1,\"nicoru\":3,\"userkey\":\"\(userKey)\"}},{\"ping\":{\"content\":\"pf:3\"}},{\"ping\":{\"content\":\"rf:0\"}}]"
     }
     
-    private func getContentUri(responseString: String, headers: Headers) throws -> String {
-        guard let dataFromString = responseString.data(using: .utf8, allowLossyConversion: false),
+    private func getContentUri(sessionResponseString: String, headers: Headers) throws -> String {
+        guard let dataFromString = sessionResponseString.data(using: .utf8, allowLossyConversion: false),
             let sessionJson = try? JSON(data: dataFromString) else {
-                throw SomeError.Some
+            throw NicoError.SessionAPIError("Error while parsing session json response")
         }
         return sessionJson["data"]["session"]["content_uri"].stringValue
     }
 
-    private func getPlaylistUri(responseString: String, contentUri: String) -> String {
-        let playlistPostfix = responseString.split(separator: "\n").last!
+    private func getPlaylistUri(contentResponseString: String, contentUri: String) throws -> String {
+        guard let r = contentUri.range(of: "master"),
+              let playlistPostfix = contentResponseString.split(separator: "\n").last else {
+            throw NicoError.SessionAPIError("Error while parsing playlist URI from: \(contentResponseString)")
+        }
 
-        let r: Range! = contentUri.range(of: "master")
-
-        let prefixUri = String(contentUri[..<r!.lowerBound])
+        let prefixUri = String(contentUri[..<r.lowerBound])
         return "\(prefixUri)\(playlistPostfix)"
     }
 
-    private func getTsUrls(responseString: String, playlistUri: String) -> [String] {
-        let tsLines = responseString.split(separator: "\n").filter { $0.contains(".ts?") }
+    private func getTsUrls(playlistResponseString: String, playlistUri: String) throws -> [String] {
+        let tsLines = playlistResponseString.split(separator: "\n").filter { $0.contains(".ts?") }
         
-        let r: Range! = playlistUri.range(of: "/ts/")
-        let playlistPrefixUri = String(playlistUri[..<r!.upperBound])
+        guard tsLines.count > 0,
+              let r = playlistUri.range(of: "/ts/") else {
+            throw NicoError.SessionAPIError("Error while parsing playlist: \(playlistResponseString)")
+        }
+        let playlistPrefixUri = String(playlistUri[..<r.upperBound])
 
         return tsLines.map { "\(playlistPrefixUri)\($0)" }
     }
 
     private func createSession(sessionApi: JSON) -> [String: Any] {
-        let isHlsEnabled = sessionApi["protocols"].arrayValue.contains { $0.stringValue == "lhs" }
+        let isHlsEnabled = sessionApi["protocols"].arrayValue.contains { $0.stringValue == "hls" }
         let protocolName = isHlsEnabled ? "hls" : ["http", "storyboard"].first { p in sessionApi["protocols"].arrayValue.contains { $0.stringValue == p } }!
         
         var session: [String: Any] = [

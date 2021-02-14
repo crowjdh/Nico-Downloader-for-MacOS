@@ -79,6 +79,7 @@ class NicoVideoItem: NicoItem {
     // XXX: Deprecated
     var apiInfo: [String: String]!
     var apiDataJson: JSON!
+    var tsURLs: [String]!
     var videoFileURL: URL!
     var filterFileURL: URL?
     var duration: Double!
