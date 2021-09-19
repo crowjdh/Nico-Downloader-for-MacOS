@@ -16,6 +16,7 @@
 		57341F351E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */; };
 		5737478F1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */; };
 		573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 573B9A0C1E3DC755001C4F5D /* PowerManager.swift */; };
+		5743817F25CD2BFF00E77340 /* ProgressViewController+NewApi.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5743817E25CD2BFF00E77340 /* ProgressViewController+NewApi.swift */; };
 		5752D03D1E9A52E8002753FF /* URL+Paths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5752D03C1E9A52E8002753FF /* URL+Paths.swift */; };
 		575C68E11E683F7A00B56D34 /* Enum+Iterable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */; };
 		575D45CB1E3093B000F9E623 /* ProgressTableCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 575D45CA1E3093B000F9E623 /* ProgressTableCellView.swift */; };
@@ -28,6 +29,8 @@
 		5784FDC21E3075AC004BD160 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5784FDC01E3075AC004BD160 /* Main.storyboard */; };
 		5784FDCD1E3075AC004BD160 /* NicoDownloaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDCC1E3075AC004BD160 /* NicoDownloaderTests.swift */; };
 		5784FDD81E307B49004BD160 /* ProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5784FDD71E307B49004BD160 /* ProgressViewController.swift */; };
+		5785A8CB1F974D990025BB80 /* String+JSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5785A8CA1F974D990025BB80 /* String+JSON.swift */; };
+		5789E653216DB87E00ECEF21 /* rtmpdump in Resources */ = {isa = PBXBuildFile; fileRef = 5789E652216DB87E00ECEF21 /* rtmpdump */; };
 		579253D61E6548780041E2C8 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 579253D51E6548780041E2C8 /* Comment.swift */; };
 		57A337D31E84D546008AE550 /* String+UnicodeScalar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */; };
 		57A337D51E84D617008AE550 /* NSFont+Init.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57A337D41E84D617008AE550 /* NSFont+Init.swift */; };
@@ -37,6 +40,8 @@
 		57C25CED1E69184800499029 /* NSColor+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CEC1E69184800499029 /* NSColor+Hex.swift */; };
 		57C25CEF1E692FA900499029 /* ffmpeg in Resources */ = {isa = PBXBuildFile; fileRef = 57C25CEE1E692FA900499029 /* ffmpeg */; };
 		57C25CF21E69309400499029 /* FFMpegUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57C25CF11E69309400499029 /* FFMpegUtil.swift */; };
+		57DFC25B216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57DFC25A216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift */; };
+		57DFC25D216E1E1D00168FF5 /* ports in Resources */ = {isa = PBXBuildFile; fileRef = 57DFC25C216E1E1D00168FF5 /* ports */; };
 		57EC4C2A1E7D570C00C1DE41 /* ヒラギノ角ゴシック W4.ttc in CopyFiles */ = {isa = PBXBuildFile; fileRef = 57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */; };
 		57F30F711E30D40500BB2445 /* Metadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F701E30D40500BB2445 /* Metadata.swift */; };
 		57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */; };
@@ -78,6 +83,7 @@
 		57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CommentBurnerViewController+ApplyComment.swift"; sourceTree = "<group>"; };
 		5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSUserNotificationCenter+ShortenedDeliver.swift"; sourceTree = "<group>"; };
 		573B9A0C1E3DC755001C4F5D /* PowerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerManager.swift; sourceTree = "<group>"; };
+		5743817E25CD2BFF00E77340 /* ProgressViewController+NewApi.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ProgressViewController+NewApi.swift"; sourceTree = "<group>"; };
 		5752D03C1E9A52E8002753FF /* URL+Paths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "URL+Paths.swift"; sourceTree = "<group>"; };
 		575C68E01E683F7A00B56D34 /* Enum+Iterable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Enum+Iterable.swift"; sourceTree = "<group>"; };
 		575D45CA1E3093B000F9E623 /* ProgressTableCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressTableCellView.swift; sourceTree = "<group>"; };
@@ -94,6 +100,8 @@
 		5784FDCC1E3075AC004BD160 /* NicoDownloaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NicoDownloaderTests.swift; sourceTree = "<group>"; };
 		5784FDCE1E3075AC004BD160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5784FDD71E307B49004BD160 /* ProgressViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressViewController.swift; sourceTree = "<group>"; };
+		5785A8CA1F974D990025BB80 /* String+JSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+JSON.swift"; sourceTree = "<group>"; };
+		5789E652216DB87E00ECEF21 /* rtmpdump */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = rtmpdump; sourceTree = "<group>"; };
 		579253D51E6548780041E2C8 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		57A337D21E84D546008AE550 /* String+UnicodeScalar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "String+UnicodeScalar.swift"; sourceTree = "<group>"; };
 		57A337D41E84D617008AE550 /* NSFont+Init.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSFont+Init.swift"; sourceTree = "<group>"; };
@@ -103,6 +111,8 @@
 		57C25CEC1E69184800499029 /* NSColor+Hex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSColor+Hex.swift"; sourceTree = "<group>"; };
 		57C25CEE1E692FA900499029 /* ffmpeg */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = ffmpeg; sourceTree = "<group>"; };
 		57C25CF11E69309400499029 /* FFMpegUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFMpegUtil.swift; sourceTree = "<group>"; };
+		57DFC25A216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSTextCheckingResult+Groups.swift"; sourceTree = "<group>"; };
+		57DFC25C216E1E1D00168FF5 /* ports */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ports; sourceTree = "<group>"; };
 		57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ヒラギノ角ゴシック W4.ttc"; sourceTree = "<group>"; };
 		57F30F701E30D40500BB2445 /* Metadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Metadata.swift; sourceTree = "<group>"; };
 		57F30F731E30E72D00BB2445 /* Date+XMLPubDate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Date+XMLPubDate.swift"; path = "NicoDownloader/Extensions/Date+XMLPubDate.swift"; sourceTree = SOURCE_ROOT; };
@@ -234,8 +244,10 @@
 		57C25CF01E692FB400499029 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5789E652216DB87E00ECEF21 /* rtmpdump */,
 				57C25CEE1E692FA900499029 /* ffmpeg */,
 				576FF7CC1E751B45008F11A2 /* ffprobe */,
+				57DFC25C216E1E1D00168FF5 /* ports */,
 				571885071E82146C007D6988 /* Arial Unicode.ttf */,
 				57EC4C291E7D56BA00C1DE41 /* ヒラギノ角ゴシック W4.ttc */,
 			);
@@ -259,6 +271,9 @@
 				57341F341E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift */,
 				5752D03C1E9A52E8002753FF /* URL+Paths.swift */,
 				5737478E1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift */,
+				5785A8CA1F974D990025BB80 /* String+JSON.swift */,
+				57DFC25A216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift */,
+				5743817E25CD2BFF00E77340 /* ProgressViewController+NewApi.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -286,7 +301,6 @@
 				5784FDB41E3075AB004BD160 /* Frameworks */,
 				5784FDB51E3075AB004BD160 /* Resources */,
 				A628445F036677BE2AF87BCA /* [CP] Embed Pods Frameworks */,
-				2E44BC01A66F53FE28CFD35F /* [CP] Copy Pods Resources */,
 				57F56EEC1E74C932002CB108 /* CopyFiles */,
 			);
 			buildRules = (
@@ -306,8 +320,6 @@
 				5784FDC41E3075AC004BD160 /* Sources */,
 				5784FDC51E3075AC004BD160 /* Frameworks */,
 				5784FDC61E3075AC004BD160 /* Resources */,
-				1673C246829D87953739FBE8 /* [CP] Embed Pods Frameworks */,
-				EF7A9CD8A328FDD1ACD7E690 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -331,7 +343,7 @@
 				TargetAttributes = {
 					5784FDB61E3075AB004BD160 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = SHURBSH97H;
+						DevelopmentTeam = MLP3L3AX37;
 						ProvisioningStyle = Automatic;
 					};
 					5784FDC71E3075AC004BD160 = {
@@ -347,6 +359,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -369,7 +382,9 @@
 				5784FDBF1E3075AC004BD160 /* Assets.xcassets in Resources */,
 				5784FDC21E3075AC004BD160 /* Main.storyboard in Resources */,
 				57C25CEF1E692FA900499029 /* ffmpeg in Resources */,
+				57DFC25D216E1E1D00168FF5 /* ports in Resources */,
 				576FF7CD1E751B45008F11A2 /* ffprobe in Resources */,
+				5789E653216DB87E00ECEF21 /* rtmpdump in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -383,49 +398,22 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1673C246829D87953739FBE8 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NicoDownloaderTests/Pods-NicoDownloaderTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		22CD59AAD3E4050CCE75F053 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-NicoDownloaderTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		2E44BC01A66F53FE28CFD35F /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader-resources.sh\"\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		46AA4BD20C8A645BB0634F6C /* [CP] Check Pods Manifest.lock */ = {
@@ -434,13 +422,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-NicoDownloader-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		A628445F036677BE2AF87BCA /* [CP] Embed Pods Frameworks */ = {
@@ -449,28 +440,26 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/Kanna/Kanna.framework",
+				"${BUILT_PRODUCTS_DIR}/KeychainAccess/KeychainAccess.framework",
+				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftSoup/SwiftSoup.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Kanna.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KeychainAccess.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftSoup.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EF7A9CD8A328FDD1ACD7E690 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NicoDownloaderTests/Pods-NicoDownloaderTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NicoDownloader/Pods-NicoDownloader-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -491,12 +480,15 @@
 				577F8DA11E9242A300324C33 /* MimeType.swift in Sources */,
 				573B9A0D1E3DC755001C4F5D /* PowerManager.swift in Sources */,
 				57341F351E99DABB000D4502 /* CommentBurnerViewController+ApplyComment.swift in Sources */,
+				5743817F25CD2BFF00E77340 /* ProgressViewController+NewApi.swift in Sources */,
 				5737478F1EA36AFF003A01C7 /* NSUserNotificationCenter+ShortenedDeliver.swift in Sources */,
+				5785A8CB1F974D990025BB80 /* String+JSON.swift in Sources */,
 				57F30F741E30E72D00BB2445 /* Date+XMLPubDate.swift in Sources */,
 				57F3418B1E8FC5B800D90BF4 /* Levenshtein.swift in Sources */,
 				57B224EB1E8F58E3006E101A /* CommentBurnerViewController.swift in Sources */,
 				5784FDBD1E3075AC004BD160 /* ViewController.swift in Sources */,
 				575D45CB1E3093B000F9E623 /* ProgressTableCellView.swift in Sources */,
+				57DFC25B216DFEE100168FF5 /* NSTextCheckingResult+Groups.swift in Sources */,
 				579253D61E6548780041E2C8 /* Comment.swift in Sources */,
 				57341F331E99D71C000D4502 /* CommentBurnerable.swift in Sources */,
 				5784FDBB1E3075AC004BD160 /* AppDelegate.swift in Sources */,
@@ -636,14 +628,19 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = SHURBSH97H;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = MLP3L3AX37;
 				INFOPLIST_FILE = NicoDownloader/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.blogspot.crowjdh.NicoDownloader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -653,14 +650,19 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = SHURBSH97H;
+				CURRENT_PROJECT_VERSION = 5;
+				DEVELOPMENT_TEAM = MLP3L3AX37;
 				INFOPLIST_FILE = NicoDownloader/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = kr.blogspot.crowjdh.NicoDownloader;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

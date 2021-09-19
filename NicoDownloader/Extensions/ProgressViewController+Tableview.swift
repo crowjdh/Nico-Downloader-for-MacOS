@@ -26,24 +26,24 @@ extension ProgressViewController: NSTableViewDelegate {
         
         switch tableColumn {
         case tableView.tableColumns[0]:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.NumberCell, owner: nil) as? NSTableCellView {
+            if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CellIdentifiers.NumberCell), owner: nil) as? NSTableCellView {
                 cell.textField?.stringValue = String(row)
                 return cell
             }
         case tableView.tableColumns[1]:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.TitleCell, owner: nil) as? NSTableCellView {
+            if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CellIdentifiers.TitleCell), owner: nil) as? NSTableCellView {
                 cell.textField?.stringValue = item.name ?? "Unknown"
                 return cell
             }
         case tableView.tableColumns[2]:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.ProgressCell, owner: nil) as? ProgressTableCellView {
+            if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CellIdentifiers.ProgressCell), owner: nil) as? ProgressTableCellView {
                 cell.progressIndicator.doubleValue = item.status == .filtering
                     ? item.filterProgress
                     : Double(item.progress)
                 return cell
             }
         default:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.StatusCell, owner: nil) as? NSTableCellView {
+            if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CellIdentifiers.StatusCell), owner: nil) as? NSTableCellView {
                 cell.textField?.stringValue = item.status.description
                 return cell
             }

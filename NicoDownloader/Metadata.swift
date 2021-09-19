@@ -45,3 +45,7 @@ struct Mylist: VideoInfo {
 struct Videos: VideoInfo {
     let ids: [String]
 }
+
+struct Lives: VideoInfo {
+    let ids: [String]
+}

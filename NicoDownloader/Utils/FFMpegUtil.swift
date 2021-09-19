@@ -8,7 +8,6 @@
 
 import Foundation
 
-typealias ProcessMeta = (Process, DispatchWorkItem)
 typealias ProgressCallback = (String) -> Void
 typealias ProcessResult = ([String], [String], Int32)
 typealias VideoResolution = (Int, Int)
@@ -17,15 +16,49 @@ fileprivate let probeUnavailable = "N/A"
 
 func filterVideo(inputFilePath: String, outputFilePath: String,
                  filterPath: String, progressCallback: ProgressCallback? = nil,
-                 callback: @escaping (ProcessResult) -> Void) -> (Process, DispatchWorkItem)? {
+                 callback: @escaping (ProcessResult) -> Void) -> Process? {
     let arguments = [
         "-y",
         "-i", inputFilePath,
         "-filter_script:v", filterPath,
         "-vcodec", "h264",
+        "-acodec", "copy",
         outputFilePath
     ]
     return requestProcess(bundleName: "ffmpeg", arguments: arguments,
+                          progressCallback: progressCallback) { processResult in
+        callback(processResult)
+    }
+}
+
+func concatVideos(inputFilesUrl: URL, fileExtension: String, outputFileURL: URL,
+                 callback: @escaping (ProcessResult) -> Void) -> Process? {
+    let concatInputFileName = "concat_input_file.txt"
+    let concatInputFilePath = inputFilesUrl.appendingPathComponent(concatInputFileName)
+    try? FileManager.default.contentsOfDirectory(at: inputFilesUrl, includingPropertiesForKeys: nil)
+        .filter { $0.pathExtension == fileExtension }
+        .sorted(by: { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending })
+        .map { (inputFileUrl: URL) -> String in
+            return "file '\(inputFileUrl.path)'"
+        }
+        .joined(separator: "\n")
+        .write(to: concatInputFilePath, atomically: true, encoding: .utf8)
+    let arguments = [
+        "-f", "concat",
+        "-safe", "0",
+        "-i", "\(concatInputFilePath.path)",
+        "-c", "copy",
+        outputFileURL.path
+    ]
+    return requestProcess(bundleName: "ffmpeg", arguments: arguments) { processResult in
+        callback(processResult)
+        try? FileManager.default.removeItem(at: concatInputFilePath)
+    }
+}
+
+func rtmpdump(withArguments arguments: [String], progressCallback: ProgressCallback? = nil,
+              callback: @escaping (ProcessResult) -> Void) -> Process? {
+    return requestProcess(bundleName: "rtmpdump", arguments: arguments,
                           progressCallback: progressCallback) { processResult in
         callback(processResult)
     }
@@ -41,8 +74,8 @@ func getVideoResolution(inputFilePath: String) -> VideoResolution? {
         inputFilePath
     ]
     guard let output = requestProcess(bundleName: "ffprobe", arguments: arguments)?.0,
-        output.count == 2,
-        output[0] != probeUnavailable, output[1] != probeUnavailable else {
+          output.count >= 2,
+          output[0] != probeUnavailable, output[1] != probeUnavailable else {
         return nil
     }
     let widthString = output[0].components(separatedBy: "=")[1]
@@ -79,17 +112,38 @@ func encodedTime(fromOutput output: String) -> Double? {
     return Double(timeComponents[0])! * 60 * 60 + Double(timeComponents[1])! * 60 + Double(timeComponents[2])!
 }
 
+func encodePercentage(fromOutput output: String) -> Double? {
+    let pattern = "\\((.*)%\\)"
+    guard let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive),
+        let firstMatch = regex.firstMatch(in: output, options: [], range: NSRange(output.startIndex..., in: output)) else {
+        return nil
+    }
+    let groups = firstMatch.groups(src: output)
+    guard groups.count > 1, let progress = groups[1] else {
+        return nil
+    }
+    
+    return Double(progress)
+}
+
 private func requestProcess(bundleName: String, bundleType: String? = nil,
                             arguments: [String]?) -> ProcessResult? {
     var result: ProcessResult? = nil
-    let processMeta = createProcessMeta(bundleName: bundleName, bundleType: bundleType, arguments: arguments) {
+    let process = createProcess(bundleName: bundleName, bundleType: bundleType, arguments: arguments) {
         result = $0
     }
-    guard let _ = processMeta?.0, let task = processMeta?.1 else {
+    guard process != nil else {
         return nil
     }
-    task.perform()
-    task.wait()
+    process!.launch()
+    while true {
+        process!.waitUntilExit()
+        
+        if result != nil {
+            break
+        }
+        usleep(100)
+    }
     
     return result
 }
@@ -97,18 +151,18 @@ private func requestProcess(bundleName: String, bundleType: String? = nil,
 private func requestProcess(bundleName: String, bundleType: String? = nil,
                             arguments: [String]?,
                             progressCallback: ProgressCallback? = nil,
-                            callback: @escaping (ProcessResult) -> Void) -> ProcessMeta? {
-    guard let processMeta = createProcessMeta(bundleName: bundleName, bundleType: bundleType, arguments: arguments, progressCallback: progressCallback, callback: callback) else {
+                            callback: @escaping (ProcessResult) -> Void) -> Process? {
+    guard let process = createProcess(bundleName: bundleName, bundleType: bundleType, arguments: arguments, progressCallback: progressCallback, callback: callback) else {
         return nil
     }
-    DispatchQueue.global(qos: .userInitiated).async(execute: processMeta.1)
+    process.launch()
     
-    return processMeta
+    return process
 }
 
-private func createProcessMeta(bundleName: String, bundleType: String? = nil,
+private func createProcess(bundleName: String, bundleType: String? = nil,
                                arguments: [String]?, progressCallback: ProgressCallback? = nil,
-                               callback: @escaping (ProcessResult) -> Void) -> ProcessMeta? {
+                               callback: @escaping (ProcessResult) -> Void) -> Process? {
     guard let launchPath = Bundle.main.path(forResource: bundleName, ofType: bundleType) else {
         return nil
     }
@@ -121,52 +175,49 @@ private func createProcessMeta(bundleName: String, bundleType: String? = nil,
     process.standardOutput = outpipe
     let errpipe = Pipe()
     process.standardError = errpipe
-    let task = DispatchWorkItem {
-        process.launchPath = launchPath
-        process.arguments = arguments
-        process.standardInput = FileHandle.nullDevice
-        
-        let errorHandler: (Data) -> Void = { data in
-            if let str = String(data: data, encoding: .utf8) {
-                print(str)
-                if str.contains("Error while decoding stream") {
-                    process.interrupt()
-                }
+    process.launchPath = launchPath
+    process.arguments = arguments
+    process.standardInput = FileHandle.nullDevice
+    
+    let errorHandler: (Data) -> Void = { data in
+        if let str = String(data: data, encoding: .utf8), str.length > 0 {
+            if str.contains("Error while decoding stream") {
+                process.interrupt()
             }
         }
-        
-        var outdata = Data()
-        outpipe.fileHandleForReading.readabilityHandler = { handle in
-            let data = handle.availableData
-            outdata.append(data)
-            if let msg = String(data: data, encoding: .utf8) {
-                progressCallback?(msg)
-            }
-            errorHandler(data)
-        }
-        var errdata = Data()
-        errpipe.fileHandleForReading.readabilityHandler = { handle in
-            let data = handle.availableData
-            errdata.append(data)
-            if let msg = String(data: data, encoding: .utf8) {
-                progressCallback?(msg)
-            }
-            errorHandler(data)
-        }
-        
-        process.terminationHandler = { process in
-            if var string = String(data: outdata, encoding: .utf8) {
-                string = string.trimmingCharacters(in: .newlines)
-                output = string.components(separatedBy: "\n")
-            }
-            if var string = String(data: errdata, encoding: .utf8) {
-                string = string.trimmingCharacters(in: .newlines)
-                error = string.components(separatedBy: "\n")
-            }
-            callback((output, error, process.terminationStatus))
-        }
-        process.launch()
-        process.waitUntilExit()
     }
-    return (process, task)
+    
+    var outdata = Data()
+    outpipe.fileHandleForReading.readabilityHandler = { handle in
+        let data = handle.availableData
+        outdata.append(data)
+        if let msg = String(data: data, encoding: .utf8) {
+            progressCallback?(msg)
+        }
+        errorHandler(data)
+    }
+    var errdata = Data()
+    errpipe.fileHandleForReading.readabilityHandler = { handle in
+        let data = handle.availableData
+        errdata.append(data)
+        if let msg = String(data: data, encoding: .utf8) {
+            progressCallback?(msg)
+        }
+        errorHandler(data)
+    }
+    
+    process.terminationHandler = { process in
+        if var string = String(data: outdata, encoding: .utf8) {
+            string = string.trimmingCharacters(in: .newlines)
+            output = string.components(separatedBy: "\n")
+        }
+        if var string = String(data: errdata, encoding: .utf8) {
+            string = string.trimmingCharacters(in: .newlines)
+            error = string.components(separatedBy: "\n")
+        }
+        callback((output, error, process.terminationStatus))
+        outpipe.fileHandleForReading.closeFile()
+        errpipe.fileHandleForReading.closeFile()
+    }
+    return process
 }

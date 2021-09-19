@@ -21,11 +21,14 @@ class ViewController: NSViewController {
     @IBOutlet weak var rememberAccountCheckbox: NSButton!
     @IBOutlet weak var modeTabView: NSTabView!
     @IBOutlet weak var videoIdsTextField: NSTextField!
+    @IBOutlet weak var liveIdsTextField: NSTextField!
     @IBOutlet weak var advancedOptionsBox: NSBox!
     @IBOutlet weak var advancedOptionsDisclosure: NSButton!
     @IBOutlet weak var advancedOptionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var concurrentDownloadCountButton: NSPopUpButton!
+    @IBOutlet weak var ngLevelSlider: NSSlider!
     @IBOutlet weak var applyCommentCheckbox: NSButton!
+    @IBOutlet weak var adjustResolutionCheckbox: NSButton!
     
     var sessionManager: SessionManager!
     var saveDirectory: URL?
@@ -42,8 +45,10 @@ class ViewController: NSViewController {
         if let saveDirectory = UserDefaults.standard.url(forKey: "saveDirectory") {
             setSaveDirectory(url: saveDirectory)
         }
+        ngLevelSlider.integerValue = NGLevel.load().rawValue
         
-        applyCommentCheckbox.state = UserDefaults.standard.bool(forKey: "applyComment") ? NSOnState : NSOffState
+        applyCommentCheckbox.state = UserDefaults.standard.bool(forKey: "applyComment") ? NSControl.StateValue.on : NSControl.StateValue.off
+        adjustResolutionCheckbox.state = UserDefaults.standard.bool(forKey: "adjustResolution") ? NSControl.StateValue.on : NSControl.StateValue.off
         
         toggleAdvancedOptions(animate: false)
     }
@@ -66,7 +71,7 @@ class ViewController: NSViewController {
         }
         
         let account = Account(email: emailField.stringValue, password: passwordField.stringValue)
-        if rememberAccountCheckbox.state == NSOnState {
+        if rememberAccountCheckbox.state == NSControl.StateValue.on {
             let keychain = Keychain()
             try? keychain.removeAll()
             keychain[account.email] = account.password
@@ -83,8 +88,19 @@ class ViewController: NSViewController {
         }
     }
     
+    @IBAction func ngSliderValueDidChange(_ sender: NSSlider) {
+        guard let ngLevel = NGLevel.from(value: sender.integerValue) else {
+            return
+        }
+        NGLevel.save(ngLevel: ngLevel)
+    }
+    
     @IBAction func toggleApplyCommentOption(_ sender: Any) {
-        UserDefaults.standard.set(applyCommentCheckbox.state == NSOnState, forKey: "applyComment")
+        UserDefaults.standard.set(applyCommentCheckbox.state == NSControl.StateValue.on, forKey: "applyComment")
+    }
+    
+    @IBAction func toggleAdjustResolutionOption(_ sender: Any) {
+        UserDefaults.standard.set(adjustResolutionCheckbox.state == NSControl.StateValue.on, forKey: "adjustResolution")
     }
     
     private func createOptions() -> Options? {
@@ -92,6 +108,8 @@ class ViewController: NSViewController {
         switch modeTabView.selectedTabViewItem?.label {
         case .some("Video"):
             videoInfo = Videos(ids: videoIdsTextField.stringValue.components(separatedBy: " "))
+        case .some("Live"):
+            videoInfo = Lives(ids: liveIdsTextField.stringValue.components(separatedBy: " "))
         default:
             var mylist = Mylist(id: mylistIdField.stringValue)
             let rangeComponenets = rangeTextField.stringValue.components(separatedBy: ":")
@@ -107,7 +125,7 @@ class ViewController: NSViewController {
         
         var options = Options(videoInfo: videoInfo,
                               concurrentDownloadCount: concurrentDownloadCount,
-                              applyComment: applyCommentCheckbox.state == NSOnState)
+                              applyComment: applyCommentCheckbox.state == NSControl.StateValue.on)
         
         if let saveDirectory = saveDirectory {
             options.saveDirectory = saveDirectory
@@ -131,9 +149,9 @@ class ViewController: NSViewController {
         let box = animate ? advancedOptionsBox.animator() : advancedOptionsBox
         let disclosure = animate ? advancedOptionsDisclosure.animator() : advancedOptionsDisclosure
         
-        constraint!.constant = show ? 60 : 0
+        constraint!.constant = show ? 133 : 0
         box!.isHidden = !show
-        disclosure!.state = show ? NSOnState : NSOffState
+        disclosure!.state = show ? NSControl.StateValue.on : NSControl.StateValue.off
     }
 }
 

@@ -26,7 +26,7 @@ class PowerManager {
         powerAssertion = IOPMAssertionCreateWithName(
             kIOPMAssertionTypeNoDisplaySleep,
             IOPMAssertionLevel(kIOPMAssertionLevelOn),
-            "Keep screen on for set time" as CFString!,
+            "Keep screen on for set time" as CFString?,
             &powerId
         )
         

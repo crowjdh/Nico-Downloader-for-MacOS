@@ -50,14 +50,14 @@ extension CommentBurnerViewController: NSTableViewDelegate {
     
     func tableView(_ tableView: NSTableView, writeRowsWith rowIndexes: IndexSet, to pboard: NSPasteboard) -> Bool {
         let data = NSKeyedArchiver.archivedData(withRootObject: rowIndexes)
-        pboard.declareTypes([NSGeneralPboard], owner: self)
-        pboard.setData(data, forType: NSGeneralPboard)
+        pboard.declareTypes([NSPasteboard.PasteboardType.fileURL], owner: self)
+        pboard.setData(data, forType: NSPasteboard.PasteboardType.fileURL)
         
         return true
     }
     
-    func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableViewDropOperation) -> Bool {
-        let data = info.draggingPasteboard().data(forType: NSGeneralPboard)!
+    func tableView(_ tableView: NSTableView, acceptDrop info: NSDraggingInfo, row: Int, dropOperation: NSTableView.DropOperation) -> Bool {
+        let data = info.draggingPasteboard.data(forType: NSPasteboard.PasteboardType.fileURL)!
         let toIdx = row
         guard let isVideoTable = isVideoTable(tableView),
             let fromIndexSet = NSKeyedUnarchiver.unarchiveObject(with: data) as? IndexSet,
@@ -101,7 +101,7 @@ extension CommentBurnerViewController: NSTableViewDelegate {
         return true
     }
     
-    func tableView(_ tableView: NSTableView, validateDrop info: NSDraggingInfo, proposedRow row: Int, proposedDropOperation dropOperation: NSTableViewDropOperation) -> NSDragOperation {
+    func tableView(_ tableView: NSTableView, validateDrop info: NSDraggingInfo, proposedRow row: Int, proposedDropOperation dropOperation: NSTableView.DropOperation) -> NSDragOperation {
         return NSDragOperation.every
     }
     
@@ -109,7 +109,7 @@ extension CommentBurnerViewController: NSTableViewDelegate {
         guard let tableId = tableView.identifier else {
             return nil
         }
-        return tableId == "VideoTableViewID"
+        return tableId.rawValue == "VideoTableViewID"
     }
     
     private func configVideoTableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn, row: Int) -> NSView?  {
@@ -117,12 +117,12 @@ extension CommentBurnerViewController: NSTableViewDelegate {
         
         switch tableColumn {
         case tableView.tableColumns[0]:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.NumberCell, owner: nil) as? NSTableCellView {
+            if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CellIdentifiers.NumberCell), owner: nil) as? NSTableCellView {
                 cell.textField?.stringValue = String(row)
                 return cell
             }
         default:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.VideoCell, owner: nil) as? NSTableCellView {
+            if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CellIdentifiers.VideoCell), owner: nil) as? NSTableCellView {
                 cell.textField?.stringValue = item.videoFileURL?.absoluteString.removingPercentEncoding ?? ""
                 return cell
             }
@@ -135,17 +135,17 @@ extension CommentBurnerViewController: NSTableViewDelegate {
         
         switch tableColumn {
         case tableView.tableColumns[0]:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.NumberCell, owner: nil) as? NSTableCellView {
+            if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CellIdentifiers.NumberCell), owner: nil) as? NSTableCellView {
                 cell.textField?.stringValue = String(row)
                 return cell
             }
         case tableView.tableColumns[1]:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.CommentFileName, owner: nil) as? NSTableCellView {
+            if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CellIdentifiers.CommentFileName), owner: nil) as? NSTableCellView {
                 cell.textField?.stringValue = item.commentFileURL?.absoluteString.removingPercentEncoding ?? ""
                 return cell
             }
         default:
-            if let cell = tableView.make(withIdentifier: CellIdentifiers.ProgressCell, owner: nil) as? ProgressTableCellView {
+            if let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: CellIdentifiers.ProgressCell), owner: nil) as? ProgressTableCellView {
                 cell.progressIndicator.doubleValue = item.filterProgress
                 return cell
             }

@@ -12,30 +12,29 @@ import PromiseKit
 extension CommentBurnerViewController: CommentBurnerable {
     var allDone: Bool {
         get {
-            return self.items.reduce(true) { $0.0 && ($0.1.status == .done || $0.1.status == .error) }
+            return self.items.reduce(true) { $0 && ($1.status == .done || $1.status == .error) }
         }
     }
     
     func applyComment(item: FilterItem, progressCallback: @escaping DoubleCallback) -> Promise<Void> {
-        return Promise { fulfill, reject in
+        return Promise { seal in
             guard let videoFileURL = item.videoFileURL,
                 let filterFileURL = item.filterFileURL else {
-                    reject(NicoError.UnknownError("Video and/or filter file does not exists"))
+                    seal.reject(NicoError.UnknownError("Video and/or filter file does not exists"))
                     return
             }
             let res = applyComment(videoFileURL: videoFileURL, filterFileURL: filterFileURL,
                                    progressCallback: progressCallback, callback: { output, error, status in
                                     if status == 0 {
-                                        fulfill()
+                                        seal.fulfill_()
                                     } else {
-                                        reject(NicoError.UnknownError(error.joined(separator: "\n")))
+                                        seal.reject(NicoError.UnknownError(error.joined(separator: "\n")))
                                     }
             })
             if let res = res {
-                self.filterProcesses.append(res.0)
-                self.filterWorkItems.append(res.1)
+                self.filterProcesses.append(res)
             } else {
-                reject(NicoError.UnknownError("Error occurred while applying comment"))
+                seal.reject(NicoError.UnknownError("Error occurred while applying comment"))
             }
         }
     }
@@ -50,7 +49,7 @@ extension CommentBurnerViewController: CommentBurnerable {
     func checkIfAllDone() {
         if self.allDone {
             DispatchQueue.main.async {
-                NSApplication.shared().requestUserAttention(.informationalRequest)
+                NSApplication.shared.requestUserAttention(.informationalRequest)
                 NSUserNotificationCenter.notifyTaskDone() { notification in
                     notification.title = "All tasks done"
                     notification.subtitle = "Applied comments to all videos"
@@ -65,7 +64,7 @@ extension CommentBurnerViewController: CommentBurnerable {
             let concurrentDownloadCount = 2
             let semaphore = DispatchSemaphore(value: concurrentDownloadCount - 1)
             for (idx, item) in self.items.enumerated() {
-                guard let videoFileURL = item.videoFileURL,
+                guard let _ = item.videoFileURL,
                     let commentFileURL = item.commentFileURL,
                     let videoFilePath = item.videoFilePath else {
                     continue
@@ -80,7 +79,7 @@ extension CommentBurnerViewController: CommentBurnerable {
                 self.applyComment(item: self.items[idx], progressCallback: { progress in
                     self.items[idx].filterProgress = progress / self.items[idx].videoDuration
                     self.reloadTableViewData()
-                }).then { _ -> Void in
+                }).done { _ -> Void in
                     self.items[idx].status = .done
                     self.togglePreventSleep()
                     semaphore.signal()

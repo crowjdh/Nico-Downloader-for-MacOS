@@ -12,6 +12,7 @@ class CommentBurnerViewController: NSViewController {
 
     @IBOutlet weak var videosTableView: NSTableView!
     @IBOutlet weak var filterTableView: NSTableView!
+    @IBOutlet weak var adjustResolutionCheckbox: NSButton!
     
     var items: [FilterItem] = []
     weak var selectedTableView: NSTableView?
@@ -25,6 +26,7 @@ class CommentBurnerViewController: NSViewController {
         super.viewDidLoad()
         
         initTableView()
+        adjustResolutionCheckbox.state = UserDefaults.standard.bool(forKey: "adjustResolution") ? NSControl.StateValue.on : NSControl.StateValue.off
     }
     
     override func viewDidAppear() {
@@ -36,11 +38,11 @@ class CommentBurnerViewController: NSViewController {
     private func initTableView() {
         videosTableView.delegate = self
         videosTableView.dataSource = self
-        videosTableView.register(forDraggedTypes: [NSGeneralPboard])
+        videosTableView.registerForDraggedTypes([NSPasteboard.PasteboardType.fileURL])
         
         filterTableView.delegate = self
         filterTableView.dataSource = self
-        filterTableView.register(forDraggedTypes: [NSGeneralPboard])
+        filterTableView.registerForDraggedTypes([NSPasteboard.PasteboardType.fileURL])
     }
     
     @IBAction func loadFiles(_ sender: Any) {
@@ -71,6 +73,10 @@ class CommentBurnerViewController: NSViewController {
         videosTableView.reloadData()
         filterTableView.reloadData()
     }
+    @IBAction func adjustResolutionCheckboxDidChange(_ sender: Any) {
+        UserDefaults.standard.set(adjustResolutionCheckbox.state == NSControl.StateValue.on, forKey: "adjustResolution")
+    }
+    
     @IBAction func applyCommentButtonDidClick(_ sender: Any) {
         startTask()
     }
@@ -118,7 +124,7 @@ extension CommentBurnerViewController: NSWindowDelegate {
             alert.addButton(withTitle: "OK")
             alert.addButton(withTitle: "Cancel")
             alert.beginSheetModal(for: view.window!) { response in
-                if response == NSAlertFirstButtonReturn {
+                if response == NSApplication.ModalResponse.alertFirstButtonReturn {
                     self.cancelled = true
                 }
             }
