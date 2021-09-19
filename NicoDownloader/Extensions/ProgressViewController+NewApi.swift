@@ -173,7 +173,7 @@ extension ProgressViewController {
     }
 
     private func createSessionData(fromApiDataJson apiDataJson: JSON) throws -> Data {
-        let sessionApi = apiDataJson["video"]["dmcInfo"]["session_api"]
+        let sessionApi = apiDataJson["media"]["delivery"]["movie"]["session"]
         let session = createSession(sessionApi: sessionApi)
         let sessionString = JSON(session).description.split(separator: "\n").joined()
         
@@ -242,11 +242,11 @@ extension ProgressViewController {
 
     private func createSession(sessionApi: JSON) -> [String: Any] {
         let isHlsEnabled = sessionApi["protocols"].arrayValue.contains { $0.stringValue == "hls" }
-        let protocolName = isHlsEnabled ? "hls" : ["http", "storyboard"].first { p in sessionApi["protocols"].arrayValue.contains { $0.stringValue == p } }!
+        let protocolName = isHlsEnabled ? "hls" : sessionApi["protocols"].arrayValue.first!.stringValue
         
         var session: [String: Any] = [
-            "recipe_id": sessionApi["recipe_id"].stringValue,
-            "content_id": sessionApi["content_id"].stringValue,
+            "recipe_id": sessionApi["recipeId"].stringValue,
+            "content_id": sessionApi["contentId"].stringValue,
             "content_type": "movie",
             "content_src_id_sets": [[
                 "content_src_ids": [[
@@ -259,7 +259,7 @@ extension ProgressViewController {
             "timing_constraint": "unlimited",
             "keep_method": [
                 "heartbeat": [
-                    "lifetime": sessionApi["heartbeat_lifetime"].intValue
+                    "lifetime": sessionApi["heartbeatLifetime"].intValue
                 ]
             ],
             "content_uri": "",
@@ -270,13 +270,13 @@ extension ProgressViewController {
                 ]
             ],
             "content_auth": [
-                "auth_type": sessionApi["auth_types"][protocolName],
-                "content_key_timeout": sessionApi["content_key_timeout"].intValue,
+                "auth_type": sessionApi["authTypes"][protocolName],
+                "content_key_timeout": sessionApi["contentKeyTimeout"].intValue,
                 "service_id": "nicovideo",
-                "service_user_id": sessionApi["service_user_id"].stringValue
+                "service_user_id": sessionApi["serviceUserId"].stringValue
             ],
             "client_info": [
-                "player_id": sessionApi["player_id"].stringValue
+                "player_id": sessionApi["playerId"].stringValue
             ],
             "priority": sessionApi["priority"].doubleValue
         ]
@@ -289,7 +289,7 @@ extension ProgressViewController {
                     "parameters": [
                         "hls_parameters": [
                             "segment_duration": 6000,
-                            "transfer_preset": sessionApi["transfer_presets"].arrayValue.first?.string ?? "",
+                            "transfer_preset": sessionApi["transferPresets"].arrayValue.first?.string ?? "",
                             "use_ssl": "yes",
                             "use_well_known_port": "yes"
                         ]
